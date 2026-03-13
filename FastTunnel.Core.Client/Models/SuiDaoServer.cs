@@ -4,17 +4,13 @@
 //     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
 // Copyright (c) 2019 Gui.H
 
-using FastTunnel.Core.Models;
-using System.Collections.Generic;
+namespace FastTunnel.Core.Config;
 
-namespace FastTunnel.Core.Config
+public class SuiDaoServer
 {
-    public class SuiDaoServer
-    {
-        public string Protocol { get; set; } = "ws";
+    public string Protocol { get; set; } = "ws";
 
-        public string ServerAddr { get; set; }
+    public string ServerAddr { get; set; }
 
-        public int ServerPort { get; set; }
-    }
+    public int ServerPort { get; set; }
 }

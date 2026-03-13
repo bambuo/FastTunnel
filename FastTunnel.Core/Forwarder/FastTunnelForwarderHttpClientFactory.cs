@@ -4,33 +4,28 @@
 //     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
 // Copyright (c) 2019 Gui.H
 
-using FastTunnel.Core.Client;
-using FastTunnel.Core.Extensions;
-using FastTunnel.Core.Models;
-using Microsoft.AspNetCore.Connections.Features;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+using FastTunnel.Core.Client;
+using FastTunnel.Core.Extensions;
+using FastTunnel.Core.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Forwarder;
 
 namespace FastTunnel.Core.Forwarder;
 
 public class FastTunnelForwarderHttpClientFactory : ForwarderHttpClientFactory
 {
-    readonly ILogger<FastTunnelForwarderHttpClientFactory> logger;
-    readonly FastTunnelServer fastTunnelServer;
+    private static int connectionCount;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    static int connectionCount;
+    private readonly FastTunnelServer fastTunnelServer;
+    private readonly ILogger<FastTunnelForwarderHttpClientFactory> logger;
 
     public FastTunnelForwarderHttpClientFactory(
         ILogger<FastTunnelForwarderHttpClientFactory> logger,
@@ -59,10 +54,6 @@ public class FastTunnelForwarderHttpClientFactory : ForwarderHttpClientFactory
             Interlocked.Increment(ref connectionCount);
             var res = await proxyAsync(host, context, contextRequest.RequestAborted);
             return res;
-        }
-        catch (Exception)
-        {
-            throw;
         }
         finally
         {
@@ -106,10 +97,6 @@ public class FastTunnelForwarderHttpClientFactory : ForwarderHttpClientFactory
         {
             // 通讯异常，返回客户端离线
             return await OfflinePage(host, context);
-        }
-        catch (Exception)
-        {
-            throw;
         }
         finally
         {

@@ -4,29 +4,28 @@
 //     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
 // Copyright (c) 2019 Gui.H
 
-namespace FastTunnel.Server.Models
+namespace FastTunnel.Server.Models;
+
+public class ApiResponse
 {
-    public class ApiResponse
-    {
-        /// <summary>
-        /// 错误码
-        /// 0 成功，其他为失败
-        /// </summary>
-        public ErrorCodeEnum code { get; set; }
+    /// <summary>
+    ///     错误码
+    ///     0 成功，其他为失败
+    /// </summary>
+    public ErrorCodeEnum code { get; set; }
 
-        public string message { get; set; }
+    public string message { get; set; }
 
-        public object data { get; set; }
-    }
+    public object data { get; set; }
+}
 
-    public enum ErrorCodeEnum
-    {
-        NONE = 0,
+public enum ErrorCodeEnum
+{
+    NONE = 0,
 
-        AuthError = 1,
+    AuthError = 1,
 
-        Exception = 2,
+    Exception = 2,
 
-        NoAccount = 3,
-    }
+    NoAccount = 3
 }

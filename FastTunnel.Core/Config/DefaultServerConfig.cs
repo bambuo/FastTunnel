@@ -7,48 +7,45 @@
 using System;
 using System.Collections.Generic;
 
-namespace FastTunnel.Core.Config
+namespace FastTunnel.Core.Config;
+
+public class DefaultServerConfig : IServerConfig
 {
-    public class DefaultServerConfig : IServerConfig
+    [Obsolete("由Tokens替换")] public string Token { get; set; }
+
+    public List<string> Tokens { get; set; }
+
+    public ApiOptions Api { get; set; }
+    public string WebDomain { get; set; }
+
+    public string[] WebAllowAccessIps { get; set; }
+
+    public bool EnableForward { get; set; }
+
+    public class ApiOptions
     {
-        public string WebDomain { get; set; }
+        public JWTOptions JWT { get; set; }
 
-        public string[] WebAllowAccessIps { get; set; }
+        public Account[] Accounts { get; set; }
+    }
 
-        public bool EnableForward { get; set; }
+    public class JWTOptions
+    {
+        public int ClockSkew { get; set; }
 
-        [Obsolete("由Tokens替换")]
-        public string Token { get; set; }
+        public string ValidAudience { get; set; }
 
-        public List<string> Tokens { get; set; }
+        public string ValidIssuer { get; set; }
 
-        public ApiOptions Api { get; set; }
+        public string IssuerSigningKey { get; set; }
 
-        public class ApiOptions
-        {
-            public JWTOptions JWT { get; set; }
+        public int Expires { get; set; }
+    }
 
-            public Account[] Accounts { get; set; }
-        }
+    public class Account
+    {
+        public string Name { get; set; }
 
-        public class JWTOptions
-        {
-            public int ClockSkew { get; set; }
-
-            public string ValidAudience { get; set; }
-
-            public string ValidIssuer { get; set; }
-
-            public string IssuerSigningKey { get; set; }
-
-            public int Expires { get; set; }
-        }
-
-        public class Account
-        {
-            public string Name { get; set; }
-
-            public string Password { get; set; }
-        }
+        public string Password { get; set; }
     }
 }

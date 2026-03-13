@@ -22,7 +22,6 @@ using Yarp.ReverseProxy.Configuration;
 
 namespace FastTunnel.Core.Handlers.Server;
 
-
 [JsonSourceGenerationOptions(WriteIndented = false)]
 [JsonSerializable(typeof(LogInMassage))]
 internal partial class SourceGenerationContext : JsonSerializerContext
@@ -31,14 +30,23 @@ internal partial class SourceGenerationContext : JsonSerializerContext
 
 public class LoginHandler : ILoginHandler
 {
+    public const bool NeedRecive = true;
     private readonly ILogger logger;
     private readonly IProxyConfigProvider proxyConfig;
-    public const bool NeedRecive = true;
 
     public LoginHandler(ILogger<LoginHandler> logger, IProxyConfigProvider proxyConfig)
     {
         this.proxyConfig = proxyConfig;
         this.logger = logger;
+    }
+
+
+    public virtual async Task<bool> HandlerMsg(FastTunnelServer fastTunnelServer, TunnelClient tunnelClient, string lineCmd, CancellationToken cancellationToken)
+    {
+        var msg = JsonSerializer.Deserialize(lineCmd, SourceGenerationContext.Default.LogInMassage);
+
+        await HandleLoginAsync(fastTunnelServer, tunnelClient, msg, cancellationToken);
+        return NeedRecive;
     }
 
     protected async Task HandleLoginAsync(FastTunnelServer server, TunnelClient client, LogInMassage requet, CancellationToken cancellationToken)
@@ -47,7 +55,7 @@ public class LoginHandler : ILoginHandler
 
         var tips = new List<string>();
 
-        await client.webSocket.SendCmdAsync(MessageType.Log, $"穿透协议 | 映射关系（公网=>内网）", cancellationToken);
+        await client.webSocket.SendCmdAsync(MessageType.Log, "穿透协议 | 映射关系（公网=>内网）", cancellationToken);
         Thread.Sleep(300);
 
         if (requet.Webs != null && requet.Webs.Any())
@@ -92,16 +100,20 @@ public class LoginHandler : ILoginHandler
                     try
                     {
                         if (item.LocalPort == 3389)
+                        {
                             tips.Add("您已将3389端口暴露，请确保您的PC密码足够安全。");
+                        }
 
                         if (item.LocalPort == 22)
+                        {
                             tips.Add("您已将22端口暴露，请确保您的PC密码足够安全。");
+                        }
 
                         if (server.ForwardList.TryGetValue(item.RemotePort, out var old))
                         {
                             logger.LogDebug($"Remove Listener {old.Listener.ListenIp}:{old.Listener.ListenPort}");
                             old.Listener.Stop();
-                            server.ForwardList.TryRemove(item.RemotePort, out var _);
+                            server.ForwardList.TryRemove(item.RemotePort, out _);
                         }
 
                         // TODO: 客户端离线时销毁
@@ -122,7 +134,6 @@ public class LoginHandler : ILoginHandler
                         logger.LogError($"SSH proxy error: {item.RemotePort} => {item.LocalIp}:{item.LocalPort}");
                         logger.LogError(ex.Message);
                         await client.webSocket.SendCmdAsync(MessageType.Log, ex.Message, CancellationToken.None);
-                        continue;
                     }
                 }
             }
@@ -138,15 +149,8 @@ public class LoginHandler : ILoginHandler
         }
 
         if (!hasTunnel)
+        {
             await client.webSocket.SendCmdAsync(MessageType.Log, TunnelResource.NoTunnel, CancellationToken.None);
-    }
-
-
-    public virtual async Task<bool> HandlerMsg(FastTunnelServer fastTunnelServer, TunnelClient tunnelClient, string lineCmd, CancellationToken cancellationToken)
-    {
-        var msg = JsonSerializer.Deserialize<LogInMassage>(lineCmd, SourceGenerationContext.Default.LogInMassage);
-
-        await HandleLoginAsync(fastTunnelServer, tunnelClient, msg, cancellationToken);
-        return NeedRecive;
+        }
     }
 }

@@ -7,12 +7,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FastTunnel.Core.Client
-{
-    public interface IFastTunnelClient
-    {
-        Task StartAsync(CancellationToken cancellationToken);
+namespace FastTunnel.Core.Client;
 
-        Task StopAsync(CancellationToken cancellationToken);
-    }
+public interface IFastTunnelClient
+{
+    Task StartAsync(CancellationToken cancellationToken);
+
+    Task StopAsync(CancellationToken cancellationToken);
 }

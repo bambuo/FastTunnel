@@ -4,23 +4,12 @@
 //     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
 // Copyright (c) 2019 Gui.H
 
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
-using System.Net.Sockets;
 using System.Text;
 using FastTunnel.Api.Filters;
 using FastTunnel.Core.Config;
 using FastTunnel.Core.Extensions;
-using FastTunnel.Server.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
@@ -33,17 +22,14 @@ public class Program
     public static void Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .WriteTo.Console().WriteTo.File("Logs/log-.log", rollingInterval: RollingInterval.Day)
-                .CreateBootstrapLogger();
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .WriteTo.Console().WriteTo.File("Logs/log-.log", rollingInterval: RollingInterval.Day)
+            .CreateBootstrapLogger();
 
         try
         {
-            var builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions
-            {
-                Args = args
-            });
+            var builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions { Args = args });
 
             // Add services to the container.
             builder.Services.AddSingleton<CustomExceptionFilterAttribute>();
@@ -63,13 +49,14 @@ public class Program
             });
 
             builder.Host.UseSerilog((context, services, configuration) => configuration
-                    .ReadFrom.Configuration(context.Configuration)
-                    .ReadFrom.Services(services)
-                    .Enrich.FromLogContext()
-                    .WriteTo.Console());
+                .ReadFrom.Configuration(context.Configuration)
+                .ReadFrom.Services(services)
+                .Enrich.FromLogContext()
+                .WriteTo.Console());
 
-            (builder.Configuration as IConfigurationBuilder).AddJsonFile("config/appsettings.json", optional: false, reloadOnChange: true);
-            (builder.Configuration as IConfigurationBuilder).AddJsonFile($"config/appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true); ;
+            builder.Configuration.AddJsonFile("appsettings.json", false, true);
+            builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true);
+            ;
 
             // -------------------FastTunnel STEP1 OF 3------------------
             builder.Services.AddFastTunnelServer(builder.Configuration.GetSection("FastTunnel"));
@@ -78,7 +65,7 @@ public class Program
             var Configuration = builder.Configuration;
             var apioptions = Configuration.GetSection("FastTunnel").Get<DefaultServerConfig>();
 
-            builder.Services.AddAuthentication("Bearer").AddJwtBearer(delegate (JwtBearerOptions options)
+            builder.Services.AddAuthentication("Bearer").AddJwtBearer(delegate(JwtBearerOptions options)
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -93,15 +80,11 @@ public class Program
                 };
                 options.Events = new JwtBearerEvents
                 {
-                    OnChallenge = async delegate (JwtBearerChallengeContext context)
+                    OnChallenge = async delegate(JwtBearerChallengeContext context)
                     {
                         context.HandleResponse();
                         context.Response.ContentType = "application/json;charset=utf-8";
-                        await context.Response.WriteAsJsonAsync(new
-                        {
-                            code = -1,
-                            message = context.Error ?? "未登录"
-                        });
+                        await context.Response.WriteAsJsonAsync(new { code = -1, message = context.Error ?? "未登录" });
                     }
                 };
             });
@@ -137,7 +120,7 @@ public class Program
 
             app.Run();
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             Log.Fatal(ex, "致命异常");
             throw;

@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches:
-    - v2
+      - v2
 
 env:
   # 设置 docker 镜像名
@@ -12,17 +12,17 @@ env:
 
 jobs:
   build:
-   runs-on: ubuntu-latest
-   steps:
-   - uses: actions/checkout@v1
-   - name: Setup .NET Core
-     uses: actions/setup-dotnet@v1
-     with:
-       dotnet-version: 8.0.*
-       include-prerelease: true
-   - name: Build with dotnet
-     run: chmod +x ./publish.sh
-      
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 8.0.*
+          include-prerelease: true
+      - name: Build with dotnet
+        run: chmod +x ./publish.sh
+
   publish:
     name: publish-core
     runs-on: ubuntu-latest
@@ -32,8 +32,8 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-           dotnet-version: 8.0.*
-           include-prerelease: true
+          dotnet-version: 8.0.*
+          include-prerelease: true
       # Publish
       - name: publish on version change
         id: publish_nuget
@@ -41,16 +41,16 @@ jobs:
         with:
           # Filepath of the project to be packaged, relative to root of repository
           PROJECT_FILE_PATH: FastTunnel.Core/FastTunnel.Core.csproj
-          
+
           # NuGet package id, used for version detection & defaults to project name
           # PACKAGE_NAME: Core
-          
+
           # Filepath with version info, relative to root of repository & defaults to PROJECT_FILE_PATH
           # VERSION_FILE_PATH: Directory.Build.props
 
           # Regex pattern to extract version info in a capturing group
           # VERSION_REGEX: ^\s*<Version>(.*)<\/Version>\s*$
-          
+
           # Useful with external providers like Nerdbank.GitVersioning, ignores VERSION_FILE_PATH & VERSION_REGEX
           # VERSION_STATIC: 1.0.0
 
@@ -78,8 +78,8 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-           dotnet-version: 8.0.*
-           include-prerelease: true
+          dotnet-version: 8.0.*
+          include-prerelease: true
 
       # Publish
       - name: publish on version change
@@ -118,7 +118,7 @@ jobs:
           # 再上传一份覆盖latest
           echo [tag] $IMAGE_ID:$VERSION $IMAGE_ID:latest
           docker tag $IMAGE_ID:$VERSION $IMAGE_ID:latest
-          
+
           echo [push] $IMAGE_ID:latest
           docker push $IMAGE_ID:latest
   docker-client:
@@ -150,7 +150,7 @@ jobs:
           # 再上传一份覆盖latest
           echo [tag] $IMAGE_ID:$VERSION $IMAGE_ID:latest
           docker tag $IMAGE_ID:$VERSION $IMAGE_ID:latest
-          
+
           echo [push] $IMAGE_ID:latest
           docker push $IMAGE_ID:latest
-          
+

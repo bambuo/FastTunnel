@@ -4,24 +4,17 @@
 //     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
 // Copyright (c) 2019 Gui.H
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FastTunnel.Core.Config;
 using FastTunnel.Core.Models;
 
-namespace FastTunnel.Core.Client
+namespace FastTunnel.Core.Client;
+
+public interface IClientConfig
 {
-    public interface IClientConfig
-    {
-        public SuiDaoServer Server { get; set; }
+    SuiDaoServer Server { get; set; }
 
-        public IEnumerable<WebConfig> Webs { get; set; }
+    IEnumerable<WebConfig> Webs { get; set; }
 
-        public IEnumerable<ForwardConfig> Forwards { get; set; }
-    }
-
+    IEnumerable<ForwardConfig> Forwards { get; set; }
 }
-

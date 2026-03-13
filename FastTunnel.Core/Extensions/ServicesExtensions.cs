@@ -25,9 +25,8 @@ namespace FastTunnel.Core.Extensions;
 
 public static class ServicesExtensions
 {
-
     /// <summary>
-    /// 添加服务端后台进程
+    ///     添加服务端后台进程
     /// </summary>
     /// <param name="services"></param>
     public static void AddFastTunnelServer(this IServiceCollection services, IConfigurationSection configurationSection)
@@ -45,7 +44,7 @@ public static class ServicesExtensions
     }
 
     /// <summary>
-    /// 服务端中间件
+    ///     服务端中间件
     /// </summary>
     /// <param name="app"></param>
     public static void UseFastTunnelServer(this IApplicationBuilder app)
@@ -72,7 +71,7 @@ public static class ServicesExtensions
             }
 
             context.Response.StatusCode = 200;
-            context.Response.WriteAsync(TunnelResource.Page_NotFound, CancellationToken.None);
+            context.Response.WriteAsync(TunnelResource.Page_NotFund, CancellationToken.None);
             return Task.CompletedTask;
         });
     }

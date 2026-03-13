@@ -5,14 +5,14 @@
 // Copyright (c) 2019 Gui.H
 
 using System;
+using System.Reflection;
 
-namespace FastTunnel.Core.Utilitys
+namespace FastTunnel.Core.Utilitys;
+
+public static class AssemblyUtility
 {
-    public static class AssemblyUtility
+    public static Version GetVersion()
     {
-        public static Version GetVersion()
-        {
-            return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-        }
+        return Assembly.GetExecutingAssembly().GetName().Version;
     }
 }

@@ -7,9 +7,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.IO.Pipelines;
 using System.Net;
-using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -23,21 +21,12 @@ namespace FastTunnel.Core.Models;
 
 public class TunnelClient
 {
-    public WebSocket webSocket { get; private set; }
-
-    /// <summary>
-    /// 服务端端口号
-    /// </summary>
-    public int ConnectionPort { get; set; }
-
     private readonly FastTunnelServer fastTunnelServer;
-    private readonly ILoginHandler loginHandler;
+    public readonly IList<ForwardInfo<ForwardHandlerArg>> ForwardInfos = new List<ForwardInfo<ForwardHandlerArg>>();
     private readonly ILogger<TunnelClient> logger;
-
-    public IPAddress RemoteIpAddress { get; private set; }
+    private readonly ILoginHandler loginHandler;
 
     public readonly IList<WebInfo> WebInfos = new List<WebInfo>();
-    public readonly IList<ForwardInfo<ForwardHandlerArg>> ForwardInfos = new List<ForwardInfo<ForwardHandlerArg>>();
 
     public TunnelClient(
         WebSocket webSocket, FastTunnelServer fastTunnelServer,
@@ -47,9 +36,18 @@ public class TunnelClient
         this.webSocket = webSocket;
         this.fastTunnelServer = fastTunnelServer;
         this.loginHandler = loginHandler;
-        this.RemoteIpAddress = remoteIpAddress;
-        this.StartTime = DateTime.Now;
+        RemoteIpAddress = remoteIpAddress;
+        StartTime = DateTime.Now;
     }
+
+    public WebSocket webSocket { get; }
+
+    /// <summary>
+    ///     服务端端口号
+    /// </summary>
+    public int ConnectionPort { get; set; }
+
+    public IPAddress RemoteIpAddress { get; private set; }
 
     public DateTime StartTime { get; }
 
@@ -64,7 +62,7 @@ public class TunnelClient
     }
 
     /// <summary>
-    /// 接收客户端的消息
+    ///     接收客户端的消息
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -105,7 +103,9 @@ public class TunnelClient
                     fastTunnelServer.ForwardList.TryRemove(item.SSHConfig.RemotePort, out _);
                     item.Listener.Stop();
                 }
-                catch { }
+                catch
+                {
+                }
             }
         }
 

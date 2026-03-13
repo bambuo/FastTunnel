@@ -4,18 +4,13 @@
 //     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
 // Copyright (c) 2019 Gui.H
 
-using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
 using System.Net.WebSockets;
-using System.Text;
 
-namespace FastTunnel.Core.Models
+namespace FastTunnel.Core.Models;
+
+public class WebInfo
 {
-    public class WebInfo
-    {
-        public WebSocket Socket { get; set; }
+    public WebSocket Socket { get; set; }
 
-        public WebConfig WebConfig { get; set; }
-    }
+    public WebConfig WebConfig { get; set; }
 }

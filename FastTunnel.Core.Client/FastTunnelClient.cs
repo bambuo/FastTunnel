@@ -7,7 +7,6 @@
 using System;
 using System.Buffers;
 using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -25,28 +24,19 @@ using Microsoft.Extensions.Options;
 
 namespace FastTunnel.Core.Client;
 
-#if NET6_0_OR_GREATER
 [JsonSourceGenerationOptions(WriteIndented = false)]
 [JsonSerializable(typeof(LogInMassage))]
-[JsonSerializable(typeof(Message<TunnelMassage>))]
 public partial class SourceGenerationContext : JsonSerializerContext
 {
 }
-#endif
 
 public class FastTunnelClient : IFastTunnelClient
 {
-    private ClientWebSocket socket;
-
     protected readonly ILogger<FastTunnelClient> _logger;
-    protected DefaultClientConfig ClientConfig { get; private set; }
-
-    private readonly SwapHandler swapHandler;
     private readonly LogHandler logHandler;
 
-    private static ReadOnlySpan<byte> EndSpan => new ReadOnlySpan<byte>(new byte[] { (byte)'\n' });
-
-    public SuiDaoServer Server { get; protected set; }
+    private readonly SwapHandler swapHandler;
+    private ClientWebSocket socket;
 
     public FastTunnelClient(
         ILogger<FastTunnelClient> logger,
@@ -54,7 +44,7 @@ public class FastTunnelClient : IFastTunnelClient
         LogHandler logHandler,
         IOptionsMonitor<DefaultClientConfig> configuration)
     {
-        ReadOnlySpan<int> span = new ReadOnlySpan<int>();
+        var span = new ReadOnlySpan<int>();
         _logger = logger;
         swapHandler = newCustomerHandler;
         this.logHandler = logHandler;
@@ -62,8 +52,14 @@ public class FastTunnelClient : IFastTunnelClient
         Server = ClientConfig.Server;
     }
 
+    protected DefaultClientConfig ClientConfig { get; }
+
+    private static ReadOnlySpan<byte> EndSpan => new(new[] { (byte)'\n' });
+
+    public SuiDaoServer Server { get; protected set; }
+
     /// <summary>
-    /// 启动客户端
+    ///     启动客户端
     /// </summary>
     public virtual async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -87,6 +83,15 @@ public class FastTunnelClient : IFastTunnelClient
         _logger.LogInformation("===== FastTunnel Client End =====");
     }
 
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("===== FastTunnel Client Stoping =====");
+        if (socket != null)
+        {
+            socket.Abort();
+        }
+    }
+
     private async Task loginAsync(CancellationToken cancellationToken)
     {
         var logMsg = GetLoginMsg(cancellationToken);
@@ -101,9 +106,9 @@ public class FastTunnelClient : IFastTunnelClient
         socket.Options.SetRequestHeader(FastTunnelConst.FASTTUNNEL_VERSION, AssemblyUtility.GetVersion().ToString());
         socket.Options.SetRequestHeader(FastTunnelConst.FASTTUNNEL_TOKEN, ClientConfig.Token);
 
-        string address = Server.ServerAddr; // 你可以替换为任何你想 ping 的地址
-        Ping ping = new Ping();
-        PingReply reply = await ping.SendPingAsync(address);
+        var address = Server.ServerAddr; // 你可以替换为任何你想 ping 的地址
+        var ping = new Ping();
+        var reply = await ping.SendPingAsync(address);
 
         if (reply.Status == IPStatus.Success)
         {
@@ -139,11 +144,7 @@ public class FastTunnelClient : IFastTunnelClient
         }.ToJson(jsonTypeInfo: SourceGenerationContext.Default.LogInMassage);
 
 #else
-        return new LogInMassage
-        {
-            Webs = ClientConfig.Webs,
-            Forwards = ClientConfig.Forwards,
-        }.ToJson();
+        return new LogInMassage { Webs = ClientConfig.Webs, Forwards = ClientConfig.Forwards }.ToJson();
 #endif
     }
 
@@ -191,15 +192,6 @@ public class FastTunnelClient : IFastTunnelClient
         catch (Exception ex)
         {
             _logger.LogError(ex);
-        }
-    }
-
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("===== FastTunnel Client Stoping =====");
-        if (socket != null)
-        {
-            socket.Abort();
         }
     }
 }

@@ -4,19 +4,14 @@
 //     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
 // Copyright (c) 2019 Gui.H
 
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using Microsoft.Extensions.Configuration;
-using Serilog;
 using FastTunnel.Core.Client.Extensions;
+using Microsoft.Extensions.Hosting;
+using Serilog;
 using Serilog.Events;
-using Microsoft.Extensions.DependencyInjection;
-using FastTunnel.Core.Config;
 
 namespace FastTunnel.Client;
 
-class Program
+internal class Program
 {
     public static void Main(string[] args)
     {
@@ -37,14 +32,15 @@ class Program
         }
     }
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
+    public static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args)
             .UseSerilog((context, services, loggerConfiguration) =>
             {
                 loggerConfiguration.ReadFrom.Configuration(context.Configuration)
-                  .ReadFrom.Services(services)
-                  .Enrich.FromLogContext()
-                  .WriteTo.Console();
+                    .ReadFrom.Services(services)
+                    .Enrich.FromLogContext()
+                    .WriteTo.Console();
             })
             .UseWindowsService()
             .ConfigureServices((hostContext, services) =>
@@ -53,4 +49,5 @@ class Program
                 services.AddFastTunnelClient(hostContext.Configuration.GetSection("FastTunnel"));
                 // -------------------FastTunnel EDN--------------------
             });
+    }
 }

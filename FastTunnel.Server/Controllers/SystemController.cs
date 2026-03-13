@@ -6,18 +6,13 @@
 
 using FastTunnel.Core.Client;
 using FastTunnel.Server.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FastTunnel.Api.Controllers;
 
 public class SystemController : BaseController
 {
-    readonly FastTunnelServer fastTunnelServer;
+    private readonly FastTunnelServer fastTunnelServer;
 
     public SystemController(FastTunnelServer fastTunnelServer)
     {
@@ -25,42 +20,31 @@ public class SystemController : BaseController
     }
 
     /// <summary>
-    /// 获取当前等待响应的请求
+    ///     获取当前等待响应的请求
     /// </summary>
     /// <returns></returns>
     [HttpGet]
     public ApiResponse GetResponseTempList()
     {
-        ApiResponse.data = new
-        {
-            Count = fastTunnelServer.ResponseTasks.Count,
-            Rows = fastTunnelServer.ResponseTasks.Select(x => new
-            {
-                x.Key
-            })
-        };
+        ApiResponse.data = new { fastTunnelServer.ResponseTasks.Count, Rows = fastTunnelServer.ResponseTasks.Select(x => new { x.Key }) };
 
         return ApiResponse;
     }
 
     /// <summary>
-    /// 获取当前映射的所有站点信息
+    ///     获取当前映射的所有站点信息
     /// </summary>
     /// <returns></returns>
     [HttpGet]
     public ApiResponse GetAllWebList()
     {
-        ApiResponse.data = new
-        {
-            Count = fastTunnelServer.WebList.Count,
-            Rows = fastTunnelServer.WebList.Select(x => new { x.Key, x.Value.WebConfig.LocalIp, x.Value.WebConfig.LocalPort })
-        };
+        ApiResponse.data = new { fastTunnelServer.WebList.Count, Rows = fastTunnelServer.WebList.Select(x => new { x.Key, x.Value.WebConfig.LocalIp, x.Value.WebConfig.LocalPort }) };
 
         return ApiResponse;
     }
 
     /// <summary>
-    /// 获取服务端配置信息
+    ///     获取服务端配置信息
     /// </summary>
     /// <returns></returns>
     [HttpGet]
@@ -71,29 +55,19 @@ public class SystemController : BaseController
     }
 
     /// <summary>
-    /// 获取所有端口转发映射列表
+    ///     获取所有端口转发映射列表
     /// </summary>
     /// <returns></returns>
     [HttpGet]
     public ApiResponse GetAllForwardList()
     {
-        ApiResponse.data = new
-        {
-            Count = fastTunnelServer.ForwardList.Count,
-            Rows = fastTunnelServer.ForwardList.Select(x => new
-            {
-                x.Key,
-                x.Value.SSHConfig.LocalIp,
-                x.Value.SSHConfig.LocalPort,
-                x.Value.SSHConfig.RemotePort
-            })
-        };
+        ApiResponse.data = new { fastTunnelServer.ForwardList.Count, Rows = fastTunnelServer.ForwardList.Select(x => new { x.Key, x.Value.SSHConfig.LocalIp, x.Value.SSHConfig.LocalPort, x.Value.SSHConfig.RemotePort }) };
 
         return ApiResponse;
     }
 
     /// <summary>
-    /// 获取当前客户端在线数量
+    ///     获取当前客户端在线数量
     /// </summary>
     /// <returns></returns>
     [HttpGet]
@@ -106,13 +80,7 @@ public class SystemController : BaseController
     [HttpGet]
     public ApiResponse Clients()
     {
-        ApiResponse.data = fastTunnelServer.Clients.Select(x => new
-        {
-            x.WebInfos,
-            x.ForwardInfos,
-            RemoteIpAddress = x.RemoteIpAddress.ToString(),
-            StartTime = x.StartTime.ToString("yyyy-MM-dd HH:mm:ss")
-        });
+        ApiResponse.data = fastTunnelServer.Clients.Select(x => new { x.WebInfos, x.ForwardInfos, RemoteIpAddress = x.RemoteIpAddress.ToString(), StartTime = x.StartTime.ToString("yyyy-MM-dd HH:mm:ss") });
         return ApiResponse;
     }
 }

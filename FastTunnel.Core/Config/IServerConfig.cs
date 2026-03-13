@@ -4,14 +4,13 @@
 //     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
 // Copyright (c) 2019 Gui.H
 
-namespace FastTunnel.Core.Config
+namespace FastTunnel.Core.Config;
+
+public interface IServerConfig
 {
-    public interface IServerConfig
-    {
-        string WebDomain { get; set; }
+    string WebDomain { get; set; }
 
-        string[] WebAllowAccessIps { get; set; }
+    string[] WebAllowAccessIps { get; set; }
 
-        bool EnableForward { get; set; }
-    }
+    bool EnableForward { get; set; }
 }

@@ -4,52 +4,48 @@
 //     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
 // Copyright (c) 2019 Gui.H
 
-using FastTunnel.Core.Client;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.ExceptionServices;
-using System.IO;
+using FastTunnel.Core.Client;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-namespace FastTunnel.Core.Services
+namespace FastTunnel.Core.Services;
+
+public class ServiceFastTunnelClient : IHostedService
 {
-    public class ServiceFastTunnelClient : IHostedService
+    private readonly IFastTunnelClient _fastTunnelClient;
+    private readonly ILogger<ServiceFastTunnelClient> _logger;
+
+    public ServiceFastTunnelClient(ILogger<ServiceFastTunnelClient> logger, IFastTunnelClient fastTunnelClient)
     {
-        readonly ILogger<ServiceFastTunnelClient> _logger;
-        readonly IFastTunnelClient _fastTunnelClient;
+        _logger = logger;
+        _fastTunnelClient = fastTunnelClient;
 
-        public ServiceFastTunnelClient(ILogger<ServiceFastTunnelClient> logger, IFastTunnelClient fastTunnelClient)
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await _fastTunnelClient.StartAsync(cancellationToken);
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await _fastTunnelClient.StopAsync(cancellationToken);
+    }
+
+    private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        try
         {
-            _logger = logger;
-            _fastTunnelClient = fastTunnelClient;
-
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            _logger.LogError("【UnhandledException】" + e.ExceptionObject);
+            var type = e.ExceptionObject.GetType();
+            _logger.LogError("ExceptionObject GetType " + type);
         }
-
-        public async Task StartAsync(CancellationToken cancellationToken)
+        catch
         {
-            await _fastTunnelClient.StartAsync(cancellationToken);
-        }
-
-        public async Task StopAsync(CancellationToken cancellationToken)
-        {
-            await _fastTunnelClient.StopAsync(cancellationToken);
-        }
-
-        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            try
-            {
-                _logger.LogError("【UnhandledException】" + e.ExceptionObject);
-                var type = e.ExceptionObject.GetType();
-                _logger.LogError("ExceptionObject GetType " + type);
-            }
-            catch
-            {
-            }
         }
     }
 }

@@ -15,7 +15,7 @@ namespace FastTunnel.Core.Client.Extensions;
 public static class ServicesExtensions
 {
     /// <summary>
-    /// 客户端依赖及HostedService
+    ///     客户端依赖及HostedService
     /// </summary>
     /// <param name="services"></param>
     public static void AddFastTunnelClient(this IServiceCollection services, IConfigurationSection configurationSection)
@@ -29,4 +29,3 @@ public static class ServicesExtensions
         services.AddHostedService<ServiceFastTunnelClient>();
     }
 }
-
