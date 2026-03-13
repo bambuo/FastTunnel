@@ -7,4 +7,4 @@ publish
 /build
 logs
 appsettings.Development.json
-idea
+.idea
