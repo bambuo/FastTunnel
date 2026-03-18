@@ -35,17 +35,17 @@ public class AccountController : BaseController
         if ((_serverOptionsMonitor.CurrentValue?.Api?.Accounts?.Length ?? 0) == 0)
         {
             ApiResponse.Success = false;
-            ApiResponse.Message = "账号或密码错误";
+            ApiResponse.Message = "认证失败";
             return ApiResponse;
         }
 
-        var account = _serverOptionsMonitor.CurrentValue.Api.Accounts.FirstOrDefault(x =>
+        var account = _serverOptionsMonitor.CurrentValue!.Api!.Accounts.FirstOrDefault(x =>
             x.Name.Equals(request.name) && x.Password.Equals(request.password));
 
         if (account == null)
         {
             ApiResponse.Success = false;
-            ApiResponse.Message = "账号或密码错误";
+            ApiResponse.Message = "认证失败";
             return ApiResponse;
         }
 
