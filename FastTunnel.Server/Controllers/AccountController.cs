@@ -30,20 +30,21 @@ public class AccountController : BaseController
     [HttpPost]
     public ApiResponse GetToken(GetTokenRequest request)
     {
-        if ((_serverOptionsMonitor.CurrentValue?.Api?.Accounts?.Length ?? 0) == 0)
+        var currentValue = _serverOptionsMonitor.CurrentValue;
+        if (currentValue?.Api?.Accounts == null)
         {
             ApiResponse.code = ErrorCodeEnum.NoAccount;
-            ApiResponse.message = "账号或密码错误";
+            ApiResponse.message = "认证失败";
             return ApiResponse;
         }
 
-        var account = _serverOptionsMonitor.CurrentValue!.Api!.Accounts.FirstOrDefault(x =>
+        var account = currentValue.Api.Accounts.FirstOrDefault(x =>
             x.Name.Equals(request.account) && x.Password.Equals(request.password));
 
         if (account == null)
         {
             ApiResponse.code = ErrorCodeEnum.NoAccount;
-            ApiResponse.message = "账号或密码错误";
+            ApiResponse.message = "认证失败";
             return ApiResponse;
         }
 
@@ -51,10 +52,10 @@ public class AccountController : BaseController
 
         ApiResponse.data = "Bearer " + GenerateToken(
             claims,
-            _serverOptionsMonitor.CurrentValue.Api!.JWT.IssuerSigningKey,
-            _serverOptionsMonitor.CurrentValue.Api!.JWT.Expires,
-            _serverOptionsMonitor.CurrentValue.Api!.JWT.ValidIssuer,
-            _serverOptionsMonitor.CurrentValue.Api!.JWT.ValidAudience);
+            currentValue.Api.JWT.IssuerSigningKey,
+            currentValue.Api.JWT.Expires,
+            currentValue.Api.JWT.ValidIssuer,
+            currentValue.Api.JWT.ValidAudience);
 
         return ApiResponse;
     }
