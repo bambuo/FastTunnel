@@ -28,17 +28,10 @@ internal partial class SourceGenerationContext : JsonSerializerContext
 {
 }
 
-public class LoginHandler : ILoginHandler
+public class LoginHandler(ILogger<LoginHandler> logger, IProxyConfigProvider proxyConfig) : ILoginHandler
 {
     public const bool NeedRecive = true;
-    private readonly ILogger logger;
-    private readonly IProxyConfigProvider proxyConfig;
-
-    public LoginHandler(ILogger<LoginHandler> logger, IProxyConfigProvider proxyConfig)
-    {
-        this.proxyConfig = proxyConfig;
-        this.logger = logger;
-    }
+    private readonly ILogger _logger = logger;
 
 
     public virtual async Task<bool> HandlerMsg(FastTunnelServer fastTunnelServer, TunnelClient tunnelClient, string lineCmd, CancellationToken cancellationToken)
@@ -66,7 +59,7 @@ public class LoginHandler : ILoginHandler
                 var hostName = $"{item.SubDomain}.{server.ServerOption.CurrentValue.WebDomain}".Trim().ToLower();
                 var info = new WebInfo { Socket = client.webSocket, WebConfig = item };
 
-                logger.LogDebug($"new domain '{hostName}'");
+                _logger.LogDebug($"new domain '{hostName}'");
                 server.WebList.AddOrUpdate(hostName, info, (key, oldInfo) => { return info; });
                 (proxyConfig as FastTunnelInMemoryConfigProvider).AddWeb(hostName);
 
@@ -111,28 +104,28 @@ public class LoginHandler : ILoginHandler
 
                         if (server.ForwardList.TryGetValue(item.RemotePort, out var old))
                         {
-                            logger.LogDebug($"Remove Listener {old.Listener.ListenIp}:{old.Listener.ListenPort}");
+                            _logger.LogDebug($"Remove Listener {old.Listener.ListenIp}:{old.Listener.ListenPort}");
                             old.Listener.Stop();
                             server.ForwardList.TryRemove(item.RemotePort, out _);
                         }
 
                         // TODO: 客户端离线时销毁
-                        var ls = new PortProxyListener("0.0.0.0", item.RemotePort, logger, client.webSocket);
-                        ls.Start(new ForwardDispatcher(logger, server, item));
+                        var ls = new PortProxyListener("0.0.0.0", item.RemotePort, _logger, client.webSocket);
+                        ls.Start(new ForwardDispatcher(_logger, server, item));
 
                         var forwardInfo = new ForwardInfo<ForwardHandlerArg> { Listener = ls, Socket = client.webSocket, SSHConfig = item };
 
                         // TODO: 客户端离线时销毁
                         server.ForwardList.TryAdd(item.RemotePort, forwardInfo);
-                        logger.LogDebug($"SSH proxy success: {item.RemotePort} => {item.LocalIp}:{item.LocalPort}");
+                        _logger.LogDebug($"SSH proxy success: {item.RemotePort} => {item.LocalIp}:{item.LocalPort}");
 
                         client.AddForward(forwardInfo);
                         await client.webSocket.SendCmdAsync(MessageType.Log, $"  {item.Protocol}    | {server.ServerOption.CurrentValue.WebDomain}:{item.RemotePort} => {item.LocalIp}:{item.LocalPort}", CancellationToken.None);
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError($"SSH proxy error: {item.RemotePort} => {item.LocalIp}:{item.LocalPort}");
-                        logger.LogError(ex.Message);
+                        _logger.LogError($"SSH proxy error: {item.RemotePort} => {item.LocalIp}:{item.LocalPort}");
+                        _logger.LogError(ex.Message);
                         await client.webSocket.SendCmdAsync(MessageType.Log, ex.Message, CancellationToken.None);
                     }
                 }

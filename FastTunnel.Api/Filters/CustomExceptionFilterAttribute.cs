@@ -9,31 +9,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 
-namespace FastTunnel.Api.Filters
+namespace FastTunnel.Api.Filters;
+
+public class CustomExceptionFilterAttribute : ExceptionFilterAttribute
 {
-    public class CustomExceptionFilterAttribute : ExceptionFilterAttribute
+    readonly ILogger<CustomExceptionFilterAttribute> _logger;
+
+    public CustomExceptionFilterAttribute(ILogger<CustomExceptionFilterAttribute> logger)
     {
-        readonly ILogger<CustomExceptionFilterAttribute> _logger;
+        _logger = logger;
+    }
 
-        public CustomExceptionFilterAttribute(ILogger<CustomExceptionFilterAttribute> logger)
+    public override void OnException(ExceptionContext context)
+    {
+        _logger.LogError(context.Exception, "【全局异常捕获】");
+        var res = new ApiResponse
         {
-            _logger = logger;
-        }
+            Success = false,
+            Data = null,
+            Message = context.Exception.Message,
+        };
 
-        public override void OnException(ExceptionContext context)
-        {
-            _logger.LogError(context.Exception, "【全局异常捕获】");
-            var res = new ApiResponse()
-            {
-                Success = false,
-                Data = null,
-                Message = context.Exception.Message,
-            };
+        var result = new JsonResult(res) { StatusCode = 200 };
 
-            var result = new JsonResult(res) { StatusCode = 200 };
-
-            context.Result = result;
-            context.ExceptionHandled = true;
-        }
+        context.Result = result;
+        context.ExceptionHandled = true;
     }
 }

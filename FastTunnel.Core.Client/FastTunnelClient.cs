@@ -103,8 +103,8 @@ public class FastTunnelClient : IFastTunnelClient
         // 连接到的目标IP
         socket = new ClientWebSocket();
         socket.Options.RemoteCertificateValidationCallback = delegate { return true; };
-        socket.Options.SetRequestHeader(FastTunnelConst.FASTTUNNEL_VERSION, AssemblyUtility.GetVersion().ToString());
-        socket.Options.SetRequestHeader(FastTunnelConst.FASTTUNNEL_TOKEN, ClientConfig.Token);
+        socket.Options.SetRequestHeader(FastTunnelConst.FasttunnelVersion, AssemblyUtility.GetVersion().ToString());
+        socket.Options.SetRequestHeader(FastTunnelConst.FasttunnelToken, ClientConfig.Token);
 
         var address = Server.ServerAddr; // 你可以替换为任何你想 ping 的地址
         var ping = new Ping();

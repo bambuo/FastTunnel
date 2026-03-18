@@ -6,9 +6,21 @@
 
 namespace FastTunnel.Core;
 
-public class FastTunnelConst
+/// <summary>
+///
+/// </summary>
+public static class FastTunnelConst
 {
-    public const string FASTTUNNEL_VERSION = "FT_VERSION";
-    public const string FASTTUNNEL_MSGID = "FT_MSGID";
-    public const string FASTTUNNEL_TOKEN = "FT_TOKEN";
+    /// <summary>
+    ///
+    /// </summary>
+    public const string FasttunnelVersion = "FT_VERSION";
+    /// <summary>
+    ///
+    /// </summary>
+    public const string FasttunnelMsgId = "FT_MSGID";
+    /// <summary>
+    ///
+    /// </summary>
+    public const string FasttunnelToken = "FT_TOKEN";
 }

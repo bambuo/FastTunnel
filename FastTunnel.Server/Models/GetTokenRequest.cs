@@ -10,7 +10,7 @@ namespace FastTunnel.Api.Models;
 
 public class GetTokenRequest
 {
-    [Required] public string account { get; set; }
+    [Required] public string account { get; set; } = string.Empty;
 
-    [Required] public string password { get; set; }
+    [Required] public string password { get; set; } = string.Empty;
 }

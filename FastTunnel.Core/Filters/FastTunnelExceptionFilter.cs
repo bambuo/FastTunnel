@@ -7,22 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace FastTunnel.Core.Filters;
 
-public class FastTunnelExceptionFilter : IExceptionFilter
+public class FastTunnelExceptionFilter(ILogger<FastTunnelExceptionFilter> logger, IWebHostEnvironment hostingEnvironment) : IExceptionFilter
 {
-    private readonly IWebHostEnvironment _hostingEnvironment;
-    private readonly ILogger<FastTunnelExceptionFilter> logger;
-
-    public FastTunnelExceptionFilter(
-        ILogger<FastTunnelExceptionFilter> logger,
-        IWebHostEnvironment hostingEnvironment)
-    {
-        this.logger = logger;
-        _hostingEnvironment = hostingEnvironment;
-    }
-
     public void OnException(ExceptionContext context)
     {
-        if (!_hostingEnvironment.IsDevelopment())
+        if (!hostingEnvironment.IsDevelopment())
         {
             return;
         }

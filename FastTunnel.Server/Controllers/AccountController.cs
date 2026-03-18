@@ -19,30 +19,26 @@ namespace FastTunnel.Api.Controllers;
 
 public class AccountController : BaseController
 {
-    private readonly IOptionsMonitor<DefaultServerConfig> serverOptionsMonitor;
+    private readonly IOptionsMonitor<DefaultServerConfig> _serverOptionsMonitor;
 
     public AccountController(IOptionsMonitor<DefaultServerConfig> optionsMonitor)
     {
-        serverOptionsMonitor = optionsMonitor;
+        _serverOptionsMonitor = optionsMonitor;
     }
 
-    /// <summary>
-    ///     获取Token
-    /// </summary>
-    /// <param name="request"></param>
-    /// <returns></returns>
     [AllowAnonymous]
     [HttpPost]
     public ApiResponse GetToken(GetTokenRequest request)
     {
-        if ((serverOptionsMonitor.CurrentValue?.Api?.Accounts?.Length ?? 0) == 0)
+        if ((_serverOptionsMonitor.CurrentValue?.Api?.Accounts?.Length ?? 0) == 0)
         {
             ApiResponse.code = ErrorCodeEnum.NoAccount;
             ApiResponse.message = "账号或密码错误";
             return ApiResponse;
         }
 
-        var account = serverOptionsMonitor.CurrentValue.Api.Accounts.FirstOrDefault(x => { return x.Name.Equals(request.account) && x.Password.Equals(request.password); });
+        var account = _serverOptionsMonitor.CurrentValue!.Api!.Accounts.FirstOrDefault(x =>
+            x.Name.Equals(request.account) && x.Password.Equals(request.password));
 
         if (account == null)
         {
@@ -51,23 +47,22 @@ public class AccountController : BaseController
             return ApiResponse;
         }
 
-        // 生成Token
         var claims = new[] { new Claim("Name", account.Name) };
 
         ApiResponse.data = "Bearer " + GenerateToken(
             claims,
-            serverOptionsMonitor.CurrentValue.Api.JWT.IssuerSigningKey,
-            serverOptionsMonitor.CurrentValue.Api.JWT.Expires,
-            serverOptionsMonitor.CurrentValue.Api.JWT.ValidIssuer,
-            serverOptionsMonitor.CurrentValue.Api.JWT.ValidAudience);
+            _serverOptionsMonitor.CurrentValue.Api!.JWT.IssuerSigningKey,
+            _serverOptionsMonitor.CurrentValue.Api!.JWT.Expires,
+            _serverOptionsMonitor.CurrentValue.Api!.JWT.ValidIssuer,
+            _serverOptionsMonitor.CurrentValue.Api!.JWT.ValidAudience);
 
         return ApiResponse;
     }
 
     public static string GenerateToken(
-        IEnumerable<Claim> claims, string Secret, int expiresMinutes = 60, string issuer = null, string audience = null)
+        IEnumerable<Claim> claims, string secret, int expiresMinutes = 60, string? issuer = null, string? audience = null)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var securityToken = new JwtSecurityToken(

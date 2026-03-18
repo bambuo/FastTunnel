@@ -11,9 +11,9 @@ namespace FastTunnel.Core.Models;
 
 public class ForwardInfo<T>
 {
-    public WebSocket Socket { get; set; }
+    public WebSocket Socket { get; set; } = null!;
 
-    public ForwardConfig SSHConfig { get; set; }
+    public ForwardConfig SSHConfig { get; set; } = null!;
 
-    public PortProxyListener Listener { get; set; }
+    public PortProxyListener Listener { get; set; } = null!;
 }

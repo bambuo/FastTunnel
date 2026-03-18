@@ -8,9 +8,5 @@ using System;
 
 namespace FastTunnel.Core.Exceptions;
 
-public class SocketClosedException : Exception
-{
-    public SocketClosedException(string msg) : base(msg)
-    {
-    }
-}
+public class SocketClosedException(string msg)
+    : Exception(msg);

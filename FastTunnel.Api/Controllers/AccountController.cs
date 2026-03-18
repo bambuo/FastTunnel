@@ -17,74 +17,63 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 
-namespace FastTunnel.Api.Controllers
+namespace FastTunnel.Api.Controllers;
+
+public class AccountController : BaseController
 {
-    public class AccountController : BaseController
+    readonly IOptionsMonitor<DefaultServerConfig> _serverOptionsMonitor;
+
+    public AccountController(IOptionsMonitor<DefaultServerConfig> optionsMonitor)
     {
-        readonly IOptionsMonitor<DefaultServerConfig> serverOptionsMonitor;
+        _serverOptionsMonitor = optionsMonitor;
+    }
 
-        public AccountController(IOptionsMonitor<DefaultServerConfig> optionsMonitor)
+    [AllowAnonymous]
+    [HttpPost]
+    public ApiResponse GetToken(GetTokenRequest request)
+    {
+        if ((_serverOptionsMonitor.CurrentValue?.Api?.Accounts?.Length ?? 0) == 0)
         {
-            serverOptionsMonitor = optionsMonitor;
-        }
-
-        /// <summary>
-        /// 获取Token
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [AllowAnonymous]
-        [HttpPost]
-        public ApiResponse GetToken(GetTokenRequest request)
-        {
-            if ((serverOptionsMonitor.CurrentValue?.Api?.Accounts?.Length ?? 0) == 0)
-            {
-                ApiResponse.Success = false;
-                ApiResponse.Message = "账号或密码错误";
-                return ApiResponse;
-            }
-
-            var account = serverOptionsMonitor.CurrentValue.Api.Accounts.FirstOrDefault((x) =>
-            {
-                return x.Name.Equals(request.name) && x.Password.Equals(request.password);
-            });
-
-            if (account == null)
-            {
-                ApiResponse.Success = false;
-                ApiResponse.Message = "账号或密码错误";
-                return ApiResponse;
-            }
-
-            // 生成Token
-            var claims = new[] {
-                    new Claim("Name", account.Name)
-                };
-
-            ApiResponse.Data = GenerateToken(
-                claims,
-                serverOptionsMonitor.CurrentValue.Api.JWT.IssuerSigningKey,
-                serverOptionsMonitor.CurrentValue.Api.JWT.Expires,
-                serverOptionsMonitor.CurrentValue.Api.JWT.ValidIssuer,
-                serverOptionsMonitor.CurrentValue.Api.JWT.ValidAudience);
-
+            ApiResponse.Success = false;
+            ApiResponse.Message = "账号或密码错误";
             return ApiResponse;
         }
 
-        public static string GenerateToken(
-            IEnumerable<Claim> claims, string Secret, int expiresMinutes = 60, string issuer = null, string audience = null)
+        var account = _serverOptionsMonitor.CurrentValue.Api.Accounts.FirstOrDefault(x =>
+            x.Name.Equals(request.name) && x.Password.Equals(request.password));
+
+        if (account == null)
         {
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Secret));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var securityToken = new JwtSecurityToken(
-                issuer: issuer,
-                audience: audience,
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(expiresMinutes),
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(securityToken);
+            ApiResponse.Success = false;
+            ApiResponse.Message = "账号或密码错误";
+            return ApiResponse;
         }
+
+        var claims = new[] { new Claim("Name", account.Name) };
+
+        ApiResponse.Data = GenerateToken(
+            claims,
+            _serverOptionsMonitor.CurrentValue.Api.JWT.IssuerSigningKey,
+            _serverOptionsMonitor.CurrentValue.Api.JWT.Expires,
+            _serverOptionsMonitor.CurrentValue.Api.JWT.ValidIssuer,
+            _serverOptionsMonitor.CurrentValue.Api.JWT.ValidAudience);
+
+        return ApiResponse;
+    }
+
+    public static string GenerateToken(
+        IEnumerable<Claim> claims, string secret, int expiresMinutes = 60, string? issuer = null, string? audience = null)
+    {
+        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secret));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var securityToken = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
+            claims: claims,
+            expires: DateTime.Now.AddMinutes(expiresMinutes),
+            signingCredentials: creds);
+
+        return new JwtSecurityTokenHandler().WriteToken(securityToken);
     }
 }

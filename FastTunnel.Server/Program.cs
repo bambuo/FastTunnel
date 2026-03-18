@@ -67,6 +67,16 @@ public class Program
 
             builder.Services.AddAuthentication("Bearer").AddJwtBearer(delegate(JwtBearerOptions options)
             {
+                if (apioptions?.Api?.JWT == null)
+                {
+                    throw new InvalidOperationException("JWT configuration is missing when API is enabled. Please check your FastTunnel configuration.");
+                }
+
+                if (string.IsNullOrWhiteSpace(apioptions.Api.JWT.IssuerSigningKey))
+                {
+                    throw new InvalidOperationException("JWT IssuerSigningKey cannot be empty. Please configure a valid secret key in FastTunnel.Api.JWT.");
+                }
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = false,

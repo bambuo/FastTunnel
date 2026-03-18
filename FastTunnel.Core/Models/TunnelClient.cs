@@ -19,37 +19,27 @@ using Microsoft.Extensions.Logging;
 
 namespace FastTunnel.Core.Models;
 
-public class TunnelClient
+public class TunnelClient(
+    WebSocket webSocket,
+    FastTunnelServer fastTunnelServer,
+    ILoginHandler loginHandler,
+    IPAddress remoteIpAddress,
+    ILogger<TunnelClient> logger)
 {
-    private readonly FastTunnelServer fastTunnelServer;
     public readonly IList<ForwardInfo<ForwardHandlerArg>> ForwardInfos = new List<ForwardInfo<ForwardHandlerArg>>();
-    private readonly ILogger<TunnelClient> logger;
-    private readonly ILoginHandler loginHandler;
 
     public readonly IList<WebInfo> WebInfos = new List<WebInfo>();
 
-    public TunnelClient(
-        WebSocket webSocket, FastTunnelServer fastTunnelServer,
-        ILoginHandler loginHandler, IPAddress remoteIpAddress, ILogger<TunnelClient> logger)
-    {
-        this.logger = logger;
-        this.webSocket = webSocket;
-        this.fastTunnelServer = fastTunnelServer;
-        this.loginHandler = loginHandler;
-        RemoteIpAddress = remoteIpAddress;
-        StartTime = DateTime.Now;
-    }
-
-    public WebSocket webSocket { get; }
+    public WebSocket webSocket { get; } = webSocket;
 
     /// <summary>
     ///     服务端端口号
     /// </summary>
     public int ConnectionPort { get; set; }
 
-    public IPAddress RemoteIpAddress { get; private set; }
+    public IPAddress RemoteIpAddress { get; private set; } = remoteIpAddress;
 
-    public DateTime StartTime { get; }
+    public DateTime StartTime { get; } = DateTime.Now;
 
     internal void AddWeb(WebInfo info)
     {

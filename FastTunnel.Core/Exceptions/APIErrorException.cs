@@ -8,10 +8,5 @@ using System;
 
 namespace FastTunnel.Core.Exceptions;
 
-public class APIErrorException : Exception
-{
-    public APIErrorException(string message)
-        : base(message)
-    {
-    }
-}
+public class APIErrorException(string message)
+    : Exception(message);

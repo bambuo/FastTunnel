@@ -9,14 +9,13 @@ using FastTunnel.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FastTunnel.Api.Controllers
+namespace FastTunnel.Api.Controllers;
+
+[Authorize]
+[Route("api/[controller]/[action]")]
+[ApiController]
+[ServiceFilter(typeof(CustomExceptionFilterAttribute))]
+public class BaseController : ControllerBase
 {
-    [Authorize]
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    [ServiceFilter(typeof(CustomExceptionFilterAttribute))]
-    public class BaseController : ControllerBase
-    {
-        protected ApiResponse ApiResponse = new ApiResponse();
-    }
+    protected ApiResponse ApiResponse = new();
 }

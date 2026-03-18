@@ -20,21 +20,9 @@ using Yarp.ReverseProxy.Forwarder;
 
 namespace FastTunnel.Core.Forwarder;
 
-public class FastTunnelForwarderHttpClientFactory : ForwarderHttpClientFactory
+public class FastTunnelForwarderHttpClientFactory(ILogger<FastTunnelForwarderHttpClientFactory> logger, IHttpContextAccessor httpContextAccessor, FastTunnelServer fastTunnelServer) : ForwarderHttpClientFactory
 {
-    private static int connectionCount;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly FastTunnelServer fastTunnelServer;
-    private readonly ILogger<FastTunnelForwarderHttpClientFactory> logger;
-
-    public FastTunnelForwarderHttpClientFactory(
-        ILogger<FastTunnelForwarderHttpClientFactory> logger,
-        IHttpContextAccessor httpContextAccessor, FastTunnelServer fastTunnelServer)
-    {
-        this.fastTunnelServer = fastTunnelServer;
-        this.logger = logger;
-        _httpContextAccessor = httpContextAccessor;
-    }
+    private static int _connectionCount;
 
     protected override void ConfigureHandler(ForwarderHttpClientContext context, SocketsHttpHandler handler)
     {
@@ -44,25 +32,25 @@ public class FastTunnelForwarderHttpClientFactory : ForwarderHttpClientFactory
 
     private async ValueTask<Stream> ConnectCallback(SocketsHttpConnectionContext context, CancellationToken cancellationToken)
     {
-        var host = context.InitialRequestMessage.RequestUri.Host;
+        var host = context.InitialRequestMessage.RequestUri?.Host;
 
-        var contextRequest = _httpContextAccessor.HttpContext;
+        var contextRequest = httpContextAccessor.HttpContext;
         //var lifetime = contextRequest.Features.Get<IConnectionLifetimeFeature>()!;
 
         try
         {
-            Interlocked.Increment(ref connectionCount);
-            var res = await proxyAsync(host, context, contextRequest.RequestAborted);
+            Interlocked.Increment(ref _connectionCount);
+            var res = await ProxyAsync(host, context, contextRequest!.RequestAborted);
             return res;
         }
         finally
         {
-            Interlocked.Decrement(ref connectionCount);
-            logger.LogDebug($"统计YARP连接数：{connectionCount}");
+            Interlocked.Decrement(ref _connectionCount);
+            logger.LogDebug($"统计YARP连接数：{_connectionCount}");
         }
     }
 
-    public async ValueTask<Stream> proxyAsync(string host, SocketsHttpConnectionContext context, CancellationToken cancellation)
+    private async ValueTask<Stream> ProxyAsync(string host, SocketsHttpConnectionContext context, CancellationToken cancellation)
     {
         WebInfo web;
         if (!fastTunnelServer.WebList.TryGetValue(host, out web))

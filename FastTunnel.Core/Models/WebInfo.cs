@@ -10,7 +10,7 @@ namespace FastTunnel.Core.Models;
 
 public class WebInfo
 {
-    public WebSocket Socket { get; set; }
+    public WebSocket Socket { get; set; } = null!;
 
-    public WebConfig WebConfig { get; set; }
+    public WebConfig WebConfig { get; set; } = null!;
 }

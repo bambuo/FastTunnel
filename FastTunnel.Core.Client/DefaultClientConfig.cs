@@ -12,10 +12,10 @@ namespace FastTunnel.Core.Config;
 
 public class DefaultClientConfig : IClientConfig
 {
-    public string Token { get; set; }
-    public SuiDaoServer Server { get; set; }
+    public string Token { get; set; } = string.Empty;
+    public SuiDaoServer Server { get; set; } = null!;
 
-    public IEnumerable<WebConfig> Webs { get; set; }
+    public IEnumerable<WebConfig> Webs { get; set; } = [];
 
-    public IEnumerable<ForwardConfig> Forwards { get; set; }
+    public IEnumerable<ForwardConfig> Forwards { get; set; } = [];
 }

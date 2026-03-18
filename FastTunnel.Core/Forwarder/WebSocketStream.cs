@@ -8,22 +8,22 @@ namespace FastTunnel.Core.Forwarder;
 
 internal sealed class WebSocketStream : Stream
 {
-    private readonly IConnectionLifetimeFeature lifetimeFeature;
-    private readonly Stream readStream;
-    private readonly Stream wirteStream;
+    private readonly IConnectionLifetimeFeature _lifetimeFeature;
+    private readonly Stream _readStream;
+    private readonly Stream _wirteStream;
 
     public WebSocketStream(IConnectionLifetimeFeature lifetimeFeature, IConnectionTransportFeature transportFeature)
     {
-        readStream = transportFeature.Transport.Input.AsStream();
-        wirteStream = transportFeature.Transport.Output.AsStream();
-        this.lifetimeFeature = lifetimeFeature;
+        _readStream = transportFeature.Transport.Input.AsStream();
+        _wirteStream = transportFeature.Transport.Output.AsStream();
+        this._lifetimeFeature = lifetimeFeature;
     }
 
     public WebSocketStream(Stream stream)
     {
-        readStream = stream;
-        wirteStream = stream;
-        lifetimeFeature = null;
+        _readStream = stream;
+        _wirteStream = stream;
+        _lifetimeFeature = null;
     }
 
     public override bool CanRead => true;
@@ -42,12 +42,12 @@ internal sealed class WebSocketStream : Stream
 
     public override void Flush()
     {
-        wirteStream.Flush();
+        _wirteStream.Flush();
     }
 
     public override Task FlushAsync(CancellationToken cancellationToken)
     {
-        return wirteStream.FlushAsync(cancellationToken);
+        return _wirteStream.FlushAsync(cancellationToken);
     }
 
     public override long Seek(long offset, SeekOrigin origin)
@@ -62,47 +62,47 @@ internal sealed class WebSocketStream : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        return readStream.Read(buffer, offset, count);
+        return _readStream.Read(buffer, offset, count);
     }
 
     public override void Write(byte[] buffer, int offset, int count)
     {
-        wirteStream.Write(buffer, offset, count);
+        _wirteStream.Write(buffer, offset, count);
     }
 
     public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        return readStream.ReadAsync(buffer, cancellationToken);
+        return _readStream.ReadAsync(buffer, cancellationToken);
     }
 
     public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
-        return readStream.ReadAsync(buffer, offset, count, cancellationToken);
+        return _readStream.ReadAsync(buffer, offset, count, cancellationToken);
     }
 
     public override void Write(ReadOnlySpan<byte> buffer)
     {
-        wirteStream.Write(buffer);
+        _wirteStream.Write(buffer);
     }
 
     public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
-        return wirteStream.WriteAsync(buffer, offset, count, cancellationToken);
+        return _wirteStream.WriteAsync(buffer, offset, count, cancellationToken);
     }
 
     public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        await wirteStream.WriteAsync(buffer, cancellationToken);
+        await _wirteStream.WriteAsync(buffer, cancellationToken);
     }
 
     protected override void Dispose(bool disposing)
     {
-        lifetimeFeature?.Abort();
+        _lifetimeFeature?.Abort();
     }
 
     public override ValueTask DisposeAsync()
     {
-        lifetimeFeature?.Abort();
+        _lifetimeFeature?.Abort();
         return ValueTask.CompletedTask;
     }
 }

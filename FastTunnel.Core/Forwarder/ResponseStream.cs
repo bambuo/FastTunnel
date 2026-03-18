@@ -11,16 +11,12 @@ using System.Threading.Tasks;
 
 namespace FastTunnel.Core.Forwarder;
 
-public class ResponseStream : Stream
+public class ResponseStream(byte[] bytes)
+    : Stream
 {
-    private readonly MemoryStream m_Stream;
+    private readonly MemoryStream _mStream = new(bytes);
 
-    private bool complete;
-
-    public ResponseStream(byte[] bytes)
-    {
-        m_Stream = new MemoryStream(bytes);
-    }
+    private bool _complete;
 
     public override bool CanRead => true;
 
@@ -43,14 +39,12 @@ public class ResponseStream : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        if (!complete)
+        if (!_complete)
         {
             return 0;
         }
 
-        ;
-
-        var len = m_Stream.Read(buffer, offset, count);
+        var len = _mStream.Read(buffer, offset, count);
         return len;
     }
 
@@ -67,7 +61,7 @@ public class ResponseStream : Stream
     public override void Write(byte[] buffer, int offset, int count)
     {
         Console.Write(Encoding.UTF8.GetString(buffer, offset, count));
-        complete = true;
+        _complete = true;
     }
 
     protected override void Dispose(bool disposing)
@@ -77,7 +71,7 @@ public class ResponseStream : Stream
             return;
         }
 
-        m_Stream.Dispose();
+        _mStream.Dispose();
     }
 
     public override ValueTask DisposeAsync()

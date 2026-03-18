@@ -4,20 +4,15 @@
 //     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
 // Copyright (c) 2019 Gui.H
 
-namespace FastTunnel.Server.Models
+namespace FastTunnel.Server.Models;
+
+public class ApiResponse
 {
-    public class ApiResponse
-    {
-        /// <summary>
-        /// 错误码
-        /// 0 成功，其他为失败
-        /// </summary>
-        public bool Success { get; set; }
+    public bool Success { get; set; }
 
-        public string Message { get; set; }
+    public string? Message { get; set; }
 
-        public string Code { get; set; }
+    public string? Code { get; set; }
 
-        public object Data { get; set; }
-    }
+    public object? Data { get; set; }
 }

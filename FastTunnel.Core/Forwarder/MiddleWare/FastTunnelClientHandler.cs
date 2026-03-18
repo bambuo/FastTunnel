@@ -17,47 +17,32 @@ using Microsoft.Extensions.Logging;
 
 namespace FastTunnel.Core.Forwarder.MiddleWare;
 
-public class FastTunnelClientHandler
+public class FastTunnelClientHandler(ILogger<FastTunnelClientHandler> logger, FastTunnelServer fastTunnelServer, ILoginHandler loginHandler)
 {
-    private static int connectionCount;
-    private readonly FastTunnelServer fastTunnelServer;
-    private readonly ILogger<FastTunnelClientHandler> logger;
-    private readonly ILoginHandler loginHandler;
-    private readonly Version serverVersion;
+    private static int _connectionCount;
+    private readonly Version _serverVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
-    public FastTunnelClientHandler(
-        ILogger<FastTunnelClientHandler> logger, FastTunnelServer fastTunnelServer, ILoginHandler loginHandler)
-    {
-        this.logger = logger;
-        this.fastTunnelServer = fastTunnelServer;
-        this.loginHandler = loginHandler;
-
-        serverVersion = Assembly.GetExecutingAssembly().GetName().Version;
-    }
-
-    public static int ConnectionCount => connectionCount;
+    public static int ConnectionCount => _connectionCount;
 
     public async Task Handle(HttpContext context, Func<Task> next)
     {
         try
         {
-            if (!context.WebSockets.IsWebSocketRequest || !context.Request.Headers.TryGetValue(FastTunnelConst.FASTTUNNEL_VERSION, out var version))
+            if (!context.WebSockets.IsWebSocketRequest || !context.Request.Headers.TryGetValue(FastTunnelConst.FasttunnelVersion, out var version))
             {
                 await next();
                 return;
             }
 
-            ;
-
-            Interlocked.Increment(ref connectionCount);
+            Interlocked.Increment(ref _connectionCount);
 
             try
             {
-                await handleClient(context, version);
+                await HandleClient(context, version);
             }
             finally
             {
-                Interlocked.Decrement(ref connectionCount);
+                Interlocked.Decrement(ref _connectionCount);
             }
         }
         catch (Exception ex)
@@ -66,17 +51,17 @@ public class FastTunnelClientHandler
         }
     }
 
-    private async Task handleClient(HttpContext context, string clientVersion)
+    private async Task HandleClient(HttpContext context, string clientVersion)
     {
         using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-        if (Version.Parse(clientVersion).Major != serverVersion.Major)
+        if (Version.Parse(clientVersion).Major != _serverVersion.Major)
         {
-            await Close(webSocket, $"客户端版本{clientVersion}与服务端版本{serverVersion}不兼容，请升级。");
+            await Close(webSocket, $"客户端版本{clientVersion}与服务端版本{_serverVersion}不兼容，请升级。");
             return;
         }
 
-        if (!checkToken(context))
+        if (!CheckToken(context))
         {
             await Close(webSocket, "Token验证失败");
             return;
@@ -84,8 +69,7 @@ public class FastTunnelClientHandler
 
         var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
         var log = loggerFactory.CreateLogger<TunnelClient>();
-        var client = new TunnelClient(webSocket, fastTunnelServer, loginHandler, context.Connection.RemoteIpAddress, log);
-        client.ConnectionPort = context.Connection.LocalPort;
+        var client = new TunnelClient(webSocket, fastTunnelServer, loginHandler, context.Connection.RemoteIpAddress, log) { ConnectionPort = context.Connection.LocalPort };
 
         try
         {
@@ -108,13 +92,9 @@ public class FastTunnelClientHandler
         await webSocket.CloseAsync(WebSocketCloseStatus.Empty, string.Empty, CancellationToken.None);
     }
 
-    private bool checkToken(HttpContext context)
+    private bool CheckToken(HttpContext context)
     {
-        var checkToken = false;
-        if (fastTunnelServer.ServerOption.CurrentValue.Tokens != null && fastTunnelServer.ServerOption.CurrentValue.Tokens.Count != 0)
-        {
-            checkToken = true;
-        }
+        var checkToken = fastTunnelServer.ServerOption.CurrentValue.Tokens != null && fastTunnelServer.ServerOption.CurrentValue.Tokens.Count != 0;
 
         if (!checkToken)
         {
@@ -122,16 +102,11 @@ public class FastTunnelClientHandler
         }
 
         // 客户端未携带token，登录失败
-        if (!context.Request.Headers.TryGetValue(FastTunnelConst.FASTTUNNEL_TOKEN, out var token))
+        if (!context.Request.Headers.TryGetValue(FastTunnelConst.FasttunnelToken, out var token))
         {
             return false;
         }
 
-        if (fastTunnelServer.ServerOption.CurrentValue.Tokens?.Contains(token) ?? false)
-        {
-            return true;
-        }
-
-        return false;
+        return fastTunnelServer.ServerOption.CurrentValue.Tokens?.Contains(token) ?? false;
     }
 }

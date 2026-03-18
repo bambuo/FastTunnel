@@ -10,16 +10,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace FastTunnel.Core.Forwarder;
 
-public class TranStream : Stream
+public class TranStream(HttpContext context)
+    : Stream
 {
-    private readonly Stream readStream;
-    private readonly Stream wirteStream;
-
-    public TranStream(HttpContext context)
-    {
-        readStream = context.Request.BodyReader.AsStream();
-        wirteStream = context.Response.BodyWriter.AsStream();
-    }
+    private readonly Stream _readStream = context.Request.BodyReader.AsStream();
+    private readonly Stream _wirteStream = context.Response.BodyWriter.AsStream();
 
     public override bool CanRead => true;
 
@@ -37,12 +32,12 @@ public class TranStream : Stream
 
     public override void Flush()
     {
-        wirteStream.Flush();
+        _wirteStream.Flush();
     }
 
     public override Task FlushAsync(CancellationToken cancellationToken)
     {
-        return wirteStream.FlushAsync(cancellationToken);
+        return _wirteStream.FlushAsync(cancellationToken);
     }
 
     public override long Seek(long offset, SeekOrigin origin)
@@ -57,22 +52,22 @@ public class TranStream : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        return readStream.Read(buffer, offset, count);
+        return _readStream.Read(buffer, offset, count);
     }
 
     public override void Write(byte[] buffer, int offset, int count)
     {
-        wirteStream.Write(buffer, offset, count);
+        _wirteStream.Write(buffer, offset, count);
     }
 
     public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        return readStream.ReadAsync(buffer, cancellationToken);
+        return _readStream.ReadAsync(buffer, cancellationToken);
     }
 
     public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
-        var len = await readStream.ReadAsync(buffer, offset, count, cancellationToken);
+        var len = await _readStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
         if (len == 0)
         {
             Console.WriteLine("==========ReadAsync END==========");
@@ -83,17 +78,17 @@ public class TranStream : Stream
 
     public override void Write(ReadOnlySpan<byte> buffer)
     {
-        wirteStream.Write(buffer);
+        _wirteStream.Write(buffer);
     }
 
     public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
-        return wirteStream.WriteAsync(buffer, offset, count, cancellationToken);
+        return _wirteStream.WriteAsync(buffer, offset, count, cancellationToken);
     }
 
     public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        await wirteStream.WriteAsync(buffer, cancellationToken);
+        await _wirteStream.WriteAsync(buffer, cancellationToken);
     }
 
     protected override void Dispose(bool disposing)

@@ -8,7 +8,7 @@ namespace FastTunnel.Core.Forwarder;
 
 public class FastTunnelProxyConfig : IProxyConfig
 {
-    private readonly CancellationTokenSource cancellationToken = new();
+    private readonly CancellationTokenSource _cancellationToken = new();
 
     public FastTunnelProxyConfig()
         : this(Array.Empty<RouteConfig>(), Array.Empty<ClusterConfig>())
@@ -19,7 +19,7 @@ public class FastTunnelProxyConfig : IProxyConfig
     {
         Routes = routes;
         Clusters = clusters;
-        ChangeToken = new CancellationChangeToken(cancellationToken.Token);
+        ChangeToken = new CancellationChangeToken(_cancellationToken.Token);
     }
 
     public IReadOnlyList<RouteConfig> Routes { get; }

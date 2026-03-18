@@ -19,47 +19,36 @@ using Microsoft.Extensions.Logging;
 
 namespace FastTunnel.Core.Handlers;
 
-public class ForwardDispatcher
+public class ForwardDispatcher(ILogger logger, FastTunnelServer server, ForwardConfig config)
 {
-    private readonly ForwardConfig _config;
-    private readonly FastTunnelServer _server;
-    private readonly ILogger logger;
-
-    public ForwardDispatcher(ILogger logger, FastTunnelServer server, ForwardConfig config)
-    {
-        this.logger = logger;
-        _server = server;
-        _config = config;
-    }
-
     /// <summary>
     /// </summary>
-    /// <param name="_socket">用户请求</param>
+    /// <param name="socket">用户请求</param>
     /// <param name="client">FastTunnel客户端</param>
     /// <returns></returns>
-    public async Task DispatchAsync(Socket _socket, WebSocket client, PortProxyListener listener)
+    public async Task DispatchAsync(Socket socket, WebSocket client, PortProxyListener listener)
     {
         var msgId = Guid.NewGuid().ToString().Replace("-", "");
 
         try
         {
             await Task.Yield();
-            logger.LogDebug($"[Forward]Swap开始 {msgId}|{_config.RemotePort}=>{_config.LocalIp}:{_config.LocalPort}");
+            logger.LogDebug($"[Forward]Swap开始 {msgId}|{config.RemotePort}=>{config.LocalIp}:{config.LocalPort}");
 
             var tcs = new TaskCompletionSource<Stream>();
 
-            _server.ResponseTasks.TryAdd(msgId, (tcs, CancellationToken.None));
+            server.ResponseTasks.TryAdd(msgId, (tcs, CancellationToken.None));
 
             try
             {
-                await client.SendCmdAsync(MessageType.Forward, $"{msgId}|{_config.LocalIp}:{_config.LocalPort}", CancellationToken.None);
+                await client.SendCmdAsync(MessageType.Forward, $"{msgId}|{config.LocalIp}:{config.LocalPort}", CancellationToken.None);
             }
             catch (SocketClosedException sex)
             {
                 // TODO:客户端已掉线，但是没有移除对端口的监听
                 logger.LogError($"[Forward]Swap 客户端已离线 {sex.Message}");
                 tcs.TrySetCanceled();
-                Close(_socket);
+                Close(socket);
                 return;
             }
             catch (Exception ex)
@@ -67,15 +56,14 @@ public class ForwardDispatcher
                 // 网络不稳定
                 logger.LogError(ex, "[Forward]Swap Exception");
                 tcs.TrySetCanceled();
-                Close(_socket);
+                Close(socket);
                 return;
             }
 
-            using (var stream1 = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10)))
-            using (var stream2 = new NetworkStream(_socket, true) { ReadTimeout = 1000 * 60 * 10 })
-            {
-                await Task.WhenAny(stream1.CopyToAsync(stream2), stream2.CopyToAsync(stream1));
-            }
+            await using var stream1 = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            await using var stream2 = new NetworkStream(socket, true);
+            stream2.ReadTimeout = 1000 * 60 * 10;
+            await Task.WhenAny(stream1.CopyToAsync(stream2), stream2.CopyToAsync(stream1));
         }
         catch (Exception ex)
         {
@@ -84,7 +72,7 @@ public class ForwardDispatcher
         finally
         {
             logger.LogDebug($"[Forward]Swap结束 {msgId}");
-            _server.ResponseTasks.TryRemove(msgId, out _);
+            server.ResponseTasks.TryRemove(msgId, out _);
             listener.DecrementClients();
         }
     }
@@ -97,6 +85,7 @@ public class ForwardDispatcher
         }
         catch (Exception)
         {
+            // ignored
         }
         finally
         {

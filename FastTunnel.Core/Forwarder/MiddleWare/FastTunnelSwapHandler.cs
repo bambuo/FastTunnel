@@ -9,23 +9,15 @@ using Microsoft.Extensions.Logging;
 
 namespace FastTunnel.Core.Forwarder.MiddleWare;
 
-public class FastTunnelSwapHandler
+public class FastTunnelSwapHandler(ILogger<FastTunnelClientHandler> logger, FastTunnelServer fastTunnelServer)
 {
-    private static int connectionCount;
-    private readonly FastTunnelServer fastTunnelServer;
-    private readonly ILogger<FastTunnelClientHandler> logger;
+    private static int _connectionCount;
 
-    public FastTunnelSwapHandler(ILogger<FastTunnelClientHandler> logger, FastTunnelServer fastTunnelServer)
-    {
-        this.logger = logger;
-        this.fastTunnelServer = fastTunnelServer;
-    }
-
-    public static int ConnectionCount => connectionCount;
+    public static int ConnectionCount => _connectionCount;
 
     public async Task Handle(HttpContext context, Func<Task> next)
     {
-        Interlocked.Increment(ref connectionCount);
+        Interlocked.Increment(ref _connectionCount);
 
         try
         {
@@ -35,7 +27,7 @@ public class FastTunnelSwapHandler
                 return;
             }
 
-            var requestId = context.Request.Path.Value.Trim('/');
+            var requestId = context.Request.Path.Value?.Trim('/');
             logger.LogDebug($"[PROXY]:Start {requestId}");
 
             if (!fastTunnelServer.ResponseTasks.TryRemove(requestId, out var responseAwaiter))
@@ -43,8 +35,6 @@ public class FastTunnelSwapHandler
                 logger.LogError($"[PROXY]:RequestId不存在 {requestId}");
                 return;
             }
-
-            ;
 
             var lifetime = context.Features.Get<IConnectionLifetimeFeature>();
             var transport = context.Features.Get<IConnectionTransportFeature>();
@@ -54,18 +44,11 @@ public class FastTunnelSwapHandler
                 return;
             }
 
-            using var reverseConnection = new WebSocketStream(lifetime, transport);
+            await using var reverseConnection = new WebSocketStream(lifetime, transport);
             responseAwaiter.Item1.TrySetResult(reverseConnection);
 
             CancellationTokenSource cts;
-            if (responseAwaiter.Item2 != CancellationToken.None)
-            {
-                cts = CancellationTokenSource.CreateLinkedTokenSource(lifetime.ConnectionClosed, responseAwaiter.Item2);
-            }
-            else
-            {
-                cts = CancellationTokenSource.CreateLinkedTokenSource(lifetime.ConnectionClosed);
-            }
+            cts = responseAwaiter.Item2 != CancellationToken.None ? CancellationTokenSource.CreateLinkedTokenSource(lifetime.ConnectionClosed, responseAwaiter.Item2) : CancellationTokenSource.CreateLinkedTokenSource(lifetime.ConnectionClosed);
 
             var closedAwaiter = new TaskCompletionSource<object>();
 
@@ -86,7 +69,7 @@ public class FastTunnelSwapHandler
         }
         finally
         {
-            Interlocked.Decrement(ref connectionCount);
+            Interlocked.Decrement(ref _connectionCount);
             logger.LogDebug($"统计SWAP连接数：{ConnectionCount}");
         }
     }

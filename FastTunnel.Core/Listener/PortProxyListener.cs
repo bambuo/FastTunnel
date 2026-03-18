@@ -122,6 +122,7 @@ public class PortProxyListener
         }
         catch (Exception)
         {
+            // ignored
         }
         finally
         {
@@ -130,7 +131,7 @@ public class PortProxyListener
         }
     }
 
-    internal void IncrementClients()
+    private void IncrementClients()
     {
         Interlocked.Increment(ref m_numConnectedSockets);
         _logerr.LogInformation($"[Listener:{ListenPort}] Accepted. There are {{0}} clients connected", m_numConnectedSockets);

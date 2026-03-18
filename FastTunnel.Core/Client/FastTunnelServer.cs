@@ -19,25 +19,13 @@ using Yarp.ReverseProxy.Configuration;
 
 namespace FastTunnel.Core.Client;
 
-public class FastTunnelServer
+public class FastTunnelServer(ILogger<FastTunnelServer> logger, IProxyConfigProvider proxyConfig, IOptionsMonitor<DefaultServerConfig> serverSettings)
 {
-    private readonly ILogger<FastTunnelServer> logger;
-    public readonly IOptionsMonitor<DefaultServerConfig> ServerOption;
+    public readonly IOptionsMonitor<DefaultServerConfig> ServerOption = serverSettings;
 
-    /// <summary>
-    ///     在线客户端列表
-    /// </summary>
     public IList<TunnelClient> Clients = new List<TunnelClient>();
 
     public int ConnectedClientCount;
-    public IProxyConfigProvider proxyConfig;
-
-    public FastTunnelServer(ILogger<FastTunnelServer> logger, IProxyConfigProvider proxyConfig, IOptionsMonitor<DefaultServerConfig> serverSettings)
-    {
-        this.logger = logger;
-        ServerOption = serverSettings;
-        this.proxyConfig = proxyConfig;
-    }
 
     public ConcurrentDictionary<string, (TaskCompletionSource<Stream>, CancellationToken)> ResponseTasks { get; } = new();
 

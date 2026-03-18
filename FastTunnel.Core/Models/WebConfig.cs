@@ -8,22 +8,11 @@ namespace FastTunnel.Core.Models;
 
 public class WebConfig
 {
-    /// <summary>
-    ///     子域名
-    /// </summary>
-    public string SubDomain { get; set; }
+    public string SubDomain { get; set; } = string.Empty;
 
-    /// <summary>
-    ///     本地IP
-    /// </summary>
-    public string LocalIp { get; set; }
+    public string LocalIp { get; set; } = string.Empty;
 
-    /// <summary>
-    /// </summary>
     public int LocalPort { get; set; }
 
-    /// <summary>
-    ///     个人域名
-    /// </summary>
-    public string[] WWW { get; set; }
+    public string[] WWW { get; set; } = [];
 }

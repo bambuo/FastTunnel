@@ -17,84 +17,60 @@ namespace FastTunnel.Api.Controllers;
 
 public class SystemController : BaseController
 {
-    readonly FastTunnelServer fastTunnelServer;
+    readonly FastTunnelServer _fastTunnelServer;
 
     public SystemController(FastTunnelServer fastTunnelServer)
     {
-        this.fastTunnelServer = fastTunnelServer;
+        _fastTunnelServer = fastTunnelServer;
     }
 
-    /// <summary>
-    /// 获取当前等待响应的请求
-    /// </summary>
-    /// <returns></returns>
     [HttpGet]
     public ApiResponse GetResponseTempList()
     {
         ApiResponse.Data = new
         {
-            Count = fastTunnelServer.ResponseTasks.Count,
-            Rows = fastTunnelServer.ResponseTasks.Select(x => new
-            {
-                x.Key
-            })
+            Count = _fastTunnelServer.ResponseTasks.Count,
+            Rows = _fastTunnelServer.ResponseTasks.Select(x => new { x.Key })
         };
 
         return ApiResponse;
     }
 
-    /// <summary>
-    /// 获取当前映射的所有站点信息
-    /// </summary>
-    /// <returns></returns>
     [HttpGet]
     public ApiResponse GetAllWebList()
     {
         ApiResponse.Data = new
         {
-            Count = fastTunnelServer.WebList.Count,
-            Rows = fastTunnelServer.WebList.Select(x => new { x.Key, x.Value.WebConfig.LocalIp, x.Value.WebConfig.LocalPort })
+            Count = _fastTunnelServer.WebList.Count,
+            Rows = _fastTunnelServer.WebList.Select(x => new { x.Key, x.Value.WebConfig.LocalIp, x.Value.WebConfig.LocalPort })
         };
 
         return ApiResponse;
     }
 
-    /// <summary>
-    /// 获取服务端配置信息
-    /// </summary>
-    /// <returns></returns>
     [HttpGet]
     public ApiResponse GetServerOption()
     {
-        ApiResponse.Data = fastTunnelServer.ServerOption;
+        ApiResponse.Data = _fastTunnelServer.ServerOption;
         return ApiResponse;
     }
 
-    /// <summary>
-    /// 获取所有端口转发映射列表
-    /// </summary>
-    /// <returns></returns>
     [HttpGet]
     public ApiResponse GetAllForwardList()
     {
         ApiResponse.Data = new
         {
-            Count = fastTunnelServer.ForwardList.Count,
-            Rows = fastTunnelServer.ForwardList.Select(x => new { x.Key, x.Value.SSHConfig.LocalIp, x.Value.SSHConfig.LocalPort, x.Value.SSHConfig.RemotePort })
-
+            Count = _fastTunnelServer.ForwardList.Count,
+            Rows = _fastTunnelServer.ForwardList.Select(x => new { x.Key, x.Value.SSHConfig.LocalIp, x.Value.SSHConfig.LocalPort, x.Value.SSHConfig.RemotePort })
         };
 
         return ApiResponse;
     }
 
-    /// <summary>
-    /// 获取当前客户端在线数量
-    /// </summary>
-    /// <returns></returns>
     [HttpGet]
     public ApiResponse GetOnlineClientCount()
     {
-        ApiResponse.Data = fastTunnelServer.ConnectedClientCount;
+        ApiResponse.Data = _fastTunnelServer.ConnectedClientCount;
         return ApiResponse;
     }
 }

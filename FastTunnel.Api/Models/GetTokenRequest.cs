@@ -6,14 +6,13 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace FastTunnel.Api.Models
-{
-    public class GetTokenRequest
-    {
-        [Required]
-        public string name { get; set; }
+namespace FastTunnel.Api.Models;
 
-        [Required]
-        public string password { get; set; }
-    }
+public class GetTokenRequest
+{
+    [Required]
+    public string name { get; set; } = string.Empty;
+
+    [Required]
+    public string password { get; set; } = string.Empty;
 }
