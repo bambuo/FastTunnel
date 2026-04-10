@@ -5,13 +5,7 @@ obj
 *.pubxml
 publish
 /build
-<<<<<<< Updated upstream
-logs
-appsettings.Development.json
-.idea
-=======
 /FastTunnel.Server/.config
 /FastTunnel.Server/logs
 /FastTunnel.Client/appsettings.Development.json
 .idea/
->>>>>>> Stashed changes
