@@ -9,18 +9,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="logs\**"/>
-    <Content Remove="logs\**"/>
-    <EmbeddedResource Remove="logs\**"/>
-    <None Remove="logs\**"/>
+    <Compile Remove="logs\**" />
+    <Content Remove="logs\**" />
+    <EmbeddedResource Remove="logs\**" />
+    <None Remove="logs\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0"/>
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.0"/>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0"/>
-    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.0"/>
-    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
   </ItemGroup>
 
   <!--<ItemGroup Condition="'$(Configuration)'=='Debug'">
@@ -29,7 +29,8 @@
   </ItemGroup>-->
 
   <ItemGroup>
-    <ProjectReference Include="..\FastTunnel.Core\FastTunnel.Core.csproj"/>
+    <ProjectReference Include="..\FastTunnel.Core\FastTunnel.Core.csproj" />
+    <ProjectReference Include="..\FastTunnel.Api\FastTunnel.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,7 +44,7 @@
 
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties config_4appsettings_1development_1json__JsonSchema="https://json.schemastore.org/appsettings.json"/>
+      <UserProperties config_4appsettings_1development_1json__JsonSchema="https://json.schemastore.org/appsettings.json" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

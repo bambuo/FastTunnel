@@ -5,14 +5,14 @@
 // Copyright (c) 2019 Gui.H
 
 using FastTunnel.Api.Filters;
-using FastTunnel.Server.Models;
+using FastTunnel.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FastTunnel.Api.Controllers;
 
 [Authorize]
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 [ServiceFilter(typeof(CustomExceptionFilterAttribute))]
 public class BaseController : ControllerBase

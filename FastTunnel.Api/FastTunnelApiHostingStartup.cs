@@ -1,29 +1,19 @@
-// Licensed under the Apache License, Version 2.0 (the "License").
-// You may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
-// Copyright (c) 2019 Gui.H
-
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FastTunnel.Api;
+using System.Text.Json;
+using FastTunnel.Api.Data;
 using FastTunnel.Api.Filters;
+using FastTunnel.Api.Services;
 using FastTunnel.Core.Config;
-using FastTunnel.Core.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-[assembly: HostingStartup(typeof(FastTunnelApiHostingStartup))]
+[assembly: HostingStartup(typeof(FastTunnel.Api.FastTunnelApiHostingStartup))]
 
 namespace FastTunnel.Api;
 
@@ -33,48 +23,58 @@ public class FastTunnelApiHostingStartup : IHostingStartup
     {
         Debug.WriteLine("FastTunnelApiHostingStartup Configured");
 
-        builder.ConfigureServices((webHostBuilderContext, services) =>
+        builder.ConfigureServices((ctx, services) =>
         {
             services.AddControllers();
 
-            var serverOptions = webHostBuilderContext.Configuration.GetSection("FastTunnel").Get<DefaultServerConfig>();
-            if (serverOptions.Api?.JWT != null)
+            var dbPath = Path.Combine(AppContext.BaseDirectory, "data", "fasttunnel.db");
+            var dir = Path.GetDirectoryName(dbPath);
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir!);
+
+            services.AddDbContext<FastTunnelDbContext>(options =>
+                options.UseSqlite($"Data Source={dbPath}"));
+
+            services.AddSingleton<TotpService>();
+            services.AddSingleton<CustomExceptionFilterAttribute>();
+
+            var serverOptions = ctx.Configuration.GetSection("FastTunnel").Get<DefaultServerConfig>();
+            if (serverOptions?.Api?.JWT != null)
             {
+                var jwt = serverOptions.Api.JWT;
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
+                    .AddJwtBearer(options =>
                     {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.FromSeconds(serverOptions.Api.JWT.ClockSkew),
-                        ValidateIssuerSigningKey = true,
-                        ValidAudience = serverOptions.Api.JWT.ValidAudience,
-                        ValidIssuer = serverOptions.Api.JWT.ValidIssuer,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(serverOptions.Api.JWT.IssuerSigningKey))
-                    };
-
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnChallenge = async context =>
+                        options.TokenValidationParameters = new TokenValidationParameters
                         {
-                            context.HandleResponse();
+                            ValidateIssuer = false,
+                            ValidateAudience = false,
+                            ValidateLifetime = true,
+                            ClockSkew = TimeSpan.FromSeconds(jwt.ClockSkew),
+                            ValidateIssuerSigningKey = true,
+                            ValidAudience = jwt.ValidAudience,
+                            ValidIssuer = jwt.ValidIssuer,
+                            IssuerSigningKey = new SymmetricSecurityKey(
+                                System.Text.Encoding.UTF8.GetBytes(jwt.IssuerSigningKey)),
+                        };
 
-                            context.Response.ContentType = "application/json;charset=utf-8";
-                            context.Response.StatusCode = StatusCodes.Status200OK;
-
-                            await context.Response.WriteAsync(new
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnChallenge = async context =>
                             {
-                                errorCode = 1,
-                                errorMessage = context.Error ?? "Token is Required"
-                            }.ToJson());
-                        },
-                    };
-                });
+                                context.HandleResponse();
+                                context.Response.ContentType = "application/json;charset=utf-8";
+                                context.Response.StatusCode = StatusCodes.Status200OK;
+                                var errJson = JsonSerializer.Serialize(
+                                    new { errorCode = 1, errorMessage = context.Error ?? "Token is Required" });
+                                await context.Response.WriteAsync(errJson);
+                            },
+                        };
+                    });
             }
 
-            services.AddSingleton<CustomExceptionFilterAttribute>();
+            services.AddAuthorizationBuilder()
+                .AddPolicy("MfaOnly", policy =>
+                    policy.RequireClaim("scope", "mfa"));
         });
     }
 }
