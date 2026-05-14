@@ -140,15 +140,15 @@ graph TD
 ```mermaid
 graph TB
     subgraph 方案对比
-        A["Vue 3 + Vite<br/>+ Element Plus"]
+        A["Vue 3 + Bun<br/>+ Arco Design Vue"]
         B["Blazor Server<br/>内嵌"]
         C["Blazor WASM<br/>独立部署"]
     end
 
-    A --> A1["生态成熟，组件丰富"]
+    A --> A1["Arco Design 字节跳动出品"]
     A --> A2["打包为静态文件，服务端直接 serve"]
-    A --> A3["Vite 构建速度快"]
-    A --> A4["需要 Node.js 开发环境"]
+    A --> A3["Bun 原生 TS 运行时，安装极快"]
+    A --> A4["需要 Bun 开发环境"]
 
     B --> B1["纯 C# 技术栈统一"]
     B --> B2["需要 SignalR 长连接"]
@@ -161,17 +161,17 @@ graph TB
     style A fill:#4a9,stroke:#333
 ```
 
-| 维度 | Vue 3 + Element Plus | Blazor Server | Blazor WASM |
-|------|---------------------|---------------|-------------|
+| 维度 | Vue 3 + Arco Design Vue | Blazor Server | Blazor WASM |
+|------|-------------------------|---------------|-------------|
 | 生态成熟度 | 极成熟 | 成熟 | 可用 |
 | 部署方式 | 静态文件 (wwwroot) | 需 WebSocket | 静态文件 + API |
 | 服务端压力 | 无（纯静态） | 每个用户一个连接 | 无 |
-| 组件库 | Element Plus / Naive UI | Fluent UI / MudBlazor | Fluent UI / MudBlazor |
+| 组件库 | Arco Design Vue | Fluent UI / MudBlazor | Fluent UI / MudBlazor |
 | 打包体积 | ~200KB gzip | 无前端体积 | ~2MB+ |
 | 开发人员要求 | 需 JS/TS 经验 | 纯 C# | 纯 C# |
 | 本项目适配 | 已用 wwwroot 托管静态文件 | 改造大 | 改造大 |
 
-> **推荐：Vue 3 + Element Plus** — 项目已有 `wwwroot/index.html`，直接替换为 Vue SPA 静态产物即可，零服务端架构变更。Element Plus 组件丰富，开发效率高。如果团队只有 C# 开发人员，备选 Blazor WASM。
+> **推荐：Vue 3 + Bun + Arco Design Vue** — 项目已有 `wwwroot/index.html`，直接替换为 Vue SPA 静态产物即可，零服务端架构变更。Arco Design Vue 由字节跳动出品，设计语言统一。Bun 作为 JS/TS 运行时替代 Node.js，安装速度极快，原生支持 TypeScript。
 
 ---
 
@@ -354,7 +354,7 @@ pie title 方案C 实现工作量分布
 | **架构兼容性** | 仅新增项目，不破坏现有代码 |
 | **数据迁移** | 首次启动自动建库，配置文件作为初始种子数据 |
 | **向后兼容** | 保留配置文件作为 fallback，数据库优先读取 |
-| **推荐技术栈** | **SQLite + EF Core + Vue 3 + Element Plus** |
+| **推荐技术栈** | **SQLite + EF Core + Vue 3 + Bun + Arco Design Vue** |
 | **总工作量** | 约 4 个 Phase，可迭代交付 |
 
 ---
