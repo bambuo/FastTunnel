@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
@@ -16,14 +16,14 @@ const { locale, t } = useI18n()
 
 const collapsed = ref(false)
 
-const menuItems = [
+const menuItems = computed(() => [
   { key: 'Dashboard', icon: IconDashboard, label: t('nav.dashboard'), path: '/' },
   { key: 'WebTunnels', icon: IconLanguage, label: t('nav.webTunnels'), path: '/tunnels/web' },
   { key: 'ForwardTunnels', icon: IconSwap, label: t('nav.forwardTunnels'), path: '/tunnels/forward' },
   { key: 'Tokens', icon: IconSafe, label: t('nav.tokens'), path: '/tokens' },
   { key: 'Clients', icon: IconDesktop, label: t('nav.clients'), path: '/clients' },
   { key: 'AuditLogs', icon: IconFile, label: t('nav.auditLogs'), path: '/audit-logs' },
-]
+])
 
 const selectedKey = () => {
   const name = route.name as string
@@ -35,7 +35,7 @@ const selectedKey = () => {
 }
 
 function handleMenuClick(key: string) {
-  const item = menuItems.find(m => m.key === key)
+  const item = menuItems.value.find(m => m.key === key)
   if (item) router.push(item.path)
 }
 
@@ -80,12 +80,15 @@ function handleLogout() {
         <div class="header-left">
           <a-button
             type="text"
-            :icon="collapsed ? IconMenuUnfold : IconMenuFold"
             @click="collapsed = !collapsed"
-          />
+          >
+            <template #icon>
+              <component :is="collapsed ? IconMenuUnfold : IconMenuFold" />
+            </template>
+          </a-button>
           <a-breadcrumb>
             <a-breadcrumb-item v-for="item in $route.matched" :key="item.path">
-              {{ item.meta?.title || item.name }}
+              {{ item.meta?.titleKey ? t(String(item.meta.titleKey)) : (item.meta?.title || item.name) }}
             </a-breadcrumb-item>
           </a-breadcrumb>
         </div>
