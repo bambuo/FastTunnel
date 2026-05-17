@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { getAuditLogs } from '@/api/auditLogs'
 import type { AuditLogEntity } from '@/types/auditLog'
+
+const { t } = useI18n()
 
 const data = ref<AuditLogEntity[]>([])
 const total = ref(0)
@@ -15,11 +18,11 @@ const filterStartDate = ref('')
 const filterEndDate = ref('')
 
 const columns = computed(() => [
-  { title: '操作', dataIndex: 'action', width: 80 },
-  { title: '对象', dataIndex: 'entity', width: 120 },
-  { title: '详情', dataIndex: 'detail', ellipsis: true },
-  { title: '操作人', dataIndex: 'operator', width: 100 },
-  { title: '时间', dataIndex: 'createdAt', width: 180 },
+  { title: t('table.column.actions'), dataIndex: 'action', width: 80 },
+  { title: t('table.column.entity'), dataIndex: 'entity', width: 120 },
+  { title: t('table.column.detail'), dataIndex: 'detail', ellipsis: true },
+  { title: t('table.column.operator'), dataIndex: 'operator', width: 100 },
+  { title: t('table.column.time'), dataIndex: 'createdAt', width: 180 },
 ])
 
 const pagination = computed(() => ({
@@ -66,25 +69,25 @@ function handlePageSizeChange(size: number) { pageSize.value = size; page.value 
 <template>
   <div>
     <div class="page-header">
-      <h1 class="page-title">审计日志</h1>
+      <h1 class="page-title">{{ $t('page.auditLogs') }}</h1>
     </div>
 
     <div class="filter-bar">
       <a-space wrap>
-        <a-select v-model="filterAction" placeholder="操作类型" allow-clear style="width: 120px" @change="handleSearch" @clear="handleSearch">
+        <a-select v-model="filterAction" :placeholder="$t('filter.action')" allow-clear style="width: 120px" @change="handleSearch" @clear="handleSearch">
           <a-option value="create">create</a-option>
           <a-option value="update">update</a-option>
           <a-option value="delete">delete</a-option>
           <a-option value="toggle">toggle</a-option>
         </a-select>
-        <a-select v-model="filterEntity" placeholder="操作对象" allow-clear style="width: 140px" @change="handleSearch" @clear="handleSearch">
+        <a-select v-model="filterEntity" :placeholder="$t('filter.entity')" allow-clear style="width: 140px" @change="handleSearch" @clear="handleSearch">
           <a-option value="web_tunnel">web_tunnel</a-option>
           <a-option value="forward_tunnel">forward_tunnel</a-option>
           <a-option value="token">token</a-option>
         </a-select>
-        <a-date-picker v-model="filterStartDate" placeholder="开始日期" style="width: 160px" @change="handleSearch" @clear="handleSearch" />
-        <a-date-picker v-model="filterEndDate" placeholder="结束日期" style="width: 160px" @change="handleSearch" @clear="handleSearch" />
-        <a-button @click="handleReset">重置</a-button>
+        <a-date-picker v-model="filterStartDate" :placeholder="$t('filter.startDate')" style="width: 160px" @change="handleSearch" @clear="handleSearch" />
+        <a-date-picker v-model="filterEndDate" :placeholder="$t('filter.endDate')" style="width: 160px" @change="handleSearch" @clear="handleSearch" />
+        <a-button @click="handleReset">{{ $t('action.reset') }}</a-button>
       </a-space>
     </div>
 
@@ -106,7 +109,7 @@ function handlePageSizeChange(size: number) { pageSize.value = size; page.value 
         </a-tag>
       </template>
       <template #empty>
-        <a-empty description="暂无审计日志" />
+        <a-empty :description="$t('empty.noAuditLogs')" />
       </template>
     </a-table>
   </div>

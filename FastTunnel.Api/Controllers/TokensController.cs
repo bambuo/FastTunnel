@@ -1,14 +1,17 @@
 using FastTunnel.Api.Data;
 using FastTunnel.Api.Models.Entities;
+using FastTunnel.Api.Resources;
 using FastTunnel.Api.Services;
 using FastTunnel.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace FastTunnel.Api.Controllers;
 
-public class TokensController(FastTunnelDbContext db) : BaseController
+public class TokensController(FastTunnelDbContext db, IStringLocalizer<ApiMessages> localizer) : BaseController
 {
+    private readonly IStringLocalizer<ApiMessages> _localizer = localizer;
     [HttpGet]
     public async Task<ApiResponse> Index()
     {
@@ -37,10 +40,10 @@ public class TokensController(FastTunnelDbContext db) : BaseController
         };
         db.Tokens.Add(entity);
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "create", "token", $"创建 Token: {entity.Description}", GetUserName());
+        await AuditService.LogAsync(db, "create", "token", string.Format(_localizer["Audit.CreateToken"], entity.Description), GetUserName());
 
         ApiResponse.Success = true;
-        ApiResponse.Message = "Token 创建成功";
+        ApiResponse.Message = _localizer["Token.Created"];
         return ApiResponse;
     }
 
@@ -52,10 +55,10 @@ public class TokensController(FastTunnelDbContext db) : BaseController
 
         if (request.Description != null) entity.Description = request.Description;
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "update", "token", $"修改 Token: id={id}", GetUserName());
+        await AuditService.LogAsync(db, "update", "token", string.Format(_localizer["Audit.UpdateToken"], id), GetUserName());
 
         ApiResponse.Success = true;
-        ApiResponse.Message = "Token 更新成功";
+        ApiResponse.Message = _localizer["Token.Updated"];
         return ApiResponse;
     }
 
@@ -66,10 +69,10 @@ public class TokensController(FastTunnelDbContext db) : BaseController
         if (entity == null) return NotFound();
         entity.IsEnabled = false;
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "delete", "token", $"删除 Token: id={id}", GetUserName());
+        await AuditService.LogAsync(db, "delete", "token", string.Format(_localizer["Audit.DeleteToken"], id), GetUserName());
 
         ApiResponse.Success = true;
-        ApiResponse.Message = "Token 已删除";
+        ApiResponse.Message = _localizer["Token.Deleted"];
         return ApiResponse;
     }
 
@@ -80,7 +83,7 @@ public class TokensController(FastTunnelDbContext db) : BaseController
         if (entity == null) return NotFound();
         entity.IsEnabled = request.IsEnabled;
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "toggle", "token", $"{(entity.IsEnabled ? "启用" : "停用")} Token: id={id}", GetUserName());
+        await AuditService.LogAsync(db, "toggle", "token", string.Format(_localizer["Audit.ToggleToken"], entity.IsEnabled ? _localizer["Common.Enabled"] : _localizer["Common.Disabled"], id), GetUserName());
 
         ApiResponse.Success = true;
         ApiResponse.Data = new { entity.Id, entity.IsEnabled };
@@ -90,7 +93,7 @@ public class TokensController(FastTunnelDbContext db) : BaseController
     private ApiResponse NotFound()
     {
         ApiResponse.Success = false;
-        ApiResponse.Message = "Token 不存在";
+        ApiResponse.Message = _localizer["Token.NotFound"];
         return ApiResponse;
     }
 

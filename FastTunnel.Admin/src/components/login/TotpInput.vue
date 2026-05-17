@@ -76,6 +76,7 @@ function handlePaste(e: ClipboardEvent) {
       inputmode="numeric"
       maxlength="1"
       class="totp-digit"
+      :class="{ filled: digits[i] !== '' }"
       data-test="mfa-code-input"
       @input="handleInput(i, $event)"
       @keydown="handleKeydown(i, $event)"
@@ -87,26 +88,44 @@ function handlePaste(e: ClipboardEvent) {
 <style scoped>
 .totp-input-group {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   justify-content: center;
 }
 
 .totp-digit {
-  width: 44px;
-  height: 52px;
+  width: 48px;
+  height: 56px;
   text-align: center;
-  font-size: 22px;
+  font-size: 24px;
+  font-weight: 600;
   font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
-  border: 1px solid var(--color-border-2);
-  border-radius: 6px;
+  border: 2px solid var(--color-border-2);
+  border-radius: 8px;
   outline: none;
   background: var(--color-bg-1);
   color: var(--color-text-1);
-  transition: border-color 0.15s;
+  transition: all 0.15s ease;
 }
 
 .totp-digit:focus {
   border-color: rgb(var(--primary-6));
-  box-shadow: 0 0 0 2px rgba(var(--primary-6), 0.2);
+  box-shadow: 0 0 0 3px rgba(var(--primary-6), 0.15);
+}
+
+.totp-digit.filled {
+  border-color: var(--color-border-3);
+  background: var(--color-bg-2);
+}
+
+@media (max-width: 480px) {
+  .totp-input-group {
+    gap: 6px;
+  }
+
+  .totp-digit {
+    width: 42px;
+    height: 50px;
+    font-size: 20px;
+  }
 }
 </style>

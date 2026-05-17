@@ -8,13 +8,13 @@ const routes: RouteRecordRaw[] = [
     path: '/setup',
     name: 'Setup',
     component: () => import('@/views/SetupView.vue'),
-    meta: { requiresSetup: true, title: '系统初始化' },
+    meta: { requiresSetup: true, title: 'Setup' },
   },
   {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/LoginView.vue'),
-    meta: { requiresAuth: false, title: '登录' },
+    meta: { requiresAuth: false, title: 'Login' },
   },
   {
     path: '/',
@@ -22,11 +22,11 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
     children: [
       { path: '', name: 'Dashboard', component: () => import('@/views/DashboardView.vue'), meta: { title: 'Dashboard' } },
-      { path: 'tunnels/web', name: 'WebTunnels', component: () => import('@/views/tunnels/WebTunnelsView.vue'), meta: { title: 'Web 隧道' } },
-      { path: 'tunnels/forward', name: 'ForwardTunnels', component: () => import('@/views/tunnels/ForwardTunnelsView.vue'), meta: { title: 'Forward 隧道' } },
-      { path: 'tokens', name: 'Tokens', component: () => import('@/views/tokens/TokensView.vue'), meta: { title: 'Token 管理' } },
-      { path: 'clients', name: 'Clients', component: () => import('@/views/clients/ClientsView.vue'), meta: { title: '客户端' } },
-      { path: 'audit-logs', name: 'AuditLogs', component: () => import('@/views/auditLogs/AuditLogsView.vue'), meta: { title: '审计日志' } },
+      { path: 'tunnels/web', name: 'WebTunnels', component: () => import('@/views/tunnels/WebTunnelsView.vue'), meta: { title: 'Web Tunnels' } },
+      { path: 'tunnels/forward', name: 'ForwardTunnels', component: () => import('@/views/tunnels/ForwardTunnelsView.vue'), meta: { title: 'Forward Tunnels' } },
+      { path: 'tokens', name: 'Tokens', component: () => import('@/views/tokens/TokensView.vue'), meta: { title: 'Tokens' } },
+      { path: 'clients', name: 'Clients', component: () => import('@/views/clients/ClientsView.vue'), meta: { title: 'Clients' } },
+      { path: 'audit-logs', name: 'AuditLogs', component: () => import('@/views/auditLogs/AuditLogsView.vue'), meta: { title: 'Audit Logs' } },
     ],
   },
 ]

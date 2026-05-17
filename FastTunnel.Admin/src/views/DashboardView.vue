@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { getStatsOverview } from '@/api/stats'
 import { getAuditLogs } from '@/api/auditLogs'
 import type { StatsOverview } from '@/types/stats'
 import type { AuditLogEntity } from '@/types/auditLog'
 import { IconDesktop, IconLanguage, IconSwap, IconSafe } from '@arco-design/web-vue/es/icon'
+
+const { t } = useI18n()
 
 const stats = ref<StatsOverview>({
   onlineClientCount: 0,
@@ -33,7 +36,7 @@ onMounted(async () => {
 
 <template>
   <div class="dashboard">
-    <h1 class="page-title">Dashboard</h1>
+    <h1 class="page-title">{{ $t('dashboard.title') }}</h1>
 
     <template v-if="loading">
       <a-row :gutter="16" class="stats-row">
@@ -45,7 +48,7 @@ onMounted(async () => {
           </a-card>
         </a-col>
       </a-row>
-      <a-card title="最近操作">
+      <a-card :title="$t('dashboard.recentOps')">
         <a-skeleton animation>
           <a-skeleton-line :rows="5" />
         </a-skeleton>
@@ -58,7 +61,7 @@ onMounted(async () => {
           <a-card>
             <div class="stat-item">
               <IconDesktop :size="28" class="stat-icon icon-online" />
-              <a-statistic title="在线客户端" :value="stats.onlineClientCount" />
+              <a-statistic :title="$t('dashboard.stat.onlineClients')" :value="stats.onlineClientCount" />
             </div>
           </a-card>
         </a-col>
@@ -66,7 +69,7 @@ onMounted(async () => {
           <a-card>
             <div class="stat-item">
               <IconLanguage :size="28" class="stat-icon icon-web" />
-              <a-statistic title="活跃 Web 隧道" :value="stats.activeWebTunnelCount" />
+              <a-statistic :title="$t('dashboard.stat.activeWebTunnels')" :value="stats.activeWebTunnelCount" />
             </div>
           </a-card>
         </a-col>
@@ -74,7 +77,7 @@ onMounted(async () => {
           <a-card>
             <div class="stat-item">
               <IconSwap :size="28" class="stat-icon icon-forward" />
-              <a-statistic title="活跃 Forward 隧道" :value="stats.activeForwardTunnelCount" />
+              <a-statistic :title="$t('dashboard.stat.activeForwardTunnels')" :value="stats.activeForwardTunnelCount" />
             </div>
           </a-card>
         </a-col>
@@ -82,20 +85,20 @@ onMounted(async () => {
           <a-card>
             <div class="stat-item">
               <IconSafe :size="28" class="stat-icon icon-token" />
-              <a-statistic title="Token 总数" :value="stats.totalTokenCount" />
+              <a-statistic :title="$t('dashboard.stat.totalTokens')" :value="stats.totalTokenCount" />
             </div>
           </a-card>
         </a-col>
       </a-row>
 
-      <a-card title="最近操作" class="logs-card">
+      <a-card :title="$t('dashboard.recentOps')" class="logs-card">
         <a-table
           :columns="[
-            { title: '操作', dataIndex: 'action', width: 80 },
-            { title: '对象', dataIndex: 'entity', width: 120 },
-            { title: '详情', dataIndex: 'detail', ellipsis: true },
-            { title: '操作人', dataIndex: 'operator', width: 100 },
-            { title: '时间', dataIndex: 'createdAt', width: 160 },
+            { title: t('table.column.actions'), dataIndex: 'action', width: 80 },
+            { title: t('table.column.entity'), dataIndex: 'entity', width: 120 },
+            { title: t('table.column.detail'), dataIndex: 'detail', ellipsis: true },
+            { title: t('table.column.operator'), dataIndex: 'operator', width: 100 },
+            { title: t('table.column.time'), dataIndex: 'createdAt', width: 160 },
           ]"
           :data="recentLogs"
           :pagination="false"
@@ -103,7 +106,7 @@ onMounted(async () => {
           size="small"
         >
           <template #empty>
-            <a-empty description="暂无操作记录" />
+            <a-empty :description="$t('dashboard.table.empty')" />
           </template>
         </a-table>
       </a-card>

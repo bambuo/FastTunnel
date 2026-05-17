@@ -2,11 +2,13 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Message } from '@arco-design/web-vue'
+import { useI18n } from 'vue-i18n'
 import { initSystem } from '@/api/setup'
 import { useSetupStore } from '@/stores/setup'
 
 const router = useRouter()
 const setupStore = useSetupStore()
+const { t } = useI18n()
 
 const form = ref({ name: '', password: '', confirmPassword: '' })
 const loading = ref(false)
@@ -29,10 +31,10 @@ async function handleSubmit() {
   try {
     await initSystem({ name: form.value.name, password: form.value.password })
     setupStore.markInitialized()
-    Message.success('初始化完成，即将跳转登录页')
+    Message.success(t('message.setup.completed'))
     setTimeout(() => router.push('/login'), 1500)
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : '初始化失败'
+    const msg = err instanceof Error ? err.message : t('message.setup.failed')
     Message.error(msg)
   } finally {
     loading.value = false
@@ -45,49 +47,49 @@ async function handleSubmit() {
     <a-card class="setup-card" :bordered="false">
       <template #title>
         <div class="setup-header">
-          <h2>FastTunnel 系统初始化</h2>
-          <p class="setup-desc">首次部署，请创建管理员账号</p>
+          <h2>{{ $t('setup.title') }}</h2>
+          <p class="setup-desc">{{ $t('setup.desc') }}</p>
         </div>
       </template>
 
       <a-form :model="form" layout="vertical">
-        <a-form-item label="管理员用户名">
+        <a-form-item :label="$t('setup.form.username')">
           <a-input
             v-model="form.name"
-            placeholder="请输入用户名"
+            :placeholder="$t('setup.form.usernamePlaceholder')"
             :min-length="3"
             :max-length="64"
             allow-clear
           />
         </a-form-item>
 
-        <a-form-item label="管理员密码">
+        <a-form-item :label="$t('setup.form.password')">
           <a-input-password
             v-model="form.password"
-            placeholder="至少 8 位，包含字母和数字"
+            :placeholder="$t('setup.form.passwordPlaceholder')"
             allow-clear
           />
           <template #extra>
             <span :class="{ 'pw-error': form.password.length > 0 && !passwordValid() }">
               <template v-if="form.password.length > 0 && !passwordValid()">
-                密码强度不足：至少 8 位，包含字母和数字
+                {{ $t('setup.form.passwordWeak') }}
               </template>
               <template v-else>
-                推荐使用字母 + 数字组合
+                {{ $t('setup.form.passwordHint') }}
               </template>
             </span>
           </template>
         </a-form-item>
 
-        <a-form-item label="确认密码">
+        <a-form-item :label="$t('setup.form.confirm')">
           <a-input-password
             v-model="form.confirmPassword"
-            placeholder="请再次输入密码"
+            :placeholder="$t('setup.form.confirmPlaceholder')"
             allow-clear
           />
           <template #extra>
             <span v-if="form.confirmPassword.length > 0 && !confirmValid()" class="pw-error">
-              两次输入密码不一致
+              {{ $t('setup.form.confirmMismatch') }}
             </span>
           </template>
         </a-form-item>
@@ -100,7 +102,7 @@ async function handleSubmit() {
             :disabled="!canSubmit()"
             @click="handleSubmit"
           >
-            完成初始化
+            {{ $t('setup.form.submit') }}
           </a-button>
         </a-form-item>
       </a-form>
