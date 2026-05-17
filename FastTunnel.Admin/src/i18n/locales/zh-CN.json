@@ -1,0 +1,202 @@
+{
+  "nav": {
+    "brand": "FastTunnel",
+    "dashboard": "总览",
+    "webTunnels": "Web 隧道",
+    "forwardTunnels": "Forward 隧道",
+    "tokens": "Token 管理",
+    "clients": "客户端",
+    "auditLogs": "审计日志",
+    "logout": "退出",
+    "language": "语言"
+  },
+  "login": {
+    "brand": {
+      "desc": "内网穿透管理面板"
+    },
+    "title": {
+      "credentials": "登录管理面板",
+      "mfaSetup": "绑定两步验证",
+      "mfaVerify": "两步验证"
+    },
+    "form": {
+      "username": "用户名",
+      "usernamePlaceholder": "请输入用户名",
+      "password": "密码",
+      "passwordPlaceholder": "请输入密码",
+      "submit": "登录"
+    },
+    "setup": {
+      "hint": "无法连接服务器，如果是首次部署请先",
+      "link": "进入初始化页面"
+    },
+    "mfa": {
+      "totpLabel": "请输入应用显示的 6 位验证码",
+      "totpHint": "请输入 Authenticator 应用中的 6 位验证码",
+      "countdown": "令牌有效期",
+      "back": "返回登录"
+    }
+  },
+  "mfa": {
+    "setup": {
+      "title": "账号验证通过，请绑定两步验证",
+      "tip": "请使用 {app1} 或 {app2} 扫描下方二维码",
+      "secretLabel": "无法扫码？手动输入密钥：",
+      "copy": "复制"
+    }
+  },
+  "setup": {
+    "title": "FastTunnel 系统初始化",
+    "desc": "首次部署，请创建管理员账号",
+    "form": {
+      "username": "管理员用户名",
+      "usernamePlaceholder": "请输入用户名",
+      "password": "管理员密码",
+      "passwordPlaceholder": "至少 8 位，包含字母和数字",
+      "passwordWeak": "密码强度不足：至少 8 位，包含字母和数字",
+      "passwordHint": "推荐使用字母 + 数字组合",
+      "confirm": "确认密码",
+      "confirmPlaceholder": "请再次输入密码",
+      "confirmMismatch": "两次输入密码不一致",
+      "submit": "完成初始化"
+    }
+  },
+  "dashboard": {
+    "title": "总览",
+    "recentOps": "最近操作",
+    "stat": {
+      "onlineClients": "在线客户端",
+      "activeWebTunnels": "活跃 Web 隧道",
+      "activeForwardTunnels": "活跃 Forward 隧道",
+      "totalTokens": "Token 总数"
+    },
+    "table": {
+      "empty": "暂无操作记录"
+    }
+  },
+  "page": {
+    "tokens": "Token 管理",
+    "auditLogs": "审计日志",
+    "clients": "客户端管理",
+    "forwardTunnels": "Forward 隧道管理",
+    "webTunnels": "Web 隧道管理"
+  },
+  "table": {
+    "column": {
+      "tokenValue": "Token 值",
+      "description": "备注",
+      "clientCount": "引用客户端数",
+      "status": "状态",
+      "createdAt": "创建时间",
+      "actions": "操作",
+      "name": "名称",
+      "onlineStatus": "在线状态",
+      "lastSeen": "最后在线",
+      "remotePort": "远程端口",
+      "localAddress": "内网地址",
+      "protocol": "协议",
+      "client": "客户端",
+      "subDomain": "子域名",
+      "operator": "操作人",
+      "entity": "对象",
+      "detail": "详情",
+      "time": "时间"
+    }
+  },
+  "action": {
+    "edit": "编辑",
+    "delete": "删除",
+    "copy": "复制",
+    "reset": "重置",
+    "newToken": "新建 Token",
+    "newTunnel": "新建隧道",
+    "enabled": "已启用",
+    "disabled": "已停用",
+    "online": "在线",
+    "offline": "离线"
+  },
+  "placeholder": {
+    "searchToken": "搜索备注或 Token 值",
+    "searchClient": "搜索客户端名称",
+    "searchTunnel": "搜索端口号或内网地址",
+    "searchSubDomain": "搜索子域名或内网地址",
+    "tokenValue": "留空则自动生成 UUID",
+    "description": "如：办公室服务器",
+    "subDomain": "如 api",
+    "localIp": "如 192.168.1.100",
+    "localPort": "如 8080",
+    "remotePort": "如 2222",
+    "sshPort": "如 22",
+    "clientId": "客户端 ID 数字"
+  },
+  "popconfirm": {
+    "deleteToken": "确定删除？",
+    "deleteTunnel": "确定删除此隧道？"
+  },
+  "empty": {
+    "noAuditLogs": "暂无审计日志",
+    "noForwardTunnels": "暂无 Forward 隧道",
+    "noWebTunnels": "暂无 Web 隧道"
+  },
+  "message": {
+    "token": {
+      "created": "Token 创建成功",
+      "updated": "Token 更新成功",
+      "deleted": "Token 已删除",
+      "copied": "已复制到剪贴板",
+      "copyFailed": "复制失败"
+    },
+    "tunnel": {
+      "created": "隧道创建成功",
+      "updated": "隧道更新成功",
+      "deleted": "隧道已删除",
+      "portOccupied": "端口 {port} 已被占用"
+    },
+    "operationFailed": "操作失败",
+    "deleteFailed": "删除失败",
+    "setup": {
+      "completed": "初始化完成，即将跳转登录页",
+      "failed": "初始化失败"
+    },
+    "secret": {
+      "copied": "密钥已复制到剪贴板",
+      "copyFailed": "复制失败，请手动选择复制"
+    }
+  },
+  "tunnelForm": {
+    "title": {
+      "edit": "编辑隧道",
+      "create": "新建隧道"
+    },
+    "label": {
+      "subDomain": "子域名",
+      "localIp": "内网 IP",
+      "localPort": "内网端口",
+      "clientId": "客户端 ID",
+      "remotePort": "远程端口",
+      "protocol": "协议"
+    }
+  },
+  "client": {
+    "loading": "加载中...",
+    "webTunnels": "Web 隧道",
+    "forwardTunnels": "Forward 隧道",
+    "none": "无"
+  },
+  "route": {
+    "setup": "系统初始化",
+    "login": "登录",
+    "dashboard": "总览",
+    "webTunnels": "Web 隧道",
+    "forwardTunnels": "Forward 隧道",
+    "tokens": "Token 管理",
+    "clients": "客户端",
+    "auditLogs": "审计日志"
+  },
+  "filter": {
+    "action": "操作类型",
+    "entity": "操作对象",
+    "startDate": "开始日期",
+    "endDate": "结束日期"
+  }
+}

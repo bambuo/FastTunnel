@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Message } from '@arco-design/web-vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
 import {
@@ -9,6 +10,8 @@ import {
 import type { ForwardTunnel, ForwardTunnelRequest } from '@/types/tunnel'
 import TunnelForm from '@/components/common/TunnelForm.vue'
 
+const { t } = useI18n()
+
 const data = ref<ForwardTunnel[]>([])
 const loading = ref(false)
 const modalVisible = ref(false)
@@ -16,13 +19,13 @@ const editTunnel = ref<ForwardTunnel | null>(null)
 const searchKeyword = ref('')
 
 const columns = computed(() => [
-  { title: '远程端口', dataIndex: 'remotePort', width: 100 },
-  { title: '内网地址', slotName: 'address', width: 200 },
-  { title: '协议', dataIndex: 'protocol', width: 70 },
-  { title: '客户端', dataIndex: 'clientName', width: 120 },
-  { title: '状态', slotName: 'status', width: 80 },
-  { title: '创建时间', dataIndex: 'createdAt', width: 160 },
-  { title: '操作', slotName: 'action', width: 220, fixed: 'right' as const },
+  { title: t('table.column.remotePort'), dataIndex: 'remotePort', width: 100 },
+  { title: t('table.column.localAddress'), slotName: 'address', width: 200 },
+  { title: t('table.column.protocol'), dataIndex: 'protocol', width: 70 },
+  { title: t('table.column.client'), dataIndex: 'clientName', width: 120 },
+  { title: t('table.column.status'), slotName: 'status', width: 80 },
+  { title: t('table.column.createdAt'), dataIndex: 'createdAt', width: 160 },
+  { title: t('table.column.actions'), slotName: 'action', width: 220, fixed: 'right' as const },
 ])
 
 onMounted(() => fetchList())
@@ -59,21 +62,21 @@ async function handleSubmit(formData: ForwardTunnelRequest) {
         t => t.remotePort === formData.remotePort && (!editTunnel.value || t.id !== editTunnel.value.id)
       )
       if (exists) {
-        Message.error(`端口 ${formData.remotePort} 已被占用`)
+        Message.error(t('message.tunnel.portOccupied', { port: String(formData.remotePort) }))
         return
       }
     }
 
     if (editTunnel.value) {
       await updateForwardTunnel(editTunnel.value.id, formData)
-      Message.success('隧道更新成功')
+      Message.success(t('message.tunnel.updated'))
     } else {
       await createForwardTunnel(formData)
-      Message.success('隧道创建成功')
+      Message.success(t('message.tunnel.created'))
     }
     await fetchList()
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : '操作失败'
+    const msg = err instanceof Error ? err.message : t('message.operationFailed')
     Message.error(msg)
   }
 }
@@ -81,10 +84,10 @@ async function handleSubmit(formData: ForwardTunnelRequest) {
 async function handleDelete(id: number) {
   try {
     await deleteForwardTunnel(id)
-    Message.success('隧道已删除')
+    Message.success(t('message.tunnel.deleted'))
     await fetchList()
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : '删除失败'
+    const msg = err instanceof Error ? err.message : t('message.deleteFailed')
     Message.error(msg)
   }
 }
@@ -92,10 +95,10 @@ async function handleDelete(id: number) {
 async function handleToggle(record: ForwardTunnel) {
   try {
     await toggleForwardTunnel(record.id, !record.isEnabled)
-    Message.success(record.isEnabled ? '已停用' : '已启用')
+    Message.success(record.isEnabled ? t('action.disabled') : t('action.enabled'))
     await fetchList()
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : '操作失败'
+    const msg = err instanceof Error ? err.message : t('message.operationFailed')
     Message.error(msg)
   }
 }
@@ -104,14 +107,14 @@ async function handleToggle(record: ForwardTunnel) {
 <template>
   <div>
     <div class="page-header">
-      <h1 class="page-title">Forward 隧道管理</h1>
-      <a-button type="primary" @click="handleAdd">新建隧道</a-button>
+      <h1 class="page-title">{{ $t('page.forwardTunnels') }}</h1>
+      <a-button type="primary" @click="handleAdd">{{ $t('action.newTunnel') }}</a-button>
     </div>
 
     <div class="search-bar">
       <a-input-search
         v-model="searchKeyword"
-        placeholder="搜索端口号或内网地址"
+        :placeholder="$t('placeholder.searchTunnel')"
         allow-clear
         @search="handleSearch"
         @clear="handleSearch"
@@ -140,14 +143,14 @@ async function handleToggle(record: ForwardTunnel) {
       </template>
       <template #action="{ record }">
         <a-space>
-          <a-button type="text" size="small" @click="handleEdit(record)">编辑</a-button>
-          <a-popconfirm content="确定删除此隧道？" @ok="() => handleDelete(record.id)">
-            <a-button type="text" size="small" status="danger">删除</a-button>
+          <a-button type="text" size="small" @click="handleEdit(record)">{{ $t('action.edit') }}</a-button>
+          <a-popconfirm :content="$t('popconfirm.deleteTunnel')" @ok="() => handleDelete(record.id)">
+            <a-button type="text" size="small" status="danger">{{ $t('action.delete') }}</a-button>
           </a-popconfirm>
         </a-space>
       </template>
       <template #empty>
-        <a-empty description="暂无 Forward 隧道" />
+        <a-empty :description="$t('empty.noForwardTunnels')" />
       </template>
     </a-table>
 

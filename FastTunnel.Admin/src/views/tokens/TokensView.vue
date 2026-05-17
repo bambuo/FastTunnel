@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Message } from '@arco-design/web-vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
 import { getTokens, createToken, updateToken, deleteToken, toggleToken } from '@/api/tokens'
 import type { TokenEntity, TokenRequest } from '@/types/token'
+
+const { t } = useI18n()
 
 const data = ref<TokenEntity[]>([])
 const loading = ref(false)
@@ -21,12 +24,12 @@ const filteredData = computed(() => {
 })
 
 const columns = computed(() => [
-  { title: 'Token 值', dataIndex: 'value', ellipsis: true, width: 280 },
-  { title: '备注', dataIndex: 'description', width: 160 },
-  { title: '引用客户端数', dataIndex: 'clientCount', width: 100 },
-  { title: '状态', slotName: 'status', width: 80 },
-  { title: '创建时间', dataIndex: 'createdAt', width: 160 },
-  { title: '操作', slotName: 'action', width: 200, fixed: 'right' as const },
+  { title: t('table.column.tokenValue'), dataIndex: 'value', ellipsis: true, width: 280 },
+  { title: t('table.column.description'), dataIndex: 'description', width: 160 },
+  { title: t('table.column.clientCount'), dataIndex: 'clientCount', width: 100 },
+  { title: t('table.column.status'), slotName: 'status', width: 80 },
+  { title: t('table.column.createdAt'), dataIndex: 'createdAt', width: 160 },
+  { title: t('table.column.actions'), slotName: 'action', width: 200, fixed: 'right' as const },
 ])
 
 onMounted(() => fetchList())
@@ -60,15 +63,15 @@ async function handleOk() {
     if (!editRecord.value) {
       if (form.value.value) req.value = form.value.value
       await createToken(req)
-      Message.success('Token 创建成功')
+      Message.success(t('message.token.created'))
     } else {
       await updateToken(editRecord.value.id, req)
-      Message.success('Token 更新成功')
+      Message.success(t('message.token.updated'))
     }
     modalVisible.value = false
     await fetchList()
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : '操作失败'
+    const msg = err instanceof Error ? err.message : t('message.operationFailed')
     Message.error(msg)
   }
 }
@@ -76,10 +79,10 @@ async function handleOk() {
 async function handleDelete(id: number) {
   try {
     await deleteToken(id)
-    Message.success('Token 已删除')
+    Message.success(t('message.token.deleted'))
     await fetchList()
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : '删除失败'
+    const msg = err instanceof Error ? err.message : t('message.deleteFailed')
     Message.error(msg)
   }
 }
@@ -87,19 +90,19 @@ async function handleDelete(id: number) {
 async function handleCopy(val: string) {
   try {
     await navigator.clipboard.writeText(val)
-    Message.success('已复制到剪贴板')
+    Message.success(t('message.token.copied'))
   } catch {
-    Message.warning('复制失败')
+    Message.warning(t('message.token.copyFailed'))
   }
 }
 
 async function handleToggle(record: TokenEntity) {
   try {
     await toggleToken(record.id, !record.isEnabled)
-    Message.success(record.isEnabled ? '已停用' : '已启用')
+    Message.success(record.isEnabled ? t('action.disabled') : t('action.enabled'))
     await fetchList()
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : '操作失败'
+    const msg = err instanceof Error ? err.message : t('message.operationFailed')
     Message.error(msg)
   }
 }
@@ -108,14 +111,14 @@ async function handleToggle(record: TokenEntity) {
 <template>
   <div>
     <div class="page-header">
-      <h1 class="page-title">Token 管理</h1>
-      <a-button type="primary" @click="handleAdd">新建 Token</a-button>
+      <h1 class="page-title">{{ $t('page.tokens') }}</h1>
+      <a-button type="primary" @click="handleAdd">{{ $t('action.newToken') }}</a-button>
     </div>
 
     <div class="search-bar">
       <a-input
         v-model="searchKeyword"
-        placeholder="搜索备注或 Token 值"
+        :placeholder="$t('placeholder.searchToken')"
         allow-clear
         style="width: 320px"
       >
@@ -133,22 +136,22 @@ async function handleToggle(record: TokenEntity) {
       </template>
       <template #action="{ record }">
         <a-space>
-          <a-button type="text" size="small" @click="handleCopy(record.value)">复制</a-button>
-          <a-button type="text" size="small" @click="handleEdit(record)">编辑</a-button>
-          <a-popconfirm content="确定删除？" @ok="() => handleDelete(record.id)">
-            <a-button type="text" size="small" status="danger">删除</a-button>
+          <a-button type="text" size="small" @click="handleCopy(record.value)">{{ $t('action.copy') }}</a-button>
+          <a-button type="text" size="small" @click="handleEdit(record)">{{ $t('action.edit') }}</a-button>
+          <a-popconfirm :content="$t('popconfirm.deleteToken')" @ok="() => handleDelete(record.id)">
+            <a-button type="text" size="small" status="danger">{{ $t('action.delete') }}</a-button>
           </a-popconfirm>
         </a-space>
       </template>
     </a-table>
 
-    <a-modal v-model:visible="modalVisible" :title="editRecord ? '编辑 Token' : '新建 Token'" @ok="handleOk">
+    <a-modal v-model:visible="modalVisible" :title="editRecord ? $t('action.edit') + ' Token' : $t('action.newToken')" @ok="handleOk">
       <a-form :model="form" layout="vertical">
-        <a-form-item v-if="!editRecord" label="Token 值">
-          <a-input v-model="form.value" placeholder="留空则自动生成 UUID" />
+        <a-form-item v-if="!editRecord" :label="$t('table.column.tokenValue')">
+          <a-input v-model="form.value" :placeholder="$t('placeholder.tokenValue')" />
         </a-form-item>
-        <a-form-item label="备注">
-          <a-input v-model="form.description" placeholder="如：办公室服务器" />
+        <a-form-item :label="$t('table.column.description')">
+          <a-input v-model="form.description" :placeholder="$t('placeholder.description')" />
         </a-form-item>
       </a-form>
     </a-modal>

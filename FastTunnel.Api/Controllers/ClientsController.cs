@@ -1,13 +1,16 @@
 using FastTunnel.Api.Data;
+using FastTunnel.Api.Resources;
 using FastTunnel.Core.Client;
 using FastTunnel.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace FastTunnel.Api.Controllers;
 
-public class ClientsController(FastTunnelDbContext db, FastTunnelServer ftServer) : BaseController
+public class ClientsController(FastTunnelDbContext db, FastTunnelServer ftServer, IStringLocalizer<ApiMessages> localizer) : BaseController
 {
+    private readonly IStringLocalizer<ApiMessages> _localizer = localizer;
     [HttpGet]
     public IActionResult Index()
     {
@@ -42,7 +45,7 @@ public class ClientsController(FastTunnelDbContext db, FastTunnelServer ftServer
         if (client == null)
         {
             ApiResponse.Success = false;
-            ApiResponse.Message = "客户端不存在";
+            ApiResponse.Message = _localizer["Client.NotFound"];
             return new JsonResult(ApiResponse);
         }
 

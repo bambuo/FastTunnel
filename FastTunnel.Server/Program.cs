@@ -47,6 +47,8 @@ public class Program
             builder.Configuration.AddJsonFile("appsettings.json", false, true);
             builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true);
 
+            builder.Services.AddLocalization();
+
             builder.Services.AddFastTunnelServer(builder.Configuration.GetSection("FastTunnel"));
 
             var dbPath = System.IO.Path.Combine(AppContext.BaseDirectory, "data", "fasttunnel.db");
@@ -129,6 +131,13 @@ public class Program
                     }
                 }
             }
+
+            var supportedCultures = new[] { "zh-CN", "en-US" };
+            var localizationOptions = new RequestLocalizationOptions()
+                .SetDefaultCulture("zh-CN")
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
+            app.UseRequestLocalization(localizationOptions);
 
             app.UseCors("corsPolicy");
 

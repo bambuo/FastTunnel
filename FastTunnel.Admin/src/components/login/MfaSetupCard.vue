@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import QRCode from 'qrcode'
 import { ref, onMounted } from 'vue'
-import { IconCheckCircle } from '@arco-design/web-vue/es/icon'
+import { IconCheckCircle, IconCopy } from '@arco-design/web-vue/es/icon'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   secret: string
@@ -11,6 +12,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   copy: [secret: string]
 }>()
+
+useI18n()
 
 const canvasRef = ref<HTMLCanvasElement>()
 
@@ -28,12 +31,12 @@ function handleCopy() {
 <template>
   <div class="mfa-setup">
     <div class="setup-intro">
-      <IconCheckCircle :size="32" style="color: rgb(var(--success-6))" />
-      <span>账号验证通过，请绑定两步验证</span>
+      <IconCheckCircle :size="28" style="color: rgb(var(--success-6))" />
+      <span>{{ $t('mfa.setup.title') }}</span>
     </div>
 
     <p class="setup-tip">
-      请使用 <strong>Google Authenticator</strong> 或 <strong>Microsoft Authenticator</strong> 扫描下方二维码
+      {{ $t('mfa.setup.tip', { app1: 'Google Authenticator', app2: 'Microsoft Authenticator' }) }}
     </p>
 
     <div class="qr-wrapper">
@@ -41,9 +44,14 @@ function handleCopy() {
     </div>
 
     <div class="secret-row">
-      <span class="secret-label">无法扫码？手动输入密钥：</span>
+      <span class="secret-label">{{ $t('mfa.setup.secretLabel') }}</span>
       <a-tag color="arcoblue" class="secret-tag" data-test="mfa-secret">{{ secret }}</a-tag>
-      <a-button type="text" size="small" @click="handleCopy">复制</a-button>
+      <a-button type="text" size="small" @click="handleCopy">
+        <template #icon>
+          <IconCopy />
+        </template>
+        {{ $t('mfa.setup.copy') }}
+      </a-button>
     </div>
   </div>
 </template>
@@ -53,14 +61,15 @@ function handleCopy() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 
 .setup-intro {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
   color: var(--color-text-1);
 }
 
@@ -69,13 +78,15 @@ function handleCopy() {
   color: var(--color-text-2);
   text-align: center;
   margin: 0;
+  line-height: 1.6;
 }
 
 .qr-wrapper {
-  padding: 12px;
+  padding: 16px;
   background: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid var(--color-border-2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .qr-canvas {
@@ -85,7 +96,9 @@ function handleCopy() {
 .secret-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
   font-size: 13px;
 }
 
@@ -96,5 +109,6 @@ function handleCopy() {
 .secret-tag {
   font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
   user-select: all;
+  font-size: 12px;
 }
 </style>

@@ -1,12 +1,14 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using FastTunnel.Api.Data;
+using FastTunnel.Api.Resources;
 using FastTunnel.Api.Services;
 using FastTunnel.Core.Config;
 using FastTunnel.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -15,8 +17,10 @@ namespace FastTunnel.Api.Controllers;
 public class AccountController(
     IOptionsMonitor<DefaultServerConfig> serverOptions,
     FastTunnelDbContext db,
-    TotpService totp) : BaseController
+    TotpService totp,
+    IStringLocalizer<ApiMessages> localizer) : BaseController
 {
+    private readonly IStringLocalizer<ApiMessages> _localizer = localizer;
     private DefaultServerConfig ServerConfig => serverOptions.CurrentValue;
 
     [AllowAnonymous]
@@ -27,7 +31,7 @@ public class AccountController(
         if (account == null || !PasswordService.Verify(request.Password, account.PasswordHash))
         {
             ApiResponse.Success = false;
-            ApiResponse.Message = "用户名或密码错误";
+            ApiResponse.Message = _localizer["Account.LoginFailed"];
             return ApiResponse;
         }
 
@@ -55,7 +59,7 @@ public class AccountController(
         if (account.MfaEnabled)
         {
             ApiResponse.Success = false;
-            ApiResponse.Message = "MFA 已绑定";
+            ApiResponse.Message = _localizer["Account.MfaAlreadyBound"];
             return ApiResponse;
         }
 
@@ -84,20 +88,20 @@ public class AccountController(
         if (account.MfaEnabled || string.IsNullOrEmpty(account.MfaSecret))
         {
             ApiResponse.Success = false;
-            ApiResponse.Message = "请先调用 mfa/setup";
+            ApiResponse.Message = _localizer["Account.MfaSetupRequired"];
             return ApiResponse;
         }
 
         if (!totp.ValidateCode(account.MfaSecret, request.Code))
         {
             ApiResponse.Success = false;
-            ApiResponse.Message = "验证码错误";
+            ApiResponse.Message = _localizer["Account.CodeInvalid"];
             return ApiResponse;
         }
 
         account.MfaEnabled = true;
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "bind", "mfa", $"绑定 MFA: {account.Name}", account.Name);
+        await AuditService.LogAsync(db, "bind", "mfa", string.Format(_localizer["Audit.BindMfa"], account.Name), account.Name);
 
         ApiResponse.Success = true;
         ApiResponse.Data = new
@@ -105,7 +109,7 @@ public class AccountController(
             token = GenerateFullToken(account.Name),
             username = account.Name,
         };
-        ApiResponse.Message = "MFA 绑定成功";
+        ApiResponse.Message = _localizer["Account.MfaBindSuccess"];
         return ApiResponse;
     }
 
@@ -121,14 +125,14 @@ public class AccountController(
         if (!account.MfaEnabled || string.IsNullOrEmpty(account.MfaSecret))
         {
             ApiResponse.Success = false;
-            ApiResponse.Message = "请先绑定 MFA";
+            ApiResponse.Message = _localizer["Account.MfaBindRequired"];
             return ApiResponse;
         }
 
         if (!totp.ValidateCode(account.MfaSecret, request.Code))
         {
             ApiResponse.Success = false;
-            ApiResponse.Message = "验证码错误";
+            ApiResponse.Message = _localizer["Account.CodeInvalid"];
             return ApiResponse;
         }
 
@@ -191,14 +195,14 @@ public class AccountController(
     private ApiResponse NotFound()
     {
         ApiResponse.Success = false;
-        ApiResponse.Message = "账号不存在";
+        ApiResponse.Message = _localizer["Account.AccountNotFound"];
         return ApiResponse;
     }
 
     private ApiResponse Unauthorized()
     {
         ApiResponse.Success = false;
-        ApiResponse.Message = "预认证令牌无效";
+        ApiResponse.Message = _localizer["Account.InvalidPreAuth"];
         HttpContext.Response.StatusCode = 401;
         return ApiResponse;
     }

@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { getClients, getClientTunnels } from '@/api/clients'
 import { IconSearch, IconCheckCircle, IconCloseCircle } from '@arco-design/web-vue/es/icon'
 import type { ClientEntity, ClientTunnels } from '@/types/client'
+
+const { t } = useI18n()
 
 const data = ref<ClientEntity[]>([])
 const loading = ref(false)
@@ -16,10 +19,10 @@ const filteredData = computed(() => {
 })
 
 const columns = computed(() => [
-  { title: '名称', dataIndex: 'name', width: 160 },
+  { title: t('table.column.name'), dataIndex: 'name', width: 160 },
   { title: 'Token', dataIndex: 'tokenPreview', width: 200, ellipsis: true },
-  { title: '在线状态', slotName: 'online', width: 100 },
-  { title: '最后在线', dataIndex: 'lastSeen', width: 160 },
+  { title: t('table.column.onlineStatus'), slotName: 'online', width: 100 },
+  { title: t('table.column.lastSeen'), dataIndex: 'lastSeen', width: 160 },
 ])
 
 onMounted(() => fetchList())
@@ -49,13 +52,13 @@ async function handleExpand(row: ClientEntity) {
 <template>
   <div>
     <div class="page-header">
-      <h1 class="page-title">客户端管理</h1>
+      <h1 class="page-title">{{ $t('page.clients') }}</h1>
     </div>
 
     <div class="search-bar">
       <a-input
         v-model="searchKeyword"
-        placeholder="搜索客户端名称"
+        :placeholder="$t('placeholder.searchClient')"
         allow-clear
         style="width: 320px"
       >
@@ -76,24 +79,24 @@ async function handleExpand(row: ClientEntity) {
         <a-space :size="4">
           <IconCheckCircle v-if="record.isOnline" :size="14" style="color: rgb(var(--success-6))" />
           <IconCloseCircle v-else :size="14" style="color: rgb(var(--danger-6))" />
-          <span>{{ record.isOnline ? '在线' : '离线' }}</span>
+          <span>{{ record.isOnline ? $t('action.online') : $t('action.offline') }}</span>
         </a-space>
       </template>
       <template #expand-row="{ record }">
         <div class="expand-content">
-          <p v-if="!expandedTunnels[record.id]">加载中...</p>
+          <p v-if="!expandedTunnels[record.id]">{{ $t('client.loading') }}</p>
           <template v-else-if="expandedTunnels[record.id]">
-            <p class="expand-title">Web 隧道 ({{ expandedTunnels[record.id]!.webs.length }})：</p>
+            <p class="expand-title">{{ $t('client.webTunnels') }} ({{ expandedTunnels[record.id]!.webs.length }})：</p>
             <a-tag v-for="w in expandedTunnels[record.id]!.webs" :key="w.id" color="arcoblue" size="small">
               {{ w.subDomain }}
             </a-tag>
-            <p v-if="expandedTunnels[record.id]!.webs.length === 0" class="expand-empty">无</p>
+            <p v-if="expandedTunnels[record.id]!.webs.length === 0" class="expand-empty">{{ $t('client.none') }}</p>
 
-            <p class="expand-title">Forward 隧道 ({{ expandedTunnels[record.id]!.forwards.length }})：</p>
+            <p class="expand-title">{{ $t('client.forwardTunnels') }} ({{ expandedTunnels[record.id]!.forwards.length }})：</p>
             <a-tag v-for="f in expandedTunnels[record.id]!.forwards" :key="f.id" color="orangered" size="small">
               :{{ f.remotePort }}
             </a-tag>
-            <p v-if="expandedTunnels[record.id]!.forwards.length === 0" class="expand-empty">无</p>
+            <p v-if="expandedTunnels[record.id]!.forwards.length === 0" class="expand-empty">{{ $t('client.none') }}</p>
           </template>
         </div>
       </template>

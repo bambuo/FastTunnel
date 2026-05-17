@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+
+  <data name="Account.LoginFailed"><value>Invalid username or password</value></data>
+  <data name="Account.MfaAlreadyBound"><value>MFA is already bound</value></data>
+  <data name="Account.MfaSetupRequired"><value>Please call mfa/setup first</value></data>
+  <data name="Account.CodeInvalid"><value>Invalid verification code</value></data>
+  <data name="Account.MfaBindSuccess"><value>MFA bound successfully</value></data>
+  <data name="Account.MfaBindRequired"><value>Please bind MFA first</value></data>
+  <data name="Account.AccountNotFound"><value>Account not found</value></data>
+  <data name="Account.InvalidPreAuth"><value>Invalid pre-auth token</value></data>
+
+  <data name="Setup.AlreadyInitialized"><value>System has been initialized</value></data>
+  <data name="Setup.NameTooShort"><value>Username must be at least 3 characters</value></data>
+  <data name="Setup.WeakPassword"><value>Password too weak: at least 8 characters with letters and numbers</value></data>
+  <data name="Setup.Completed"><value>Setup completed</value></data>
+
+  <data name="Token.Created"><value>Token created successfully</value></data>
+  <data name="Token.Updated"><value>Token updated successfully</value></data>
+  <data name="Token.Deleted"><value>Token deleted</value></data>
+  <data name="Token.NotFound"><value>Token not found</value></data>
+
+  <data name="Tunnel.Created"><value>Tunnel created successfully</value></data>
+  <data name="Tunnel.Updated"><value>Tunnel updated successfully</value></data>
+  <data name="Tunnel.Deleted"><value>Tunnel deleted</value></data>
+  <data name="Tunnel.NotFound"><value>Tunnel not found</value></data>
+
+  <data name="Client.NotFound"><value>Client not found</value></data>
+
+  <data name="Audit.CreateTunnel"><value>Created {0} tunnel: {1} → {2}:{3}</value></data>
+  <data name="Audit.UpdateTunnel"><value>Updated {0} tunnel: id={1}</value></data>
+  <data name="Audit.DeleteTunnel"><value>Deleted {0} tunnel: id={1}</value></data>
+  <data name="Audit.ToggleTunnel"><value>{0} {1} tunnel: id={2}</value></data>
+  <data name="Audit.CreateToken"><value>Created Token: {0}</value></data>
+  <data name="Audit.UpdateToken"><value>Updated Token: id={0}</value></data>
+  <data name="Audit.DeleteToken"><value>Deleted Token: id={0}</value></data>
+  <data name="Audit.ToggleToken"><value>{0} Token: id={1}</value></data>
+  <data name="Audit.CreateAccount"><value>Created admin account: {0}</value></data>
+  <data name="Audit.BindMfa"><value>Bound MFA: {0}</value></data>
+
+  <data name="Common.Enabled"><value>Enabled</value></data>
+  <data name="Common.Disabled"><value>Disabled</value></data>
+</root>

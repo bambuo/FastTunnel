@@ -1,15 +1,18 @@
 using FastTunnel.Api.Data;
 using FastTunnel.Api.Models.Entities;
+using FastTunnel.Api.Resources;
 using FastTunnel.Api.Services;
 using FastTunnel.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace FastTunnel.Api.Controllers;
 
-public class SetupController(FastTunnelDbContext db, TotpService totp) : BaseController
+public class SetupController(FastTunnelDbContext db, TotpService totp, IStringLocalizer<ApiMessages> localizer) : BaseController
 {
+    private readonly IStringLocalizer<ApiMessages> _localizer = localizer;
     [AllowAnonymous]
     [HttpGet("status")]
     public async Task<ApiResponse> Status()
@@ -27,14 +30,14 @@ public class SetupController(FastTunnelDbContext db, TotpService totp) : BaseCon
         if (await db.Accounts.AnyAsync())
         {
             ApiResponse.Success = false;
-            ApiResponse.Message = "系统已完成初始化";
+            ApiResponse.Message = _localizer["Setup.AlreadyInitialized"];
             return ApiResponse;
         }
 
         if (string.IsNullOrWhiteSpace(request.Name) || request.Name.Length < 3)
         {
             ApiResponse.Success = false;
-            ApiResponse.Message = "用户名至少3位";
+            ApiResponse.Message = _localizer["Setup.NameTooShort"];
             return ApiResponse;
         }
 
@@ -42,7 +45,7 @@ public class SetupController(FastTunnelDbContext db, TotpService totp) : BaseCon
             !request.Password.Any(char.IsLetter) || !request.Password.Any(char.IsDigit))
         {
             ApiResponse.Success = false;
-            ApiResponse.Message = "密码强度不足：至少 8 位，包含字母和数字";
+            ApiResponse.Message = _localizer["Setup.WeakPassword"];
             return ApiResponse;
         }
 
@@ -54,10 +57,10 @@ public class SetupController(FastTunnelDbContext db, TotpService totp) : BaseCon
         });
 
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "create", "account", $"创建管理员账号: {request.Name}", request.Name);
+        await AuditService.LogAsync(db, "create", "account", string.Format(_localizer["Audit.CreateAccount"], request.Name), request.Name);
 
         ApiResponse.Success = true;
-        ApiResponse.Message = "初始化完成";
+        ApiResponse.Message = _localizer["Setup.Completed"];
         return ApiResponse;
     }
 }

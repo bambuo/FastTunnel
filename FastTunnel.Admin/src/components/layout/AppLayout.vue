@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from 'vue-i18n'
+import { supportedLocales, type LocaleType } from '@/i18n'
 import {
   IconDashboard, IconLanguage, IconSwap, IconSafe,
   IconDesktop, IconFile, IconMenuFold, IconMenuUnfold,
@@ -10,16 +12,17 @@ import {
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const { locale, t } = useI18n()
 
 const collapsed = ref(false)
 
 const menuItems = [
-  { key: 'Dashboard', icon: IconDashboard, label: 'Dashboard', path: '/' },
-  { key: 'WebTunnels', icon: IconLanguage, label: 'Web 隧道', path: '/tunnels/web' },
-  { key: 'ForwardTunnels', icon: IconSwap, label: 'Forward 隧道', path: '/tunnels/forward' },
-  { key: 'Tokens', icon: IconSafe, label: 'Token 管理', path: '/tokens' },
-  { key: 'Clients', icon: IconDesktop, label: '客户端', path: '/clients' },
-  { key: 'AuditLogs', icon: IconFile, label: '审计日志', path: '/audit-logs' },
+  { key: 'Dashboard', icon: IconDashboard, label: t('nav.dashboard'), path: '/' },
+  { key: 'WebTunnels', icon: IconLanguage, label: t('nav.webTunnels'), path: '/tunnels/web' },
+  { key: 'ForwardTunnels', icon: IconSwap, label: t('nav.forwardTunnels'), path: '/tunnels/forward' },
+  { key: 'Tokens', icon: IconSafe, label: t('nav.tokens'), path: '/tokens' },
+  { key: 'Clients', icon: IconDesktop, label: t('nav.clients'), path: '/clients' },
+  { key: 'AuditLogs', icon: IconFile, label: t('nav.auditLogs'), path: '/audit-logs' },
 ]
 
 const selectedKey = () => {
@@ -34,6 +37,11 @@ const selectedKey = () => {
 function handleMenuClick(key: string) {
   const item = menuItems.find(m => m.key === key)
   if (item) router.push(item.path)
+}
+
+function switchLocale(lang: LocaleType) {
+  locale.value = lang
+  localStorage.setItem('locale', lang)
 }
 
 function handleLogout() {
@@ -83,7 +91,17 @@ function handleLogout() {
         </div>
         <div class="header-right">
           <span class="username">{{ authStore.username }}</span>
-          <a-button type="text" size="small" @click="handleLogout">退出</a-button>
+          <a-dropdown trigger="click">
+            <a-button type="text" size="small">{{ $t('nav.language') }}</a-button>
+            <template #content>
+              <a-doption
+                v-for="loc in supportedLocales"
+                :key="loc.key"
+                @click="switchLocale(loc.key)"
+              >{{ loc.label }}</a-doption>
+            </template>
+          </a-dropdown>
+          <a-button type="text" size="small" @click="handleLogout">{{ $t('nav.logout') }}</a-button>
         </div>
       </a-layout-header>
 

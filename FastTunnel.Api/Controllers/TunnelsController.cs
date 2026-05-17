@@ -1,15 +1,18 @@
 using FastTunnel.Api.Data;
 using FastTunnel.Api.Models.Entities;
+using FastTunnel.Api.Resources;
 using FastTunnel.Api.Services;
 using FastTunnel.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using System.Text.Json;
 
 namespace FastTunnel.Api.Controllers;
 
-public class TunnelsController(FastTunnelDbContext db) : BaseController
+public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessages> localizer) : BaseController
 {
+    private readonly IStringLocalizer<ApiMessages> _localizer = localizer;
     [HttpGet("webs")]
     public async Task<ApiResponse> GetWebs([FromQuery] string? keyword)
     {
@@ -44,7 +47,7 @@ public class TunnelsController(FastTunnelDbContext db) : BaseController
         };
         db.WebTunnels.Add(entity);
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "create", "web_tunnel", $"创建 Web 隧道: {entity.SubDomain} → {entity.LocalIp}:{entity.LocalPort}", GetUserName());
+        await AuditService.LogAsync(db, "create", "web_tunnel", string.Format(_localizer["Audit.CreateTunnel"], "Web", entity.SubDomain, entity.LocalIp, entity.LocalPort), GetUserName());
 
         ApiResponse.Data = new
         {
@@ -53,7 +56,7 @@ public class TunnelsController(FastTunnelDbContext db) : BaseController
             createdAt = entity.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
         };
         ApiResponse.Success = true;
-        ApiResponse.Message = "隧道创建成功";
+        ApiResponse.Message = _localizer["Tunnel.Created"];
         return ApiResponse;
     }
 
@@ -70,10 +73,10 @@ public class TunnelsController(FastTunnelDbContext db) : BaseController
         if (request.Wwws != null) entity.WwwsJson = JsonSerializer.Serialize(request.Wwws);
 
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "update", "web_tunnel", $"修改 Web 隧道: id={id}", GetUserName());
+        await AuditService.LogAsync(db, "update", "web_tunnel", string.Format(_localizer["Audit.UpdateTunnel"], "Web", id), GetUserName());
 
         ApiResponse.Success = true;
-        ApiResponse.Message = "隧道更新成功";
+        ApiResponse.Message = _localizer["Tunnel.Updated"];
         return ApiResponse;
     }
 
@@ -84,10 +87,10 @@ public class TunnelsController(FastTunnelDbContext db) : BaseController
         if (entity == null) return TunnelNotFound();
         entity.IsEnabled = false;
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "delete", "web_tunnel", $"删除 Web 隧道: id={id}", GetUserName());
+        await AuditService.LogAsync(db, "delete", "web_tunnel", string.Format(_localizer["Audit.DeleteTunnel"], "Web", id), GetUserName());
 
         ApiResponse.Success = true;
-        ApiResponse.Message = "隧道已删除";
+        ApiResponse.Message = _localizer["Tunnel.Deleted"];
         return ApiResponse;
     }
 
@@ -98,7 +101,7 @@ public class TunnelsController(FastTunnelDbContext db) : BaseController
         if (entity == null) return TunnelNotFound();
         entity.IsEnabled = request.IsEnabled;
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "toggle", "web_tunnel", $"{(entity.IsEnabled ? "启用" : "停用")} Web 隧道: id={id}", GetUserName());
+        await AuditService.LogAsync(db, "toggle", "web_tunnel", string.Format(_localizer["Audit.ToggleTunnel"], entity.IsEnabled ? _localizer["Common.Enabled"] : _localizer["Common.Disabled"], "Web", id), GetUserName());
 
         ApiResponse.Success = true;
         ApiResponse.Data = new { entity.Id, entity.IsEnabled };
@@ -139,7 +142,7 @@ public class TunnelsController(FastTunnelDbContext db) : BaseController
         };
         db.ForwardTunnels.Add(entity);
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "create", "forward_tunnel", $"创建 Forward 隧道: {entity.RemotePort} → {entity.LocalIp}:{entity.LocalPort}", GetUserName());
+        await AuditService.LogAsync(db, "create", "forward_tunnel", string.Format(_localizer["Audit.CreateTunnel"], "Forward", entity.RemotePort, entity.LocalIp, entity.LocalPort), GetUserName());
 
         ApiResponse.Data = new
         {
@@ -148,7 +151,7 @@ public class TunnelsController(FastTunnelDbContext db) : BaseController
             createdAt = entity.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
         };
         ApiResponse.Success = true;
-        ApiResponse.Message = "隧道创建成功";
+        ApiResponse.Message = _localizer["Tunnel.Created"];
         return ApiResponse;
     }
 
@@ -165,10 +168,10 @@ public class TunnelsController(FastTunnelDbContext db) : BaseController
         if (request.ClientId.HasValue) entity.ClientId = request.ClientId.Value;
 
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "update", "forward_tunnel", $"修改 Forward 隧道: id={id}", GetUserName());
+        await AuditService.LogAsync(db, "update", "forward_tunnel", string.Format(_localizer["Audit.UpdateTunnel"], "Forward", id), GetUserName());
 
         ApiResponse.Success = true;
-        ApiResponse.Message = "隧道更新成功";
+        ApiResponse.Message = _localizer["Tunnel.Updated"];
         return ApiResponse;
     }
 
@@ -179,10 +182,10 @@ public class TunnelsController(FastTunnelDbContext db) : BaseController
         if (entity == null) return TunnelNotFound();
         entity.IsEnabled = false;
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "delete", "forward_tunnel", $"删除 Forward 隧道: id={id}", GetUserName());
+        await AuditService.LogAsync(db, "delete", "forward_tunnel", string.Format(_localizer["Audit.DeleteTunnel"], "Forward", id), GetUserName());
 
         ApiResponse.Success = true;
-        ApiResponse.Message = "隧道已删除";
+        ApiResponse.Message = _localizer["Tunnel.Deleted"];
         return ApiResponse;
     }
 
@@ -193,7 +196,7 @@ public class TunnelsController(FastTunnelDbContext db) : BaseController
         if (entity == null) return TunnelNotFound();
         entity.IsEnabled = request.IsEnabled;
         await db.SaveChangesAsync();
-        await AuditService.LogAsync(db, "toggle", "forward_tunnel", $"{(entity.IsEnabled ? "启用" : "停用")} Forward 隧道: id={id}", GetUserName());
+        await AuditService.LogAsync(db, "toggle", "forward_tunnel", string.Format(_localizer["Audit.ToggleTunnel"], entity.IsEnabled ? _localizer["Common.Enabled"] : _localizer["Common.Disabled"], "Forward", id), GetUserName());
 
         ApiResponse.Success = true;
         ApiResponse.Data = new { entity.Id, entity.IsEnabled };
@@ -203,7 +206,7 @@ public class TunnelsController(FastTunnelDbContext db) : BaseController
     private ApiResponse TunnelNotFound()
     {
         ApiResponse.Success = false;
-        ApiResponse.Message = "隧道不存在";
+        ApiResponse.Message = _localizer["Tunnel.NotFound"];
         return ApiResponse;
     }
 

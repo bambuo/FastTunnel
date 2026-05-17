@@ -1,0 +1,1 @@
+import{a as e}from"./index-BriLuSOa.js";async function t(t){let n=await e.get(`/audit-logs`,{params:t});if(!n.data.success)throw Error(n.data.message);return n.data.data}export{t};

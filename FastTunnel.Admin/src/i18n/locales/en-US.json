@@ -1,0 +1,202 @@
+{
+  "nav": {
+    "brand": "FastTunnel",
+    "dashboard": "Dashboard",
+    "webTunnels": "Web Tunnels",
+    "forwardTunnels": "Forward Tunnels",
+    "tokens": "Tokens",
+    "clients": "Clients",
+    "auditLogs": "Audit Logs",
+    "logout": "Logout",
+    "language": "Language"
+  },
+  "login": {
+    "brand": {
+      "desc": "Intranet Penetration Panel"
+    },
+    "title": {
+      "credentials": "Sign In",
+      "mfaSetup": "Setup Two-Factor Auth",
+      "mfaVerify": "Two-Factor Auth"
+    },
+    "form": {
+      "username": "Username",
+      "usernamePlaceholder": "Enter username",
+      "password": "Password",
+      "passwordPlaceholder": "Enter password",
+      "submit": "Sign In"
+    },
+    "setup": {
+      "hint": "Cannot connect to server. If this is your first deployment,",
+      "link": "go to setup page"
+    },
+    "mfa": {
+      "totpLabel": "Enter the 6-digit code from your authenticator app",
+      "totpHint": "Enter the 6-digit code from your Authenticator app",
+      "countdown": "Token expires in",
+      "back": "Back to login"
+    }
+  },
+  "mfa": {
+    "setup": {
+      "title": "Verification passed, please set up two-factor auth",
+      "tip": "Scan the QR code below with {app1} or {app2}",
+      "secretLabel": "Can't scan? Enter the key manually:",
+      "copy": "Copy"
+    }
+  },
+  "setup": {
+    "title": "FastTunnel Setup",
+    "desc": "First deployment, please create an admin account",
+    "form": {
+      "username": "Admin Username",
+      "usernamePlaceholder": "Enter username",
+      "password": "Admin Password",
+      "passwordPlaceholder": "At least 8 chars, letters and numbers",
+      "passwordWeak": "Password too weak: at least 8 chars with letters and numbers",
+      "passwordHint": "Use a combination of letters and numbers",
+      "confirm": "Confirm Password",
+      "confirmPlaceholder": "Re-enter password",
+      "confirmMismatch": "Passwords do not match",
+      "submit": "Complete Setup"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "recentOps": "Recent Activity",
+    "stat": {
+      "onlineClients": "Online Clients",
+      "activeWebTunnels": "Active Web Tunnels",
+      "activeForwardTunnels": "Active Forward Tunnels",
+      "totalTokens": "Total Tokens"
+    },
+    "table": {
+      "empty": "No recent activity"
+    }
+  },
+  "page": {
+    "tokens": "Tokens",
+    "auditLogs": "Audit Logs",
+    "clients": "Clients",
+    "forwardTunnels": "Forward Tunnels",
+    "webTunnels": "Web Tunnels"
+  },
+  "table": {
+    "column": {
+      "tokenValue": "Token",
+      "description": "Description",
+      "clientCount": "Clients",
+      "status": "Status",
+      "createdAt": "Created At",
+      "actions": "Actions",
+      "name": "Name",
+      "onlineStatus": "Status",
+      "lastSeen": "Last Seen",
+      "remotePort": "Remote Port",
+      "localAddress": "Local Address",
+      "protocol": "Protocol",
+      "client": "Client",
+      "subDomain": "Subdomain",
+      "operator": "Operator",
+      "entity": "Entity",
+      "detail": "Detail",
+      "time": "Time"
+    }
+  },
+  "action": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "copy": "Copy",
+    "reset": "Reset",
+    "newToken": "New Token",
+    "newTunnel": "New Tunnel",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "placeholder": {
+    "searchToken": "Search description or token value",
+    "searchClient": "Search client name",
+    "searchTunnel": "Search port or local address",
+    "searchSubDomain": "Search subdomain or local address",
+    "tokenValue": "Leave blank to auto-generate UUID",
+    "description": "e.g. Office Server",
+    "subDomain": "e.g. api",
+    "localIp": "e.g. 192.168.1.100",
+    "localPort": "e.g. 8080",
+    "remotePort": "e.g. 2222",
+    "sshPort": "e.g. 22",
+    "clientId": "Client ID number"
+  },
+  "popconfirm": {
+    "deleteToken": "Delete this token?",
+    "deleteTunnel": "Delete this tunnel?"
+  },
+  "empty": {
+    "noAuditLogs": "No audit logs",
+    "noForwardTunnels": "No forward tunnels",
+    "noWebTunnels": "No web tunnels"
+  },
+  "message": {
+    "token": {
+      "created": "Token created successfully",
+      "updated": "Token updated successfully",
+      "deleted": "Token deleted",
+      "copied": "Copied to clipboard",
+      "copyFailed": "Failed to copy"
+    },
+    "tunnel": {
+      "created": "Tunnel created successfully",
+      "updated": "Tunnel updated successfully",
+      "deleted": "Tunnel deleted",
+      "portOccupied": "Port {port} is already in use"
+    },
+    "operationFailed": "Operation failed",
+    "deleteFailed": "Delete failed",
+    "setup": {
+      "completed": "Setup complete, redirecting to login",
+      "failed": "Setup failed"
+    },
+    "secret": {
+      "copied": "Secret copied to clipboard",
+      "copyFailed": "Copy failed, please copy manually"
+    }
+  },
+  "tunnelForm": {
+    "title": {
+      "edit": "Edit Tunnel",
+      "create": "New Tunnel"
+    },
+    "label": {
+      "subDomain": "Subdomain",
+      "localIp": "Local IP",
+      "localPort": "Local Port",
+      "clientId": "Client ID",
+      "remotePort": "Remote Port",
+      "protocol": "Protocol"
+    }
+  },
+  "client": {
+    "loading": "Loading...",
+    "webTunnels": "Web Tunnels",
+    "forwardTunnels": "Forward Tunnels",
+    "none": "None"
+  },
+  "route": {
+    "setup": "Setup",
+    "login": "Login",
+    "dashboard": "Dashboard",
+    "webTunnels": "Web Tunnels",
+    "forwardTunnels": "Forward Tunnels",
+    "tokens": "Tokens",
+    "clients": "Clients",
+    "auditLogs": "Audit Logs"
+  },
+  "filter": {
+    "action": "Action",
+    "entity": "Entity",
+    "startDate": "Start Date",
+    "endDate": "End Date"
+  }
+}
