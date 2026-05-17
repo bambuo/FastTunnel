@@ -1,3 +1,4 @@
+using System.Linq;
 using FastTunnel.Api.Controllers;
 using FastTunnel.Api.Models;
 using FastTunnel.Core.Client;
