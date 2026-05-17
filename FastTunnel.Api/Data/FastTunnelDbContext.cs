@@ -23,6 +23,7 @@ public class FastTunnelDbContext(DbContextOptions<FastTunnelDbContext> options) 
         {
             e.HasKey(x => x.Id);
             e.HasIndex(x => x.Value).IsUnique();
+            e.Property(x => x.IsDeleted).HasDefaultValue(false);
         });
 
         modelBuilder.Entity<WebTunnelEntity>(e =>

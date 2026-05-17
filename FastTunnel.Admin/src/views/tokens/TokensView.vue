@@ -14,13 +14,35 @@ const modalVisible = ref(false)
 const editRecord = ref<TokenEntity | null>(null)
 const form = ref({ value: '', description: '' })
 const searchKeyword = ref('')
+const deletionFilter = ref('active')
+const enabledFilter = ref('all')
 
 const filteredData = computed(() => {
-  if (!searchKeyword.value) return data.value
-  const kw = searchKeyword.value.toLowerCase()
-  return data.value.filter(t =>
-    t.description.toLowerCase().includes(kw) || t.value.toLowerCase().includes(kw)
-  )
+  let result = data.value
+
+  // Keyword filter
+  if (searchKeyword.value) {
+    const kw = searchKeyword.value.toLowerCase()
+    result = result.filter(t =>
+      t.description.toLowerCase().includes(kw) || t.value.toLowerCase().includes(kw)
+    )
+  }
+
+  // Deletion status filter
+  if (deletionFilter.value === 'active') {
+    result = result.filter(t => !t.isDeleted)
+  } else if (deletionFilter.value === 'deleted') {
+    result = result.filter(t => t.isDeleted)
+  }
+
+  // Enabled status filter
+  if (enabledFilter.value === 'enabled') {
+    result = result.filter(t => t.isEnabled)
+  } else if (enabledFilter.value === 'disabled') {
+    result = result.filter(t => !t.isEnabled)
+  }
+
+  return result
 })
 
 const columns = computed(() => [
@@ -124,11 +146,23 @@ async function handleToggle(record: TokenEntity) {
       >
         <template #prefix><IconSearch /></template>
       </a-input>
+      <a-select v-model="deletionFilter" style="width: 120px; margin-left: 12px" :placeholder="$t('filter.deletionStatus')">
+        <a-option value="all">{{ $t('filter.all') }}</a-option>
+        <a-option value="active">{{ $t('filter.notDeleted') }}</a-option>
+        <a-option value="deleted">{{ $t('filter.deleted') }}</a-option>
+      </a-select>
+      <a-select v-model="enabledFilter" style="width: 120px; margin-left: 12px" :placeholder="$t('filter.enabledStatus')">
+        <a-option value="all">{{ $t('filter.all') }}</a-option>
+        <a-option value="enabled">{{ $t('filter.enabled') }}</a-option>
+        <a-option value="disabled">{{ $t('filter.disabled') }}</a-option>
+      </a-select>
     </div>
 
     <a-table :columns="columns" :data="filteredData" :loading="loading" :pagination="{ pageSize: 20, showTotal: true }" row-key="id">
       <template #status="{ record }">
+        <a-tag v-if="record.isDeleted" color="red">{{ $t('status.deleted') }}</a-tag>
         <a-switch
+          v-else
           :model-value="record.isEnabled"
           size="small"
           @change="() => handleToggle(record)"
@@ -138,7 +172,7 @@ async function handleToggle(record: TokenEntity) {
         <a-space>
           <a-button type="text" size="small" @click="handleCopy(record.value)">{{ $t('action.copy') }}</a-button>
           <a-button type="text" size="small" @click="handleEdit(record)">{{ $t('action.edit') }}</a-button>
-          <a-popconfirm :content="$t('popconfirm.deleteToken')" @ok="() => handleDelete(record.id)">
+          <a-popconfirm v-if="!record.isDeleted" :content="$t('popconfirm.deleteToken')" @ok="() => handleDelete(record.id)">
             <a-button type="text" size="small" status="danger">{{ $t('action.delete') }}</a-button>
           </a-popconfirm>
         </a-space>
@@ -172,5 +206,7 @@ async function handleToggle(record: TokenEntity) {
 }
 .search-bar {
   margin-bottom: 16px;
+  display: flex;
+  align-items: center;
 }
 </style>
