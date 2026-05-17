@@ -197,6 +197,17 @@
     "action": "操作类型",
     "entity": "操作对象",
     "startDate": "开始日期",
-    "endDate": "结束日期"
+    "endDate": "结束日期",
+    "deletionStatus": "删除状态",
+    "enabledStatus": "启用状态",
+    "all": "全部",
+    "deleted": "已删除",
+    "notDeleted": "未删除",
+    "enabled": "已启用",
+    "disabled": "已停用"
+  },
+  "status": {
+    "deleted": "已删除",
+    "active": "正常"
   }
 }

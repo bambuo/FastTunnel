@@ -22,6 +22,7 @@ public class TokensController(FastTunnelDbContext db, IStringLocalizer<ApiMessag
             x.Value,
             x.Description,
             x.IsEnabled,
+            x.IsDeleted,
             clientCount = 0,
             createdAt = x.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
         });
@@ -67,7 +68,7 @@ public class TokensController(FastTunnelDbContext db, IStringLocalizer<ApiMessag
     {
         var entity = await db.Tokens.FindAsync(id);
         if (entity == null) return NotFound();
-        entity.IsEnabled = false;
+        entity.IsDeleted = true;
         await db.SaveChangesAsync();
         await AuditService.LogAsync(db, "delete", "token", string.Format(_localizer["Audit.DeleteToken"], id), GetUserName());
 

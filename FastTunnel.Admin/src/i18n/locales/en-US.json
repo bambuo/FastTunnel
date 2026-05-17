@@ -197,6 +197,17 @@
     "action": "Action",
     "entity": "Entity",
     "startDate": "Start Date",
-    "endDate": "End Date"
+    "endDate": "End Date",
+    "deletionStatus": "Deletion Status",
+    "enabledStatus": "Enabled Status",
+    "all": "All",
+    "deleted": "Deleted",
+    "notDeleted": "Not Deleted",
+    "enabled": "Enabled",
+    "disabled": "Disabled"
+  },
+  "status": {
+    "deleted": "Deleted",
+    "active": "Active"
   }
 }
