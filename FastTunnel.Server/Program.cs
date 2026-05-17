@@ -14,7 +14,7 @@ namespace FastTunnel.Server;
 public class Program
 {
     [RequiresUnreferencedCode("")]
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -92,7 +92,61 @@ public class Program
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<FastTunnelDbContext>();
-                db.Database.EnsureCreated();
+
+                // 兼容已有数据库：如果数据库已存在但没有迁移历史表，
+                // 说明是之前通过 EnsureCreated 创建的，需要标记初始迁移为已应用
+                if (db.Database.CanConnect())
+                {
+                    var pendingMigrations = db.Database.GetPendingMigrations().ToList();
+                    var appliedMigrations = db.Database.GetAppliedMigrations().ToList();
+
+                    if (appliedMigrations.Count == 0 && pendingMigrations.Count > 0)
+                    {
+                        // 数据库存在但没有迁移记录 → 旧数据库
+                        // 检查 Tokens 表是否已存在（作为判断标志）
+                        try
+                        {
+                            var conn = db.Database.GetDbConnection();
+                            await conn.OpenAsync();
+                            using var cmd = conn.CreateCommand();
+                            cmd.CommandText = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='Tokens'";
+                            var result = await cmd.ExecuteScalarAsync();
+                            if (Convert.ToInt64(result) > 0)
+                            {
+                                // 表已存在，说明是旧数据库，需要手动标记初始迁移为已应用
+                                var initialMigration = pendingMigrations.First();
+                                cmd.CommandText = @"
+                                    CREATE TABLE IF NOT EXISTS ""__EFMigrationsHistory"" (
+                                        ""MigrationId"" TEXT NOT NULL CONSTRAINT ""PK___EFMigrationsHistory"" PRIMARY KEY,
+                                        ""ProductVersion"" TEXT NOT NULL
+                                    );
+                                    INSERT OR IGNORE INTO ""__EFMigrationsHistory"" (""MigrationId"", ""ProductVersion"")
+                                    VALUES (@migrationId, @productVersion);";
+
+                                cmd.Parameters.Clear();
+                                var migrationIdParam = cmd.CreateParameter();
+                                migrationIdParam.ParameterName = "@migrationId";
+                                migrationIdParam.Value = initialMigration;
+                                cmd.Parameters.Add(migrationIdParam);
+
+                                var productVersionParam = cmd.CreateParameter();
+                                productVersionParam.ParameterName = "@productVersion";
+                                productVersionParam.Value = "10.0.0-preview.3.25171.1";
+                                cmd.Parameters.Add(productVersionParam);
+
+                                await cmd.ExecuteNonQueryAsync();
+                            }
+                            await conn.CloseAsync();
+                        }
+                        catch
+                        {
+                            // 如果检查失败，忽略，让 Migrate 自己处理
+                        }
+                    }
+                }
+
+                // 执行迁移（全新数据库会创建所有表，已有数据库只执行新迁移）
+                db.Database.Migrate();
 
                 if (!db.Accounts.Any())
     {
