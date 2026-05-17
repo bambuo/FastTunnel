@@ -4,6 +4,7 @@
 //     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
 // Copyright (c) 2019 Gui.H
 
+using System;
 using FastTunnel.Core.Client.Extensions;
 using Microsoft.Extensions.Hosting;
 using Serilog;

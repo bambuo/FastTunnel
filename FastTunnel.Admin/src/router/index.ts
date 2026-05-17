@@ -19,14 +19,14 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('@/components/layout/AppLayout.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, titleKey: 'nav.brand' },
     children: [
-      { path: '', name: 'Dashboard', component: () => import('@/views/DashboardView.vue'), meta: { title: 'Dashboard' } },
-      { path: 'tunnels/web', name: 'WebTunnels', component: () => import('@/views/tunnels/WebTunnelsView.vue'), meta: { title: 'Web Tunnels' } },
-      { path: 'tunnels/forward', name: 'ForwardTunnels', component: () => import('@/views/tunnels/ForwardTunnelsView.vue'), meta: { title: 'Forward Tunnels' } },
-      { path: 'tokens', name: 'Tokens', component: () => import('@/views/tokens/TokensView.vue'), meta: { title: 'Tokens' } },
-      { path: 'clients', name: 'Clients', component: () => import('@/views/clients/ClientsView.vue'), meta: { title: 'Clients' } },
-      { path: 'audit-logs', name: 'AuditLogs', component: () => import('@/views/auditLogs/AuditLogsView.vue'), meta: { title: 'Audit Logs' } },
+      { path: '', name: 'Dashboard', component: () => import('@/views/DashboardView.vue'), meta: { titleKey: 'nav.dashboard' } },
+      { path: 'tunnels/web', name: 'WebTunnels', component: () => import('@/views/tunnels/WebTunnelsView.vue'), meta: { titleKey: 'nav.webTunnels' } },
+      { path: 'tunnels/forward', name: 'ForwardTunnels', component: () => import('@/views/tunnels/ForwardTunnelsView.vue'), meta: { titleKey: 'nav.forwardTunnels' } },
+      { path: 'tokens', name: 'Tokens', component: () => import('@/views/tokens/TokensView.vue'), meta: { titleKey: 'nav.tokens' } },
+      { path: 'clients', name: 'Clients', component: () => import('@/views/clients/ClientsView.vue'), meta: { titleKey: 'nav.clients' } },
+      { path: 'audit-logs', name: 'AuditLogs', component: () => import('@/views/auditLogs/AuditLogsView.vue'), meta: { titleKey: 'nav.auditLogs' } },
     ],
   },
 ]
