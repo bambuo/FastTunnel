@@ -3,10 +3,12 @@
     "brand": "FastTunnel",
     "dashboard": "Dashboard",
     "webTunnels": "Web Tunnels",
+    "systemSettings": "System Settings",
     "forwardTunnels": "Forward Tunnels",
     "tokens": "Tokens",
     "clients": "Clients",
     "auditLogs": "Audit Logs",
+    "settings": "System Settings",
     "logout": "Logout",
     "language": "Language"
   },
@@ -73,6 +75,26 @@
     "table": {
       "empty": "No recent activity"
     }
+  },
+  "config": {
+    "general": "General",
+    "enableForward": "Enable port forwarding",
+    "enableForwardTip": "When disabled, the server stops handling Forward port forwarding",
+    "webDomain": "Root domain",
+    "webDomainPlaceholder": "e.g. test.cc",
+    "webDomainTip": "Clients access internal sites via ${SubDomain}.${WebDomain}",
+    "webAllowAccessIps": "Access whitelist",
+    "webAllowAccessIpsPlaceholder": "Type IP and press Enter",
+    "webAllowAccessIpsTip": "Empty means all IPs are allowed (reserved field, not effective in current version)",
+    "jwt": "JWT Auth",
+    "clockSkew": "Clock skew (seconds)",
+    "validAudience": "ValidAudience",
+    "validIssuer": "ValidIssuer",
+    "issuerSigningKey": "Signing key",
+    "expires": "Expires (minutes)",
+    "jwtTip": "JWT changes require a server restart to take effect",
+    "save": "Save Config",
+    "saved": "Config saved and applied (JWT changes require server restart)"
   },
   "page": {
     "tokens": "Tokens",

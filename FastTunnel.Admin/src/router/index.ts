@@ -27,6 +27,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'tokens', name: 'Tokens', component: () => import('@/views/tokens/TokensView.vue'), meta: { titleKey: 'nav.tokens' } },
       { path: 'clients', name: 'Clients', component: () => import('@/views/clients/ClientsView.vue'), meta: { titleKey: 'nav.clients' } },
       { path: 'audit-logs', name: 'AuditLogs', component: () => import('@/views/auditLogs/AuditLogsView.vue'), meta: { titleKey: 'nav.auditLogs' } },
+      { path: 'settings', name: 'Settings', component: () => import('@/views/settings/SystemSettingsView.vue'), meta: { titleKey: 'nav.settings' } },
     ],
   },
 ]

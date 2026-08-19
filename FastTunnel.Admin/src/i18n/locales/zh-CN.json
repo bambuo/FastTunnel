@@ -7,6 +7,7 @@
     "tokens": "Token 管理",
     "clients": "客户端",
     "auditLogs": "审计日志",
+    "settings": "系统配置",
     "logout": "退出",
     "language": "语言"
   },
@@ -74,12 +75,33 @@
       "empty": "暂无操作记录"
     }
   },
+  "config": {
+    "general": "通用",
+    "enableForward": "启用端口转发",
+    "enableForwardTip": "关闭后服务端不再处理 Forward 类型端口转发",
+    "webDomain": "根域名",
+    "webDomainPlaceholder": "如 test.cc",
+    "webDomainTip": "客户端通过 ${SubDomain}.${WebDomain} 访问内网站点",
+    "webAllowAccessIps": "访问白名单",
+    "webAllowAccessIpsPlaceholder": "输入 IP 后回车",
+    "webAllowAccessIpsTip": "为空时所有 IP 可访问（预留字段，当前版本未生效）",
+    "jwt": "JWT 认证",
+    "clockSkew": "时钟偏移（秒）",
+    "validAudience": "ValidAudience",
+    "validIssuer": "ValidIssuer",
+    "issuerSigningKey": "签名密钥",
+    "expires": "有效期（分钟）",
+    "jwtTip": "JWT 配置修改后需重启服务端生效",
+    "save": "保存配置",
+    "saved": "配置已保存并生效（JWT 相关修改需重启服务端生效）"
+  },
   "page": {
     "tokens": "Token 管理",
     "auditLogs": "审计日志",
     "clients": "客户端管理",
     "forwardTunnels": "Forward 隧道管理",
-    "webTunnels": "Web 隧道管理"
+    "webTunnels": "Web 隧道管理",
+    "systemSettings": "系统配置"
   },
   "table": {
     "column": {

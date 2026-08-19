@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { supportedLocales, type LocaleType } from '@/i18n'
 import {
   IconDashboard, IconLanguage, IconSwap, IconSafe,
-  IconDesktop, IconFile, IconMenuFold, IconMenuUnfold,
+  IconDesktop, IconFile, IconSettings, IconMenuFold, IconMenuUnfold,
 } from '@arco-design/web-vue/es/icon'
 
 const router = useRouter()
@@ -23,12 +23,13 @@ const menuItems = computed(() => [
   { key: 'Tokens', icon: IconSafe, label: t('nav.tokens'), path: '/tokens' },
   { key: 'Clients', icon: IconDesktop, label: t('nav.clients'), path: '/clients' },
   { key: 'AuditLogs', icon: IconFile, label: t('nav.auditLogs'), path: '/audit-logs' },
+  { key: 'Settings', icon: IconSettings, label: t('nav.settings'), path: '/settings' },
 ])
 
 const selectedKey = () => {
   const name = route.name as string
   if (name === 'Dashboard' || name === 'WebTunnels' || name === 'ForwardTunnels' ||
-      name === 'Tokens' || name === 'Clients' || name === 'AuditLogs') {
+      name === 'Tokens' || name === 'Clients' || name === 'AuditLogs' || name === 'Settings') {
     return name
   }
   return 'Dashboard'
