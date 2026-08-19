@@ -9,6 +9,7 @@ import {
 } from '@/api/tunnels'
 import type { WebTunnel, WebTunnelRequest } from '@/types/tunnel'
 import TunnelForm from '@/components/common/TunnelForm.vue'
+import { formatDateTime } from '@/utils/format'
 
 const { t } = useI18n()
 
@@ -23,7 +24,7 @@ const columns = computed(() => [
   { title: t('table.column.localAddress'), slotName: 'address', width: 200 },
   { title: t('table.column.client'), dataIndex: 'clientName', width: 120 },
   { title: t('table.column.status'), slotName: 'status', width: 80 },
-  { title: t('table.column.createdAt'), dataIndex: 'createdAt', width: 160 },
+  { title: t('table.column.createdAt'), slotName: 'createdAt', width: 160 },
   { title: t('table.column.actions'), slotName: 'action', width: 220, fixed: 'right' as const },
 ])
 
@@ -141,6 +142,7 @@ async function handleToggle(record: WebTunnel) {
       <template #empty>
         <a-empty :description="$t('empty.noWebTunnels')" />
       </template>
+          <template #createdAt="{ record }">{{ formatDateTime(record.createdAt) }}</template>
     </a-table>
 
     <TunnelForm

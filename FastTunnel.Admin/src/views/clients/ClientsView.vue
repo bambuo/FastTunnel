@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { getClients, getClientTunnels } from '@/api/clients'
 import { IconSearch, IconCheckCircle, IconCloseCircle } from '@arco-design/web-vue/es/icon'
 import type { ClientEntity, ClientTunnels } from '@/types/client'
+import { formatDateTime } from '@/utils/format'
 
 const { t } = useI18n()
 
@@ -22,7 +23,7 @@ const columns = computed(() => [
   { title: t('table.column.name'), dataIndex: 'name', width: 160 },
   { title: 'Token', dataIndex: 'tokenPreview', width: 200, ellipsis: true },
   { title: t('table.column.onlineStatus'), slotName: 'online', width: 100 },
-  { title: t('table.column.lastSeen'), dataIndex: 'lastSeen', width: 160 },
+  { title: t('table.column.lastSeen'), slotName: 'lastSeen', width: 160 },
 ])
 
 onMounted(() => fetchList())
@@ -100,6 +101,7 @@ async function handleExpand(row: ClientEntity) {
           </template>
         </div>
       </template>
+          <template #lastSeen="{ record }">{{ formatDateTime(record.lastSeen) }}</template>
     </a-table>
   </div>
 </template>

@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getAuditLogs } from '@/api/auditLogs'
 import type { AuditLogEntity } from '@/types/auditLog'
+import { formatDateTime } from '@/utils/format'
 
 const { t } = useI18n()
 
@@ -22,7 +23,7 @@ const columns = computed(() => [
   { title: t('table.column.entity'), dataIndex: 'entity', width: 120 },
   { title: t('table.column.detail'), dataIndex: 'detail', ellipsis: true },
   { title: t('table.column.operator'), dataIndex: 'operator', width: 100 },
-  { title: t('table.column.time'), dataIndex: 'createdAt', width: 180 },
+  { title: t('table.column.time'), slotName: 'createdAt', width: 180 },
 ])
 
 const pagination = computed(() => ({
@@ -111,6 +112,7 @@ function handlePageSizeChange(size: number) { pageSize.value = size; page.value 
       <template #empty>
         <a-empty :description="$t('empty.noAuditLogs')" />
       </template>
+          <template #createdAt="{ record }">{{ formatDateTime(record.createdAt) }}</template>
     </a-table>
   </div>
 </template>

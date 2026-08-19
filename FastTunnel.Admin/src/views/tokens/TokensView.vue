@@ -5,6 +5,7 @@ import { Message } from '@arco-design/web-vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
 import { getTokens, createToken, updateToken, deleteToken, toggleToken } from '@/api/tokens'
 import type { TokenEntity, TokenRequest } from '@/types/token'
+import { formatDateTime } from '@/utils/format'
 
 const { t } = useI18n()
 
@@ -49,7 +50,7 @@ const columns = computed(() => [
   { title: t('table.column.tokenValue'), dataIndex: 'value', ellipsis: true, width: 280 },
   { title: t('table.column.description'), dataIndex: 'description', width: 160 },
   { title: t('table.column.status'), slotName: 'status', width: 80 },
-  { title: t('table.column.createdAt'), dataIndex: 'createdAt', width: 160 },
+  { title: t('table.column.createdAt'), slotName: 'createdAt', width: 160 },
   { title: t('table.column.actions'), slotName: 'action', width: 200, fixed: 'right' as const },
 ])
 
@@ -176,6 +177,7 @@ async function handleToggle(record: TokenEntity) {
           </a-popconfirm>
         </a-space>
       </template>
+          <template #createdAt="{ record }">{{ formatDateTime(record.createdAt) }}</template>
     </a-table>
 
     <a-modal v-model:visible="modalVisible" :title="editRecord ? $t('action.edit') + ' Token' : $t('action.newToken')" @ok="handleOk">

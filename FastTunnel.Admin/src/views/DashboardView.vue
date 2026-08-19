@@ -6,6 +6,7 @@ import { getAuditLogs } from '@/api/auditLogs'
 import type { StatsOverview } from '@/types/stats'
 import type { AuditLogEntity } from '@/types/auditLog'
 import { IconDesktop, IconLanguage, IconSwap, IconSafe } from '@arco-design/web-vue/es/icon'
+import { formatDateTime } from '@/utils/format'
 
 const { t } = useI18n()
 
@@ -98,7 +99,7 @@ onMounted(async () => {
             { title: t('table.column.entity'), dataIndex: 'entity', width: 120 },
             { title: t('table.column.detail'), dataIndex: 'detail', ellipsis: true },
             { title: t('table.column.operator'), dataIndex: 'operator', width: 100 },
-            { title: t('table.column.time'), dataIndex: 'createdAt', width: 160 },
+            { title: t('table.column.time'), slotName: 'createdAt', width: 160 },
           ]"
           :data="recentLogs"
           :pagination="false"
@@ -108,7 +109,8 @@ onMounted(async () => {
           <template #empty>
             <a-empty :description="$t('dashboard.table.empty')" />
           </template>
-        </a-table>
+              <template #createdAt="{ record }">{{ formatDateTime(record.createdAt) }}</template>
+    </a-table>
       </a-card>
     </template>
   </div>
