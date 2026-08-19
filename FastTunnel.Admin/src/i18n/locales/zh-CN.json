@@ -4,7 +4,7 @@
     "dashboard": "总览",
     "webTunnels": "Web 隧道",
     "forwardTunnels": "Forward 隧道",
-    "tokens": "Token 管理",
+    "tokens": "令牌管理",
     "clients": "客户端",
     "auditLogs": "审计日志",
     "settings": "系统配置",
@@ -97,7 +97,7 @@
     "saved": "配置已保存并生效（JWT 相关修改需重启服务端生效）"
   },
   "page": {
-    "tokens": "Token 管理",
+    "tokens": "令牌管理",
     "auditLogs": "审计日志",
     "clients": "客户端管理",
     "forwardTunnels": "Forward 隧道管理",
@@ -211,7 +211,7 @@
     "dashboard": "总览",
     "webTunnels": "Web 隧道",
     "forwardTunnels": "Forward 隧道",
-    "tokens": "Token 管理",
+    "tokens": "令牌管理",
     "clients": "客户端",
     "auditLogs": "审计日志"
   },
