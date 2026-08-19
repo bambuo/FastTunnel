@@ -19,6 +19,6 @@ public class ForwardConfig
 
 public enum ProtocolEnum
 {
-    Tcp = 0,
-    Udp = 1
+    TCP = 0,
+    UDP = 1
 }

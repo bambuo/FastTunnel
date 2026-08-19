@@ -110,7 +110,7 @@ public class LoginHandler(ILogger<LoginHandler> logger, IProxyConfigProvider pro
                         }
 
                         // TODO: 客户端离线时销毁
-                        IPortListener ls = item.Protocol == ProtocolEnum.Udp
+                        IPortListener ls = item.Protocol == ProtocolEnum.UDP
                             ? new UdpProxyListener("0.0.0.0", item.RemotePort, _logger, client.webSocket)
                             : new PortProxyListener("0.0.0.0", item.RemotePort, _logger, client.webSocket);
                         ls.Start(new ForwardDispatcher(_logger, server, item));
