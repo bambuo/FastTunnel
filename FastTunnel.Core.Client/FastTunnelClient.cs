@@ -19,6 +19,7 @@ using FastTunnel.Core.Handlers.Client;
 using FastTunnel.Core.Models;
 using FastTunnel.Core.Models.Massage;
 using FastTunnel.Core.Utilitys;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -38,13 +39,16 @@ public class FastTunnelClient : IFastTunnelClient
 
     private readonly SwapHandler swapHandler;
     private readonly ConfigHandler configHandler;
+    private readonly IHostApplicationLifetime _appLifetime;
     private ClientWebSocket socket;
+    private volatile bool _fatalError;
 
     public FastTunnelClient(
         ILogger<FastTunnelClient> logger,
         SwapHandler newCustomerHandler,
         ConfigHandler configHandler,
         LogHandler logHandler,
+        IHostApplicationLifetime appLifetime,
         IOptionsMonitor<DefaultClientConfig> configuration)
     {
         var span = new ReadOnlySpan<int>();
@@ -52,6 +56,7 @@ public class FastTunnelClient : IFastTunnelClient
         swapHandler = newCustomerHandler;
         this.configHandler = configHandler;
         this.logHandler = logHandler;
+        _appLifetime = appLifetime;
         ClientConfig = configuration.CurrentValue;
         Server = ClientConfig.Server;
     }
@@ -69,7 +74,7 @@ public class FastTunnelClient : IFastTunnelClient
     {
         _logger.LogInformation("===== FastTunnel Client Start =====");
 
-        while (!cancellationToken.IsCancellationRequested)
+        while (!cancellationToken.IsCancellationRequested && !_fatalError)
         {
             try
             {
@@ -78,13 +83,25 @@ public class FastTunnelClient : IFastTunnelClient
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                if (!_fatalError) _logger.LogError(ex.Message);
             }
 
+            if (_fatalError) break;
             await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
         }
 
         _logger.LogInformation("===== FastTunnel Client End =====");
+    }
+
+    /// <summary>
+    ///     服务端致命错误（Token 验证失败、版本不兼容等）：记录错误、终止重连循环并停止进程
+    /// </summary>
+    public void HandleFatalError(string message)
+    {
+        _fatalError = true;
+        _logger.LogError(message);
+        try { socket?.Abort(); } catch { }
+        _appLifetime.StopApplication();
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

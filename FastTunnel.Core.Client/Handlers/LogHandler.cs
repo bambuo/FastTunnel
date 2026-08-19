@@ -20,9 +20,16 @@ public class LogHandler : IClientHandler
         _logger = logger;
     }
 
-    public async Task HandlerMsgAsync(FastTunnelClient cleint, string msg, CancellationToken cancellationToken)
+    public Task HandlerMsgAsync(FastTunnelClient cleint, string msg, CancellationToken cancellationToken)
     {
+        // 服务端致命错误（Token 验证失败、版本不兼容等）：退出进程而非重试
+        if (msg.StartsWith(FastTunnelConst.FatalErrorPrefix))
+        {
+            cleint.HandleFatalError(msg);
+            return Task.CompletedTask;
+        }
+
         _logger.LogInformation(msg);
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 }

@@ -89,7 +89,8 @@ public class FastTunnelClientHandler(ILogger<FastTunnelClientHandler> logger, Fa
 
     private static async Task Close(WebSocket webSocket, string reason)
     {
-        await webSocket.SendCmdAsync(MessageType.Log, reason, CancellationToken.None);
+        // 致命错误消息带 ERR: 前缀，客户端收到后退出进程（不重试）
+        await webSocket.SendCmdAsync(MessageType.Log, $"{FastTunnelConst.FatalErrorPrefix}{reason}", CancellationToken.None);
         await webSocket.CloseAsync(WebSocketCloseStatus.Empty, string.Empty, CancellationToken.None);
     }
 

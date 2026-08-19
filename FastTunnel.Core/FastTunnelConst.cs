@@ -23,4 +23,9 @@ public static class FastTunnelConst
     ///
     /// </summary>
     public const string FasttunnelToken = "FT_TOKEN";
+    /// <summary>
+    ///     服务端致命错误消息前缀（如 Token 验证失败、版本不兼容），
+    ///     客户端收到后应退出进程而非重试。
+    /// </summary>
+    public const string FatalErrorPrefix = "ERR:";
 }
