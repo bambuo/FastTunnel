@@ -108,7 +108,6 @@
     "column": {
       "tokenValue": "Token 值",
       "description": "备注",
-      "clientCount": "引用客户端数",
       "status": "状态",
       "createdAt": "创建时间",
       "actions": "操作",

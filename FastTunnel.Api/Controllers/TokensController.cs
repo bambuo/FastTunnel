@@ -23,7 +23,6 @@ public class TokensController(FastTunnelDbContext db, IStringLocalizer<ApiMessag
             x.Description,
             x.IsEnabled,
             x.IsDeleted,
-            clientCount = 0,
             createdAt = x.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
         });
         ApiResponse.Success = true;

@@ -48,7 +48,6 @@ const filteredData = computed(() => {
 const columns = computed(() => [
   { title: t('table.column.tokenValue'), dataIndex: 'value', ellipsis: true, width: 280 },
   { title: t('table.column.description'), dataIndex: 'description', width: 160 },
-  { title: t('table.column.clientCount'), dataIndex: 'clientCount', width: 100 },
   { title: t('table.column.status'), slotName: 'status', width: 80 },
   { title: t('table.column.createdAt'), dataIndex: 'createdAt', width: 160 },
   { title: t('table.column.actions'), slotName: 'action', width: 200, fixed: 'right' as const },

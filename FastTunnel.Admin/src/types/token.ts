@@ -4,7 +4,6 @@ export interface TokenEntity {
   description: string
   isEnabled: boolean
   isDeleted: boolean
-  clientCount?: number
   createdAt: string
 }
 

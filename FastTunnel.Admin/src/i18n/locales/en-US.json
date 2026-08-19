@@ -108,7 +108,6 @@
     "column": {
       "tokenValue": "Token",
       "description": "Description",
-      "clientCount": "Clients",
       "status": "Status",
       "createdAt": "Created At",
       "actions": "Actions",
