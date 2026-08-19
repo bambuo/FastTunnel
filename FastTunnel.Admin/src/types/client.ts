@@ -1,6 +1,7 @@
 export interface ClientEntity {
   id: number
   name: string
+  ip: string
   token: string
   tokenPreview: string
   isOnline: boolean

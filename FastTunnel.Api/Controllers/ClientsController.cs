@@ -18,6 +18,7 @@ public class ClientsController(FastTunnelDbContext db, FastTunnelServer ftServer
         {
             id = x.RemoteIpAddress.GetHashCode() ^ x.StartTime.Ticks,
             name = $"Client@{x.RemoteIpAddress}",
+            ip = x.RemoteIpAddress.ToString(),
             token = x.Token,
             tokenPreview = MaskToken(x.Token),
             isOnline = true,
