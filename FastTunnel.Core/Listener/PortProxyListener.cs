@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FastTunnel.Core.Listener;
 
-public class PortProxyListener
+public class PortProxyListener : IPortListener
 {
     private readonly ILogger _logerr;
     private readonly WebSocket client;

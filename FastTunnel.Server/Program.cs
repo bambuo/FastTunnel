@@ -50,6 +50,7 @@ public class Program
             builder.Services.AddLocalization();
 
             builder.Services.AddFastTunnelServer(builder.Configuration.GetSection("FastTunnel"));
+            builder.Services.AddOpenApi();
 
             var dbPath = System.IO.Path.Combine(AppContext.BaseDirectory, "data", "fasttunnel.db");
             var dbDir = System.IO.Path.GetDirectoryName(dbPath);
@@ -192,6 +193,11 @@ public class Program
                 .AddSupportedCultures(supportedCultures)
                 .AddSupportedUICultures(supportedCultures);
             app.UseRequestLocalization(localizationOptions);
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.MapOpenApi();
+            }
 
             app.UseCors("corsPolicy");
 

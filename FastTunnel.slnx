@@ -8,5 +8,6 @@
         <File Path=".github/workflows/dotnetcore.yml"/>
     </Folder>
     <Project Path="FastTunnel.Client/FastTunnel.Client.csproj"/>
+    <Project Path="FastTunnel.Api/FastTunnel.Api.csproj"/>
     <Project Path="FastTunnel.Server/FastTunnel.Server.csproj"/>
 </Solution>

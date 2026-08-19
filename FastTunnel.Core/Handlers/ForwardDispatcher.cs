@@ -92,4 +92,30 @@ public class ForwardDispatcher(ILogger logger, FastTunnelServer server, ForwardC
             socket.Close();
         }
     }
+
+    /// <summary>
+    /// Open a tunnel stream towards the FastTunnel client for UDP forwarding.
+    /// The protocol marker "udp" is included so the client knows it must
+    /// connect to the local target via UDP and frame datagrams.
+    /// </summary>
+    public async Task<Stream> RequestUdpTunnelAsync(WebSocket client, CancellationToken cancellationToken)
+    {
+        var msgId = Guid.NewGuid().ToString().Replace("-", "");
+        var tcs = new TaskCompletionSource<Stream>();
+        server.ResponseTasks.TryAdd(msgId, (tcs, cancellationToken));
+
+        try
+        {
+            logger.LogDebug($"[Forward-UDP]Swap开始 {msgId}|{config.RemotePort}=>{config.LocalIp}:{config.LocalPort}");
+            await client.SendCmdAsync(MessageType.Forward, $"{msgId}|udp|{config.LocalIp}:{config.LocalPort}", cancellationToken);
+            return await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10), cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"[Forward-UDP]Swap failed {msgId}");
+            server.ResponseTasks.TryRemove(msgId, out _);
+            tcs.TrySetCanceled();
+            return null;
+        }
+    }
 }
