@@ -10,6 +10,7 @@ public class FastTunnelDbContext(DbContextOptions<FastTunnelDbContext> options) 
     public DbSet<WebTunnelEntity> WebTunnels => Set<WebTunnelEntity>();
     public DbSet<ForwardTunnelEntity> ForwardTunnels => Set<ForwardTunnelEntity>();
     public DbSet<AuditLogEntity> AuditLogs => Set<AuditLogEntity>();
+    public DbSet<SystemConfigEntity> SystemConfigs => Set<SystemConfigEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,6 +42,12 @@ public class FastTunnelDbContext(DbContextOptions<FastTunnelDbContext> options) 
         {
             e.HasKey(x => x.Id);
             e.HasIndex(x => x.CreatedAt);
+        });
+
+        modelBuilder.Entity<SystemConfigEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.HasIndex(x => x.Key).IsUnique();
         });
     }
 }

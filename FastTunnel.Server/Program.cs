@@ -5,6 +5,7 @@ using FastTunnel.Core.Config;
 using FastTunnel.Core.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
@@ -47,14 +48,22 @@ public class Program
             builder.Configuration.AddJsonFile("appsettings.json", false, true);
             builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true);
 
+            // FastTunnel 配置由管理台（数据库 SystemConfigs 表）管理，挂载为配置源（放最后覆盖配置文件残留）
+            var dbPath = System.IO.Path.Combine(AppContext.BaseDirectory, "data", "fasttunnel.db");
+            var dbDir = System.IO.Path.GetDirectoryName(dbPath);
+            if (!System.IO.Directory.Exists(dbDir)) System.IO.Directory.CreateDirectory(dbDir!);
+            var systemConfigSource = new FastTunnel.Api.Data.SystemConfigSource(
+                new DbContextOptionsBuilder<FastTunnel.Api.Data.FastTunnelDbContext>()
+                    .UseSqlite($"Data Source={dbPath}")
+                    .Options);
+            ((IConfigurationBuilder)builder.Configuration).Add(systemConfigSource);
+            builder.Services.AddSingleton(systemConfigSource);
+
             builder.Services.AddLocalization();
 
             builder.Services.AddFastTunnelServer(builder.Configuration.GetSection("FastTunnel"));
             builder.Services.AddOpenApi();
 
-            var dbPath = System.IO.Path.Combine(AppContext.BaseDirectory, "data", "fasttunnel.db");
-            var dbDir = System.IO.Path.GetDirectoryName(dbPath);
-            if (!System.IO.Directory.Exists(dbDir)) System.IO.Directory.CreateDirectory(dbDir!);
             builder.Services.AddDbContext<FastTunnelDbContext>(options =>
                 options.UseSqlite($"Data Source={dbPath}"));
 
@@ -172,6 +181,21 @@ public class Program
     }
 
                 // Token 由管理台创建（数据库 Tokens 表），不再从配置文件导入
+
+                // 首次部署播种默认系统配置（之后由管理台维护）
+                if (!db.SystemConfigs.Any())
+                {
+                    foreach (var kv in FastTunnel.Api.Data.SystemConfigProvider.DefaultValues)
+                    {
+                        db.SystemConfigs.Add(new FastTunnel.Api.Models.Entities.SystemConfigEntity
+                        {
+                            Key = kv.Key,
+                            Value = kv.Value,
+                            UpdatedAt = DateTime.UtcNow,
+                        });
+                    }
+                    db.SaveChanges();
+                }
             }
 
             var supportedCultures = new[] { "zh-CN", "en-US" };

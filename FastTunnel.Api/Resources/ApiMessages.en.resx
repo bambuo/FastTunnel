@@ -44,4 +44,8 @@
 
   <data name="Common.Enabled"><value>Enabled</value></data>
   <data name="Common.Disabled"><value>Disabled</value></data>
+  <data name="Config.SigningKeyRequired"><value>JWT signing key is required</value></data>
+  <data name="Config.JwtInvalid"><value>Invalid JWT config: Expires must be &gt; 0 and ClockSkew cannot be negative</value></data>
+  <data name="Config.Saved"><value>Config saved and applied (JWT changes require server restart)</value></data>
+  <data name="Audit.UpdateConfig"><value>Updated system config: {0}</value></data>
 </root>

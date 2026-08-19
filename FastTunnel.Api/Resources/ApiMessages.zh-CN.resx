@@ -44,4 +44,8 @@
 
   <data name="Common.Enabled"><value>启用</value></data>
   <data name="Common.Disabled"><value>停用</value></data>
+  <data name="Config.SigningKeyRequired"><value>JWT 签名密钥不能为空</value></data>
+  <data name="Config.JwtInvalid"><value>JWT 配置无效：有效期必须大于 0，时间偏移不能为负数</value></data>
+  <data name="Config.Saved"><value>配置已保存并生效（JWT 相关修改需重启服务端生效）</value></data>
+  <data name="Audit.UpdateConfig"><value>修改系统配置: {0}</value></data>
 </root>
