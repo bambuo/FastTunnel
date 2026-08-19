@@ -3,7 +3,7 @@
     "brand": "FastTunnel",
     "dashboard": "总览",
     "webTunnels": "Web 隧道",
-    "forwardTunnels": "Forward 隧道",
+    "forwardTunnels": "端口转发",
     "tokens": "令牌管理",
     "clients": "客户端",
     "auditLogs": "审计日志",
@@ -100,7 +100,7 @@
     "tokens": "令牌管理",
     "auditLogs": "审计日志",
     "clients": "客户端管理",
-    "forwardTunnels": "Forward 隧道管理",
+    "forwardTunnels": "端口转发管理",
     "webTunnels": "Web 隧道管理",
     "systemSettings": "系统配置"
   },
@@ -202,7 +202,7 @@
   "client": {
     "loading": "加载中...",
     "webTunnels": "Web 隧道",
-    "forwardTunnels": "Forward 隧道",
+    "forwardTunnels": "端口转发",
     "none": "无"
   },
   "route": {
@@ -210,7 +210,7 @@
     "login": "登录",
     "dashboard": "总览",
     "webTunnels": "Web 隧道",
-    "forwardTunnels": "Forward 隧道",
+    "forwardTunnels": "端口转发",
     "tokens": "令牌管理",
     "clients": "客户端",
     "auditLogs": "审计日志"
