@@ -21,7 +21,7 @@ const filterEndDate = ref('')
 const columns = computed(() => [
   { title: t('table.column.actions'), dataIndex: 'action', width: 80 },
   { title: t('table.column.entity'), dataIndex: 'entity', width: 120 },
-  { title: t('table.column.detail'), dataIndex: 'detail', ellipsis: true },
+  { title: t('table.column.detail'), dataIndex: 'detail', ellipsis: true, width: 320 },
   { title: t('table.column.operator'), dataIndex: 'operator', width: 100 },
   { title: t('table.column.time'), slotName: 'createdAt', width: 180 },
 ])
