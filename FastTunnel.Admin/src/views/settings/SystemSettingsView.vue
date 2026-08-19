@@ -76,26 +76,25 @@ async function handleSave() {
           <a-form :model="form" layout="vertical">
             <a-row :gutter="24">
               <a-col :span="12">
-                <a-form-item :label="$t('config.enableForward')">
-                  <div class="switch-row">
-                    <a-switch v-model="form.enableForward" />
-                  </div>
-                </a-form-item>
-              </a-col>
-              <a-col :span="12">
                 <a-form-item :label="$t('config.webDomain')">
                   <a-input v-model="form.webDomain" :placeholder="$t('config.webDomainPlaceholder')" allow-clear />
                 </a-form-item>
               </a-col>
-              <a-col :span="24">
+              <a-col :span="12">
                 <a-form-item :label="$t('config.webAllowAccessIps')">
                   <a-input-tag v-model="form.webAllowAccessIps" :placeholder="$t('config.webAllowAccessIpsPlaceholder')" allow-clear />
-                  <div class="field-tip">{{ $t('config.webAllowAccessIpsTip') }}</div>
+                </a-form-item>
+              </a-col>
+              <a-col :span="24">
+                <a-form-item :label="$t('config.enableForward')">
+                  <div class="switch-row">
+                    <a-switch v-model="form.enableForward" />
+                  </div>
+                  <div class="field-tip">{{ $t('config.enableForwardTip') }}</div>
                 </a-form-item>
               </a-col>
             </a-row>
           </a-form>
-          <div class="card-note">{{ $t('config.enableForwardTip') }}</div>
         </a-card>
 
         <!-- JWT 认证 -->
@@ -203,14 +202,6 @@ async function handleSave() {
 .field-tip {
   font-size: 12px;
   color: var(--color-text-3);
-  margin-top: 4px;
-}
-
-.card-note {
-  font-size: 12px;
-  color: var(--color-text-3);
-  border-top: 1px dashed var(--color-border-2);
-  padding-top: 10px;
   margin-top: 4px;
 }
 
