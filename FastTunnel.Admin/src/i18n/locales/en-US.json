@@ -78,6 +78,7 @@
   },
   "config": {
     "general": "General",
+    "pageDesc": "Manage FastTunnel server config. Changes take effect immediately (JWT changes require restart)",
     "enableForward": "Enable port forwarding",
     "enableForwardTip": "When disabled, the server stops handling Forward port forwarding",
     "webDomain": "Root domain",

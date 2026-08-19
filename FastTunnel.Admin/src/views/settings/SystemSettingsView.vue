@@ -2,6 +2,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Message } from '@arco-design/web-vue'
+import { IconSettings, IconSafe } from '@arco-design/web-vue/es/icon'
 import { getSystemConfig, saveSystemConfig } from '@/api/systemConfig'
 import type { SystemConfigSaveRequest } from '@/types/systemConfig'
 
@@ -59,15 +60,18 @@ async function handleSave() {
   <div class="settings-page">
     <div class="page-header">
       <h1 class="page-title">{{ $t('page.systemSettings') }}</h1>
-      <a-button type="primary" :loading="saving" @click="handleSave">{{ $t('config.save') }}</a-button>
+      <p class="page-desc">{{ $t('config.pageDesc') }}</p>
     </div>
 
     <a-spin :loading="loading" style="width: 100%">
-      <div class="config-grid">
+      <div class="card-list">
         <!-- 通用设置 -->
-        <a-card class="config-card" :bordered="false">
+        <a-card class="config-card" :bordered="true">
           <template #title>
-            <span class="card-title">{{ $t('config.general') }}</span>
+            <div class="card-title">
+              <IconSettings class="card-icon" />
+              <span>{{ $t('config.general') }}</span>
+            </div>
           </template>
           <a-form :model="form" layout="vertical">
             <a-row :gutter="24">
@@ -75,7 +79,6 @@ async function handleSave() {
                 <a-form-item :label="$t('config.enableForward')">
                   <div class="switch-row">
                     <a-switch v-model="form.enableForward" />
-                    <span class="switch-tip">{{ $t('config.enableForwardTip') }}</span>
                   </div>
                 </a-form-item>
               </a-col>
@@ -92,12 +95,16 @@ async function handleSave() {
               </a-col>
             </a-row>
           </a-form>
+          <div class="card-note">{{ $t('config.enableForwardTip') }}</div>
         </a-card>
 
         <!-- JWT 认证 -->
-        <a-card class="config-card" :bordered="false">
+        <a-card class="config-card" :bordered="true">
           <template #title>
-            <span class="card-title">{{ $t('config.jwt') }}</span>
+            <div class="card-title">
+              <IconSafe class="card-icon" />
+              <span>{{ $t('config.jwt') }}</span>
+            </div>
           </template>
           <a-form :model="form" layout="vertical">
             <a-row :gutter="24">
@@ -134,14 +141,20 @@ async function handleSave() {
         </a-card>
       </div>
     </a-spin>
+
+    <!-- 底部固定操作栏 -->
+    <div class="action-bar">
+      <a-button type="primary" :loading="saving" @click="handleSave">{{ $t('config.save') }}</a-button>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.settings-page {
+  max-width: 860px;
+}
+
 .page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   margin-bottom: 16px;
 }
 
@@ -151,38 +164,72 @@ async function handleSave() {
   color: var(--color-text-1);
 }
 
-.config-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+.page-desc {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--color-text-3);
+}
+
+.card-list {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
-  align-items: start;
+  padding-bottom: 72px; /* 为底部操作栏留出空间 */
 }
 
 .config-card {
-  background: var(--color-bg-2);
-  border-radius: 8px;
+  border-radius: var(--border-radius-medium);
 }
 
 .card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 15px;
   font-weight: 600;
 }
 
-.switch-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  height: 32px;
+.card-icon {
+  font-size: 16px;
+  color: var(--color-primary-6);
 }
 
-.switch-tip {
-  font-size: 12px;
-  color: var(--color-text-3);
+.switch-row {
+  height: 32px;
+  display: flex;
+  align-items: center;
 }
 
 .field-tip {
   font-size: 12px;
   color: var(--color-text-3);
   margin-top: 4px;
+}
+
+.card-note {
+  font-size: 12px;
+  color: var(--color-text-3);
+  border-top: 1px dashed var(--color-border-2);
+  padding-top: 10px;
+  margin-top: 4px;
+}
+
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 220px; /* 侧边栏宽度，与主内容区对齐 */
+  right: 0;
+  padding: 12px 24px;
+  background: var(--color-bg-2);
+  border-top: 1px solid var(--color-border-2);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .action-bar {
+    left: 0;
+  }
 }
 </style>
