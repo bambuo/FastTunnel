@@ -180,7 +180,7 @@ async function handleToggle(record: TokenEntity) {
           <template #createdAt="{ record }">{{ formatDateTime(record.createdAt) }}</template>
     </a-table>
 
-    <a-modal v-model:visible="modalVisible" :title="editRecord ? $t('action.edit') + ' Token' : $t('action.newToken')" @ok="handleOk">
+    <a-modal v-model:visible="modalVisible" :title="editRecord ? $t('action.editToken') : $t('action.newToken')" @ok="handleOk">
       <a-form :model="form" layout="vertical">
         <a-form-item v-if="!editRecord" :label="$t('table.column.tokenValue')">
           <a-input v-model="form.value" :placeholder="$t('placeholder.tokenValue')" />

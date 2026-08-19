@@ -131,6 +131,7 @@
     "copy": "Copy",
     "reset": "Reset",
     "newToken": "New Token",
+    "editToken": "Edit Token",
     "newTunnel": "New Tunnel",
     "enabled": "Enabled",
     "disabled": "Disabled",
