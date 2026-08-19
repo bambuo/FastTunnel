@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import type { WebTunnel, WebTunnelRequest, ForwardTunnel, ForwardTunnelRequest } from '@/types/tunnel'
-import type { ClientEntity } from '@/types/client'
-import { getClients } from '@/api/clients'
+import type { TokenEntity } from '@/types/token'
+import { getTokens } from '@/api/tokens'
 import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
@@ -18,7 +18,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const clients = ref<ClientEntity[]>([])
+const tokens = ref<TokenEntity[]>([])
 
 const webForm = reactive<WebTunnelRequest>({
   subDomain: '',
@@ -37,7 +37,7 @@ const forwardForm = reactive<ForwardTunnelRequest>({
 })
 
 function initForm() {
-  loadClients()
+  loadTokens()
   if (props.type === 'web') {
     webForm.subDomain = ''
     webForm.localIp = ''
@@ -69,12 +69,18 @@ function initForm() {
   }
 }
 
-async function loadClients() {
+async function loadTokens() {
   try {
-    clients.value = await getClients()
+    // Token 是配置实体：客户端离线也能配置隧道，数据源用 Token 管理列表而非在线客户端
+    tokens.value = (await getTokens()).filter(t => !t.isDeleted)
   } catch {
-    clients.value = []
+    tokens.value = []
   }
+}
+
+function maskToken(value: string): string {
+  if (!value) return '(未设置)'
+  return value.length <= 8 ? value : `${value.slice(0, 4)}****${value.slice(-4)}`
 }
 
 function handleOk() {
@@ -121,7 +127,7 @@ function handleOk() {
         </a-form-item>
         <a-form-item :label="$t('tunnelForm.label.clientToken')" field="clientToken" required>
           <a-select v-model="webForm.clientToken" :placeholder="$t('placeholder.clientToken')" allow-clear>
-            <a-option v-for="c in clients" :key="c.token" :value="c.token">{{ c.tokenPreview }}（{{ c.name }}）</a-option>
+            <a-option v-for="tk in tokens" :key="tk.value" :value="tk.value">{{ maskToken(tk.value) }}（{{ tk.description || 'Token' }}）</a-option>
           </a-select>
         </a-form-item>
       </a-form>
@@ -146,7 +152,7 @@ function handleOk() {
         </a-form-item>
         <a-form-item :label="$t('tunnelForm.label.clientToken')" field="clientToken" required>
           <a-select v-model="forwardForm.clientToken" :placeholder="$t('placeholder.clientToken')" allow-clear>
-            <a-option v-for="c in clients" :key="c.token" :value="c.token">{{ c.tokenPreview }}（{{ c.name }}）</a-option>
+            <a-option v-for="tk in tokens" :key="tk.value" :value="tk.value">{{ maskToken(tk.value) }}（{{ tk.description || 'Token' }}）</a-option>
           </a-select>
         </a-form-item>
       </a-form>

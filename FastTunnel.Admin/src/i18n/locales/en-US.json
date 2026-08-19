@@ -127,7 +127,7 @@
     "localPort": "e.g. 8080",
     "remotePort": "e.g. 2222",
     "sshPort": "e.g. 22",
-    "clientToken": "Select an online client"
+    "clientToken": "Select a Token"
   },
   "popconfirm": {
     "deleteToken": "Delete this token?",
@@ -172,7 +172,7 @@
       "subDomain": "Subdomain",
       "localIp": "Local IP",
       "localPort": "Local Port",
-      "clientToken": "Client Token",
+      "clientToken": "Token",
       "remotePort": "Remote Port",
       "protocol": "Protocol"
     }
