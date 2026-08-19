@@ -198,7 +198,6 @@ async function handleSave() {
   height: 32px;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 12px;
 }
 
