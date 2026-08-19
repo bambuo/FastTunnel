@@ -16,11 +16,10 @@ const searchKeyword = ref('')
 const filteredData = computed(() => {
   if (!searchKeyword.value) return data.value
   const kw = searchKeyword.value.toLowerCase()
-  return data.value.filter(c => c.name.toLowerCase().includes(kw))
+  return data.value.filter(c => c.token.toLowerCase().includes(kw))
 })
 
 const columns = computed(() => [
-  { title: t('table.column.name'), dataIndex: 'name', width: 160 },
   { title: 'Token', dataIndex: 'tokenPreview', width: 200, ellipsis: true },
   { title: t('table.column.onlineStatus'), slotName: 'online', width: 100 },
   { title: t('table.column.lastSeen'), slotName: 'lastSeen', width: 160 },
