@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import type { WebTunnel, WebTunnelRequest, ForwardTunnel, ForwardTunnelRequest } from '@/types/tunnel'
+import type { ClientEntity } from '@/types/client'
+import { getClients } from '@/api/clients'
 import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
@@ -16,57 +18,62 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const webForm = reactive<WebTunnelRequest & { clientIdStr: string }>({
+const clients = ref<ClientEntity[]>([])
+
+const webForm = reactive<WebTunnelRequest>({
   subDomain: '',
   localIp: '',
   localPort: undefined,
   wwws: [],
-  clientId: undefined,
-  clientIdStr: '',
+  clientToken: '',
 })
 
-const forwardForm = reactive<ForwardTunnelRequest & { clientIdStr: string }>({
+const forwardForm = reactive<ForwardTunnelRequest>({
   remotePort: undefined,
   localIp: '',
   localPort: undefined,
   protocol: 'TCP',
-  clientId: undefined,
-  clientIdStr: '',
+  clientToken: '',
 })
 
 function initForm() {
+  loadClients()
   if (props.type === 'web') {
     webForm.subDomain = ''
     webForm.localIp = ''
     webForm.localPort = undefined
     webForm.wwws = []
-    webForm.clientId = undefined
-    webForm.clientIdStr = ''
+    webForm.clientToken = ''
     if (props.editData) {
       const d = props.editData as WebTunnel
       webForm.subDomain = d.subDomain
       webForm.localIp = d.localIp
       webForm.localPort = d.localPort
       webForm.wwws = d.wwws
-      webForm.clientId = d.clientId
-      webForm.clientIdStr = String(d.clientId)
+      webForm.clientToken = d.clientToken
     }
   } else {
     forwardForm.remotePort = undefined
     forwardForm.localIp = ''
     forwardForm.localPort = undefined
     forwardForm.protocol = 'TCP'
-    forwardForm.clientId = undefined
-    forwardForm.clientIdStr = ''
+    forwardForm.clientToken = ''
     if (props.editData) {
       const d = props.editData as ForwardTunnel
       forwardForm.remotePort = d.remotePort
       forwardForm.localIp = d.localIp
       forwardForm.localPort = d.localPort
       forwardForm.protocol = d.protocol
-      forwardForm.clientId = d.clientId
-      forwardForm.clientIdStr = String(d.clientId)
+      forwardForm.clientToken = d.clientToken
     }
+  }
+}
+
+async function loadClients() {
+  try {
+    clients.value = await getClients()
+  } catch {
+    clients.value = []
   }
 }
 
@@ -77,7 +84,7 @@ function handleOk() {
       localIp: webForm.localIp,
       localPort: webForm.localPort,
       wwws: webForm.wwws,
-      clientId: Number(webForm.clientIdStr),
+      clientToken: webForm.clientToken,
     })
   } else {
     emit('submit', {
@@ -85,7 +92,7 @@ function handleOk() {
       localIp: forwardForm.localIp,
       localPort: forwardForm.localPort,
       protocol: forwardForm.protocol,
-      clientId: Number(forwardForm.clientIdStr),
+      clientToken: forwardForm.clientToken,
     })
   }
   emit('update:visible', false)
@@ -112,8 +119,10 @@ function handleOk() {
         <a-form-item :label="$t('tunnelForm.label.localPort')" field="localPort" required>
           <a-input-number v-model="webForm.localPort" :min="1" :max="65535" :placeholder="$t('placeholder.localPort')" style="width:100%" />
         </a-form-item>
-        <a-form-item :label="$t('tunnelForm.label.clientId')" field="clientId" required>
-          <a-input v-model="webForm.clientIdStr" :placeholder="$t('placeholder.clientId')" />
+        <a-form-item :label="$t('tunnelForm.label.clientToken')" field="clientToken" required>
+          <a-select v-model="webForm.clientToken" :placeholder="$t('placeholder.clientToken')" allow-clear>
+            <a-option v-for="c in clients" :key="c.token" :value="c.token">{{ c.tokenPreview }}（{{ c.name }}）</a-option>
+          </a-select>
         </a-form-item>
       </a-form>
     </template>
@@ -135,8 +144,10 @@ function handleOk() {
             <a-radio value="UDP">UDP</a-radio>
           </a-radio-group>
         </a-form-item>
-        <a-form-item :label="$t('tunnelForm.label.clientId')" field="clientId" required>
-          <a-input v-model="forwardForm.clientIdStr" :placeholder="$t('placeholder.clientId')" />
+        <a-form-item :label="$t('tunnelForm.label.clientToken')" field="clientToken" required>
+          <a-select v-model="forwardForm.clientToken" :placeholder="$t('placeholder.clientToken')" allow-clear>
+            <a-option v-for="c in clients" :key="c.token" :value="c.token">{{ c.tokenPreview }}（{{ c.name }}）</a-option>
+          </a-select>
         </a-form-item>
       </a-form>
     </template>

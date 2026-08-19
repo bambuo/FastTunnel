@@ -4,7 +4,7 @@ export interface WebTunnel {
   localIp: string
   localPort: number
   wwws: string[]
-  clientId: number
+  clientToken: string
   clientName?: string
   isEnabled: boolean
   createdAt: string
@@ -15,7 +15,7 @@ export interface WebTunnelRequest {
   localIp?: string
   localPort?: number
   wwws?: string[]
-  clientId?: number
+  clientToken?: string
 }
 
 export interface ForwardTunnel {
@@ -24,7 +24,7 @@ export interface ForwardTunnel {
   localIp: string
   localPort: number
   protocol: 'TCP' | 'UDP'
-  clientId: number
+  clientToken: string
   clientName?: string
   isEnabled: boolean
   createdAt: string
@@ -35,5 +35,5 @@ export interface ForwardTunnelRequest {
   localIp?: string
   localPort?: number
   protocol?: 'TCP' | 'UDP'
-  clientId?: number
+  clientToken?: string
 }

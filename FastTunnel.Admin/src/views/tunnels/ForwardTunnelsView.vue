@@ -68,11 +68,11 @@ async function handleSubmit(formData: ForwardTunnelRequest) {
     }
 
     if (editTunnel.value) {
-      await updateForwardTunnel(editTunnel.value.id, formData)
-      Message.success(t('message.tunnel.updated'))
+      const r = await updateForwardTunnel(editTunnel.value.id, formData)
+      Message.success(r.message || t('message.tunnel.updated'))
     } else {
-      await createForwardTunnel(formData)
-      Message.success(t('message.tunnel.created'))
+      const r = await createForwardTunnel(formData)
+      Message.success(r.message || t('message.tunnel.created'))
     }
     await fetchList()
   } catch (err: unknown) {
@@ -83,8 +83,8 @@ async function handleSubmit(formData: ForwardTunnelRequest) {
 
 async function handleDelete(id: number) {
   try {
-    await deleteForwardTunnel(id)
-    Message.success(t('message.tunnel.deleted'))
+    const r = await deleteForwardTunnel(id)
+    Message.success(r.message || t('message.tunnel.deleted'))
     await fetchList()
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : t('message.deleteFailed')
@@ -94,8 +94,8 @@ async function handleDelete(id: number) {
 
 async function handleToggle(record: ForwardTunnel) {
   try {
-    await toggleForwardTunnel(record.id, !record.isEnabled)
-    Message.success(record.isEnabled ? t('action.disabled') : t('action.enabled'))
+    const r = await toggleForwardTunnel(record.id, !record.isEnabled)
+    Message.success(r.message || (record.isEnabled ? t('action.disabled') : t('action.enabled')))
     await fetchList()
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : t('message.operationFailed')

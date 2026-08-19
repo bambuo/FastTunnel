@@ -127,7 +127,7 @@
     "localPort": "如 8080",
     "remotePort": "如 2222",
     "sshPort": "如 22",
-    "clientId": "客户端 ID 数字"
+    "clientToken": "选择在线客户端"
   },
   "popconfirm": {
     "deleteToken": "确定删除？",
@@ -172,7 +172,7 @@
       "subDomain": "子域名",
       "localIp": "内网 IP",
       "localPort": "内网端口",
-      "clientId": "客户端 ID",
+      "clientToken": "客户端 Token",
       "remotePort": "远程端口",
       "protocol": "协议"
     }

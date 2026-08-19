@@ -57,11 +57,11 @@ function handleEdit(record: WebTunnel) {
 async function handleSubmit(formData: WebTunnelRequest) {
   try {
     if (editTunnel.value) {
-      await updateWebTunnel(editTunnel.value.id, formData)
-      Message.success(t('message.tunnel.updated'))
+      const r = await updateWebTunnel(editTunnel.value.id, formData)
+      Message.success(r.message || t('message.tunnel.updated'))
     } else {
-      await createWebTunnel(formData)
-      Message.success(t('message.tunnel.created'))
+      const r = await createWebTunnel(formData)
+      Message.success(r.message || t('message.tunnel.created'))
     }
     await fetchList()
   } catch (err: unknown) {
@@ -72,8 +72,8 @@ async function handleSubmit(formData: WebTunnelRequest) {
 
 async function handleDelete(id: number) {
   try {
-    await deleteWebTunnel(id)
-    Message.success(t('message.tunnel.deleted'))
+    const r = await deleteWebTunnel(id)
+    Message.success(r.message || t('message.tunnel.deleted'))
     await fetchList()
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : t('message.deleteFailed')
@@ -83,8 +83,8 @@ async function handleDelete(id: number) {
 
 async function handleToggle(record: WebTunnel) {
   try {
-    await toggleWebTunnel(record.id, !record.isEnabled)
-    Message.success(record.isEnabled ? t('action.disabled') : t('action.enabled'))
+    const r = await toggleWebTunnel(record.id, !record.isEnabled)
+    Message.success(r.message || (record.isEnabled ? t('action.disabled') : t('action.enabled')))
     await fetchList()
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : t('message.operationFailed')
