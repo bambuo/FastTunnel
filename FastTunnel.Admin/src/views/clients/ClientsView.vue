@@ -20,8 +20,8 @@ const filteredData = computed(() => {
 })
 
 const columns = computed(() => [
+  { title: '令牌', dataIndex: 'tokenPreview', width: 200, ellipsis: true },
   { title: 'IP', dataIndex: 'ip', width: 140 },
-  { title: 'Token', dataIndex: 'tokenPreview', width: 200, ellipsis: true },
   { title: t('table.column.onlineStatus'), slotName: 'online', width: 100 },
   { title: t('table.column.lastSeen'), slotName: 'lastSeen', width: 160 },
 ])
