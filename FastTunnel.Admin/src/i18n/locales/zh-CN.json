@@ -5,7 +5,7 @@
     "webTunnels": "网站隧道",
     "forwardTunnels": "端口转发",
     "tokens": "令牌管理",
-    "clients": "客户端",
+    "clients": "在线客户端",
     "auditLogs": "审计日志",
     "settings": "系统配置",
     "logout": "退出",
@@ -99,7 +99,7 @@
   "page": {
     "tokens": "令牌管理",
     "auditLogs": "审计日志",
-    "clients": "客户端管理",
+    "clients": "在线客户端",
     "forwardTunnels": "端口转发管理",
     "webTunnels": "网站隧道管理",
     "systemSettings": "系统配置"
@@ -212,7 +212,7 @@
     "webTunnels": "网站隧道",
     "forwardTunnels": "端口转发",
     "tokens": "令牌管理",
-    "clients": "客户端",
+    "clients": "在线客户端",
     "auditLogs": "审计日志"
   },
   "filter": {
