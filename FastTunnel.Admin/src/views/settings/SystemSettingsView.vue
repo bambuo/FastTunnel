@@ -89,8 +89,8 @@ async function handleSave() {
                 <a-form-item :label="$t('config.enableForward')">
                   <div class="switch-row">
                     <a-switch v-model="form.enableForward" />
+                    <span class="switch-tip">{{ $t('config.enableForwardTip') }}</span>
                   </div>
-                  <div class="switch-tip">{{ $t('config.enableForwardTip') }}</div>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -194,9 +194,12 @@ async function handleSave() {
 }
 
 .switch-row {
+  width: 100%;
   height: 32px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
 
 .field-tip {
@@ -208,7 +211,6 @@ async function handleSave() {
 .switch-tip {
   font-size: 12px;
   color: var(--color-text-3);
-  margin-top: 10px;
 }
 
 .action-bar {
