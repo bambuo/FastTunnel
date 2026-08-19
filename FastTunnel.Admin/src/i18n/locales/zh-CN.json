@@ -67,9 +67,9 @@
     "recentOps": "最近操作",
     "stat": {
       "onlineClients": "在线客户端",
-      "activeWebTunnels": "活跃 Web 隧道",
-      "activeForwardTunnels": "活跃 Forward 隧道",
-      "totalTokens": "Token 总数"
+      "activeWebTunnels": "活跃网站隧道",
+      "activeForwardTunnels": "活跃端口转发",
+      "totalTokens": "令牌总数"
     },
     "table": {
       "empty": "暂无操作记录"
