@@ -76,6 +76,24 @@ public class FastTunnelInMemoryConfigProvider(IReadOnlyList<RouteConfig> routes,
         }
     }
 
+    public void RemoveWeb(string hostName)
+    {
+        lock (_locker)
+        {
+            var oldConfig = _config;
+            if (oldConfig.Routes.All(x => x.ClusterId != hostName))
+            {
+                return;
+            }
+
+            var newRoutes = oldConfig.Routes.Where(x => x.ClusterId != hostName).ToList();
+            var newClusters = oldConfig.Clusters.Where(x => x.ClusterId != hostName).ToList();
+
+            _config = new InMemoryConfig(newRoutes, newClusters);
+            oldConfig.SignalChange();
+        }
+    }
+
     /// <summary>
     ///     Implementation of IProxyConfig which is a snapshot of the current config state. The data for this class should be
     ///     immutable.

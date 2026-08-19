@@ -4,7 +4,6 @@
 //     https://github.com/FastTunnel/FastTunnel/edit/v2/LICENSE
 // Copyright (c) 2019 Gui.H
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -13,22 +12,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using FastTunnel.Core.Client;
 using FastTunnel.Core.Extensions;
-using FastTunnel.Core.Forwarder;
-using FastTunnel.Core.Listener;
 using FastTunnel.Core.Models;
 using FastTunnel.Core.Models.Massage;
 using Microsoft.Extensions.Logging;
-using Yarp.ReverseProxy.Configuration;
 
 namespace FastTunnel.Core.Handlers.Server;
 
 [JsonSourceGenerationOptions(WriteIndented = false)]
 [JsonSerializable(typeof(LogInMassage))]
+[JsonSerializable(typeof(TunnelConfigMessage))]
 internal partial class SourceGenerationContext : JsonSerializerContext
 {
 }
 
-public class LoginHandler(ILogger<LoginHandler> logger, IProxyConfigProvider proxyConfig) : ILoginHandler
+public class LoginHandler(ILogger<LoginHandler> logger, IClientConfigProvider configProvider) : ILoginHandler
 {
     public const bool NeedRecive = true;
     private readonly ILogger _logger = logger;
@@ -44,98 +41,56 @@ public class LoginHandler(ILogger<LoginHandler> logger, IProxyConfigProvider pro
 
     protected async Task HandleLoginAsync(FastTunnelServer server, TunnelClient client, LogInMassage requet, CancellationToken cancellationToken)
     {
-        var hasTunnel = false;
-
         var tips = new List<string>();
 
         await client.webSocket.SendCmdAsync(MessageType.Log, "穿透协议 | 映射关系（公网=>内网）", cancellationToken);
         Thread.Sleep(300);
 
-        if (requet.Webs != null && requet.Webs.Any())
+        // 客户端零上报，隧道配置一律以服务端数据库（按 Token）为准
+        var webs = await configProvider.GetWebsAsync(client.Token) ?? [];
+        var forwards = await configProvider.GetForwardsAsync(client.Token) ?? [];
+
+        server.ApplyWebConfig(client, webs);
+
+        foreach (var item in webs)
         {
-            hasTunnel = true;
-            foreach (var item in requet.Webs)
+            var hostName = $"{item.SubDomain}.{server.ServerOption.CurrentValue.WebDomain}".Trim().ToLower();
+            await client.webSocket.SendCmdAsync(MessageType.Log, $"  HTTP   | http://{hostName}:{client.ConnectionPort} => {item.LocalIp}:{item.LocalPort}", CancellationToken.None);
+
+            if (item.WWW != null)
             {
-                var hostName = $"{item.SubDomain}.{server.ServerOption.CurrentValue.WebDomain}".Trim().ToLower();
-                var info = new WebInfo { Socket = client.webSocket, WebConfig = item };
-
-                _logger.LogDebug($"new domain '{hostName}'");
-                server.WebList.AddOrUpdate(hostName, info, (key, oldInfo) => { return info; });
-                (proxyConfig as FastTunnelInMemoryConfigProvider).AddWeb(hostName);
-
-                await client.webSocket.SendCmdAsync(MessageType.Log, $"  HTTP   | http://{hostName}:{client.ConnectionPort} => {item.LocalIp}:{item.LocalPort}", CancellationToken.None);
-                client.AddWeb(info);
-
-                if (item.WWW != null)
+                foreach (var www in item.WWW)
                 {
-                    foreach (var www in item.WWW)
-                    {
-                        // TODO:validateDomain
-                        hostName = www.Trim().ToLower();
-                        server.WebList.AddOrUpdate(www, info, (key, oldInfo) => { return info; });
-                        (proxyConfig as FastTunnelInMemoryConfigProvider).AddWeb(www);
-
-                        await client.webSocket.SendCmdAsync(MessageType.Log, $"  HTTP   | http://{www}:{client.ConnectionPort} => {item.LocalIp}:{item.LocalPort}", CancellationToken.None);
-                        client.AddWeb(info);
-                    }
+                    await client.webSocket.SendCmdAsync(MessageType.Log, $"  HTTP   | http://{www.Trim().ToLower()}:{client.ConnectionPort} => {item.LocalIp}:{item.LocalPort}", CancellationToken.None);
                 }
             }
         }
 
-        if (requet.Forwards != null && requet.Forwards.Any())
+        if (server.ServerOption.CurrentValue.EnableForward)
         {
-            if (server.ServerOption.CurrentValue.EnableForward)
+            foreach (var item in forwards)
             {
-                hasTunnel = true;
-
-                foreach (var item in requet.Forwards)
+                if (item.LocalPort == 3389)
                 {
-                    try
-                    {
-                        if (item.LocalPort == 3389)
-                        {
-                            tips.Add("您已将3389端口暴露，请确保您的PC密码足够安全。");
-                        }
+                    tips.Add("您已将3389端口暴露，请确保您的PC密码足够安全。");
+                }
 
-                        if (item.LocalPort == 22)
-                        {
-                            tips.Add("您已将22端口暴露，请确保您的PC密码足够安全。");
-                        }
-
-                        if (server.ForwardList.TryGetValue(item.RemotePort, out var old))
-                        {
-                            _logger.LogDebug($"Remove Listener {old.Listener.ListenIp}:{old.Listener.ListenPort}");
-                            old.Listener.Stop();
-                            server.ForwardList.TryRemove(item.RemotePort, out _);
-                        }
-
-                        // TODO: 客户端离线时销毁
-                        IPortListener ls = item.Protocol == ProtocolEnum.UDP
-                            ? new UdpProxyListener("0.0.0.0", item.RemotePort, _logger, client.webSocket)
-                            : new PortProxyListener("0.0.0.0", item.RemotePort, _logger, client.webSocket);
-                        ls.Start(new ForwardDispatcher(_logger, server, item));
-
-                        var forwardInfo = new ForwardInfo<ForwardHandlerArg> { Listener = ls, Socket = client.webSocket, SSHConfig = item };
-
-                        // TODO: 客户端离线时销毁
-                        server.ForwardList.TryAdd(item.RemotePort, forwardInfo);
-                        _logger.LogDebug($"SSH proxy success: {item.RemotePort} => {item.LocalIp}:{item.LocalPort}");
-
-                        client.AddForward(forwardInfo);
-                        await client.webSocket.SendCmdAsync(MessageType.Log, $"  {item.Protocol}    | {server.ServerOption.CurrentValue.WebDomain}:{item.RemotePort} => {item.LocalIp}:{item.LocalPort}", CancellationToken.None);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"SSH proxy error: {item.RemotePort} => {item.LocalIp}:{item.LocalPort}");
-                        _logger.LogError(ex.Message);
-                        await client.webSocket.SendCmdAsync(MessageType.Log, ex.Message, CancellationToken.None);
-                    }
+                if (item.LocalPort == 22)
+                {
+                    tips.Add("您已将22端口暴露，请确保您的PC密码足够安全。");
                 }
             }
-            else
+
+            server.ApplyForwardConfig(client, forwards);
+
+            foreach (var item in forwards)
             {
-                await client.webSocket.SendCmdAsync(MessageType.Log, TunnelResource.ForwardDisabled, CancellationToken.None);
+                await client.webSocket.SendCmdAsync(MessageType.Log, $"  {item.Protocol}    | {server.ServerOption.CurrentValue.WebDomain}:{item.RemotePort} => {item.LocalIp}:{item.LocalPort}", CancellationToken.None);
             }
+        }
+        else
+        {
+            await client.webSocket.SendCmdAsync(MessageType.Log, TunnelResource.ForwardDisabled, CancellationToken.None);
         }
 
         foreach (var item in tips)
@@ -143,7 +98,11 @@ public class LoginHandler(ILogger<LoginHandler> logger, IProxyConfigProvider pro
             await client.webSocket.SendCmdAsync(MessageType.Log, item, CancellationToken.None);
         }
 
-        if (!hasTunnel)
+        // 下发隧道配置清单
+        var configMsg = new TunnelConfigMessage { Webs = webs, Forwards = forwards };
+        await client.webSocket.SendCmdAsync(MessageType.ConfigUpdate, JsonSerializer.Serialize(configMsg, SourceGenerationContext.Default.TunnelConfigMessage), cancellationToken);
+
+        if (!webs.Any() && !forwards.Any())
         {
             await client.webSocket.SendCmdAsync(MessageType.Log, TunnelResource.NoTunnel, CancellationToken.None);
         }

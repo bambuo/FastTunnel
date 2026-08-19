@@ -69,7 +69,8 @@ public class FastTunnelClientHandler(ILogger<FastTunnelClientHandler> logger, Fa
 
         var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
         var log = loggerFactory.CreateLogger<TunnelClient>();
-        var client = new TunnelClient(webSocket, fastTunnelServer, loginHandler, context.Connection.RemoteIpAddress, log) { ConnectionPort = context.Connection.LocalPort };
+        var token = context.Request.Headers.TryGetValue(FastTunnelConst.FasttunnelToken, out var tokenValue) ? tokenValue.ToString() : string.Empty;
+        var client = new TunnelClient(webSocket, fastTunnelServer, loginHandler, context.Connection.RemoteIpAddress, token, log) { ConnectionPort = context.Connection.LocalPort };
 
         try
         {

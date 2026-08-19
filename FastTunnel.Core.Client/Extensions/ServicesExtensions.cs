@@ -24,7 +24,8 @@ public static class ServicesExtensions
 
         services.AddTransient<IFastTunnelClient, FastTunnelClient>()
             .AddSingleton<LogHandler>()
-            .AddSingleton<SwapHandler>();
+            .AddSingleton<SwapHandler>()
+            .AddSingleton<ConfigHandler>();
 
         services.AddHostedService<ServiceFastTunnelClient>();
     }

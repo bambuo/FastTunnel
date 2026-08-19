@@ -26,6 +26,7 @@ namespace FastTunnel.Core.Client;
 
 [JsonSourceGenerationOptions(WriteIndented = false)]
 [JsonSerializable(typeof(LogInMassage))]
+[JsonSerializable(typeof(TunnelConfigMessage))]
 public partial class SourceGenerationContext : JsonSerializerContext
 {
 }
@@ -36,17 +37,20 @@ public class FastTunnelClient : IFastTunnelClient
     private readonly LogHandler logHandler;
 
     private readonly SwapHandler swapHandler;
+    private readonly ConfigHandler configHandler;
     private ClientWebSocket socket;
 
     public FastTunnelClient(
         ILogger<FastTunnelClient> logger,
         SwapHandler newCustomerHandler,
+        ConfigHandler configHandler,
         LogHandler logHandler,
         IOptionsMonitor<DefaultClientConfig> configuration)
     {
         var span = new ReadOnlySpan<int>();
         _logger = logger;
         swapHandler = newCustomerHandler;
+        this.configHandler = configHandler;
         this.logHandler = logHandler;
         ClientConfig = configuration.CurrentValue;
         Server = ClientConfig.Server;
@@ -136,16 +140,22 @@ public class FastTunnelClient : IFastTunnelClient
     {
         Server = ClientConfig.Server;
 
+        // 客户端不上报隧道配置，配置由服务端按 Token 下发
 # if NET8_0_OR_GREATER
-        return new LogInMassage
-        {
-            Webs = ClientConfig.Webs,
-            Forwards = ClientConfig.Forwards,
-        }.ToJson(jsonTypeInfo: SourceGenerationContext.Default.LogInMassage);
+        return new LogInMassage().ToJson(jsonTypeInfo: SourceGenerationContext.Default.LogInMassage);
 
 #else
-        return new LogInMassage { Webs = ClientConfig.Webs, Forwards = ClientConfig.Forwards }.ToJson();
+        return new LogInMassage().ToJson();
 #endif
+    }
+
+    /// <summary>
+    ///     更新服务端下发的隧道配置清单（仅内存持有，不参与上报）
+    /// </summary>
+    public void UpdateTunnelConfig(IEnumerable<WebConfig> webs, IEnumerable<ForwardConfig> forwards)
+    {
+        ClientConfig.Webs = webs;
+        ClientConfig.Forwards = forwards;
     }
 
 
@@ -175,6 +185,9 @@ public class FastTunnelClient : IFastTunnelClient
                     break;
                 case MessageType.Log:
                     handler = logHandler;
+                    break;
+                case MessageType.ConfigUpdate:
+                    handler = configHandler;
                     break;
                 default:
                     throw new Exception($"未处理的消息：cmd={cmd}");

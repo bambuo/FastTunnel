@@ -18,5 +18,6 @@ public enum MessageType : byte
     LogIn = 1, // client
     SwapMsg = 2,
     Forward = 3,
-    Log = 4
+    Log = 4,
+    ConfigUpdate = 5 // 服务端下发隧道配置清单
 }

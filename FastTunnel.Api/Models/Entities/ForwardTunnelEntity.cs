@@ -7,7 +7,7 @@ public class ForwardTunnelEntity
     public string LocalIp { get; set; } = string.Empty;
     public int LocalPort { get; set; }
     public string Protocol { get; set; } = "TCP";
-    public int ClientId { get; set; }
+    public string ClientToken { get; set; } = string.Empty;
     public bool IsEnabled { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

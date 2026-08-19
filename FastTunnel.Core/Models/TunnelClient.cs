@@ -24,6 +24,7 @@ public class TunnelClient(
     FastTunnelServer fastTunnelServer,
     ILoginHandler loginHandler,
     IPAddress remoteIpAddress,
+    string token,
     ILogger<TunnelClient> logger)
 {
     public readonly IList<ForwardInfo<ForwardHandlerArg>> ForwardInfos = new List<ForwardInfo<ForwardHandlerArg>>();
@@ -31,6 +32,11 @@ public class TunnelClient(
     public readonly IList<WebInfo> WebInfos = new List<WebInfo>();
 
     public WebSocket webSocket { get; } = webSocket;
+
+    /// <summary>
+    ///     客户端登录使用的 Token（握手 FT_TOKEN 头）
+    /// </summary>
+    public string Token { get; } = token;
 
     /// <summary>
     ///     服务端端口号
@@ -92,6 +98,29 @@ public class TunnelClient(
                 {
                     fastTunnelServer.ForwardList.TryRemove(item.SSHConfig.RemotePort, out _);
                     item.Listener.Stop();
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        // web路由注销
+        if (WebInfos != null)
+        {
+            foreach (var info in WebInfos)
+            {
+                try
+                {
+                    fastTunnelServer.RemoveWebRoute($"{info.WebConfig.SubDomain}.{fastTunnelServer.ServerOption.CurrentValue.WebDomain}".Trim().ToLower());
+
+                    if (info.WebConfig.WWW != null)
+                    {
+                        foreach (var www in info.WebConfig.WWW)
+                        {
+                            fastTunnelServer.RemoveWebRoute(www.Trim().ToLower());
+                        }
+                    }
                 }
                 catch
                 {

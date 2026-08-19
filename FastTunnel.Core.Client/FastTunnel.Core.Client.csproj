@@ -18,6 +18,7 @@
     <Compile Include="..\FastTunnel.Core\Models\Message.cs" Link="Models\Message.cs"/>
     <Compile Include="..\FastTunnel.Core\Models\TunnelMassage.cs" Link="Models\TunnelMassage.cs"/>
     <Compile Include="..\FastTunnel.Core\Models\WebConfig.cs" Link="Models\WebConfig.cs"/>
+    <Compile Include="..\FastTunnel.Core\Models\Massage\TunnelConfigMessage.cs" Link="Models\Massage\TunnelConfigMessage.cs"/>
     <Compile Include="..\FastTunnel.Core\Utilitys\WebSocketUtility.cs" Link="Utilitys\WebSocketUtility.cs"/>
   </ItemGroup>
 

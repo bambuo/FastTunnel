@@ -60,6 +60,7 @@ public class Program
 
             builder.Services.AddSingleton<FastTunnel.Api.Services.TotpService>();
             builder.Services.AddSingleton<FastTunnel.Api.Filters.CustomExceptionFilterAttribute>();
+            builder.Services.AddSingleton<FastTunnel.Core.IClientConfigProvider, FastTunnel.Api.Services.ClientConfigProvider>();
 
             var jwtConfig = builder.Configuration.GetSection("FastTunnel:Api:JWT").Get<FastTunnel.Core.Config.DefaultServerConfig.JWTOptions>();
             if (jwtConfig != null)

@@ -3,6 +3,11 @@ using FastTunnel.Api.Models.Entities;
 using FastTunnel.Api.Resources;
 using FastTunnel.Api.Services;
 using FastTunnel.Api.Models;
+using FastTunnel.Core;
+using FastTunnel.Core.Client;
+using FastTunnel.Core.Extensions;
+using FastTunnel.Core.Models;
+using FastTunnel.Core.Models.Massage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -10,9 +15,10 @@ using System.Text.Json;
 
 namespace FastTunnel.Api.Controllers;
 
-public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessages> localizer) : BaseController
+public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessages> localizer, FastTunnelServer ftServer, IClientConfigProvider configProvider) : BaseController
 {
     private readonly IStringLocalizer<ApiMessages> _localizer = localizer;
+
     [HttpGet("webs")]
     public async Task<ApiResponse> GetWebs([FromQuery] string? keyword)
     {
@@ -25,8 +31,8 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
         {
             x.Id, x.SubDomain, x.LocalIp, x.LocalPort,
             wwws = DeserializeWwws(x.WwwsJson),
-            x.ClientId,
-            clientName = $"Client#{x.ClientId}",
+            x.ClientToken,
+            clientName = MaskToken(x.ClientToken),
             x.IsEnabled,
             createdAt = x.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
         });
@@ -42,7 +48,7 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
             SubDomain = request.SubDomain ?? string.Empty,
             LocalIp = request.LocalIp ?? string.Empty,
             LocalPort = request.LocalPort ?? 80,
-            ClientId = request.ClientId ?? 0,
+            ClientToken = request.ClientToken ?? string.Empty,
             WwwsJson = request.Wwws != null ? JsonSerializer.Serialize(request.Wwws) : null,
         };
         db.WebTunnels.Add(entity);
@@ -52,11 +58,11 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
         ApiResponse.Data = new
         {
             entity.Id, entity.SubDomain, entity.LocalIp, entity.LocalPort,
-            entity.ClientId, entity.IsEnabled,
+            entity.ClientToken, entity.IsEnabled,
             createdAt = entity.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
         };
         ApiResponse.Success = true;
-        ApiResponse.Message = _localizer["Tunnel.Created"];
+        ApiResponse.Message = $"{_localizer["Tunnel.Created"]}（{await PushConfigAsync(entity.ClientToken, CancellationToken.None)}）";
         return ApiResponse;
     }
 
@@ -69,14 +75,14 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
         if (request.SubDomain != null) entity.SubDomain = request.SubDomain;
         if (request.LocalIp != null) entity.LocalIp = request.LocalIp;
         if (request.LocalPort.HasValue) entity.LocalPort = request.LocalPort.Value;
-        if (request.ClientId.HasValue) entity.ClientId = request.ClientId.Value;
+        if (request.ClientToken != null) entity.ClientToken = request.ClientToken;
         if (request.Wwws != null) entity.WwwsJson = JsonSerializer.Serialize(request.Wwws);
 
         await db.SaveChangesAsync();
         await AuditService.LogAsync(db, "update", "web_tunnel", string.Format(_localizer["Audit.UpdateTunnel"], "Web", id), GetUserName());
 
         ApiResponse.Success = true;
-        ApiResponse.Message = _localizer["Tunnel.Updated"];
+        ApiResponse.Message = $"{_localizer["Tunnel.Updated"]}（{await PushConfigAsync(entity.ClientToken, CancellationToken.None)}）";
         return ApiResponse;
     }
 
@@ -90,7 +96,7 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
         await AuditService.LogAsync(db, "delete", "web_tunnel", string.Format(_localizer["Audit.DeleteTunnel"], "Web", id), GetUserName());
 
         ApiResponse.Success = true;
-        ApiResponse.Message = _localizer["Tunnel.Deleted"];
+        ApiResponse.Message = $"{_localizer["Tunnel.Deleted"]}（{await PushConfigAsync(entity.ClientToken, CancellationToken.None)}）";
         return ApiResponse;
     }
 
@@ -105,6 +111,7 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
 
         ApiResponse.Success = true;
         ApiResponse.Data = new { entity.Id, entity.IsEnabled };
+        ApiResponse.Message = $"{_localizer["Tunnel.Updated"]}（{await PushConfigAsync(entity.ClientToken, CancellationToken.None)}）";
         return ApiResponse;
     }
 
@@ -120,8 +127,8 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
         {
             x.Id, x.RemotePort, x.LocalIp, x.LocalPort,
             x.Protocol,
-            x.ClientId,
-            clientName = $"Client#{x.ClientId}",
+            x.ClientToken,
+            clientName = MaskToken(x.ClientToken),
             x.IsEnabled,
             createdAt = x.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
         });
@@ -138,7 +145,7 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
             LocalIp = request.LocalIp ?? string.Empty,
             LocalPort = request.LocalPort ?? 0,
             Protocol = request.Protocol ?? "TCP",
-            ClientId = request.ClientId ?? 0,
+            ClientToken = request.ClientToken ?? string.Empty,
         };
         db.ForwardTunnels.Add(entity);
         await db.SaveChangesAsync();
@@ -147,11 +154,11 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
         ApiResponse.Data = new
         {
             entity.Id, entity.RemotePort, entity.LocalIp, entity.LocalPort,
-            entity.Protocol, entity.ClientId, entity.IsEnabled,
+            entity.Protocol, entity.ClientToken, entity.IsEnabled,
             createdAt = entity.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
         };
         ApiResponse.Success = true;
-        ApiResponse.Message = _localizer["Tunnel.Created"];
+        ApiResponse.Message = $"{_localizer["Tunnel.Created"]}（{await PushConfigAsync(entity.ClientToken, CancellationToken.None)}）";
         return ApiResponse;
     }
 
@@ -165,13 +172,13 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
         if (request.LocalIp != null) entity.LocalIp = request.LocalIp;
         if (request.LocalPort.HasValue) entity.LocalPort = request.LocalPort.Value;
         if (request.Protocol != null) entity.Protocol = request.Protocol;
-        if (request.ClientId.HasValue) entity.ClientId = request.ClientId.Value;
+        if (request.ClientToken != null) entity.ClientToken = request.ClientToken;
 
         await db.SaveChangesAsync();
         await AuditService.LogAsync(db, "update", "forward_tunnel", string.Format(_localizer["Audit.UpdateTunnel"], "Forward", id), GetUserName());
 
         ApiResponse.Success = true;
-        ApiResponse.Message = _localizer["Tunnel.Updated"];
+        ApiResponse.Message = $"{_localizer["Tunnel.Updated"]}（{await PushConfigAsync(entity.ClientToken, CancellationToken.None)}）";
         return ApiResponse;
     }
 
@@ -185,7 +192,7 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
         await AuditService.LogAsync(db, "delete", "forward_tunnel", string.Format(_localizer["Audit.DeleteTunnel"], "Forward", id), GetUserName());
 
         ApiResponse.Success = true;
-        ApiResponse.Message = _localizer["Tunnel.Deleted"];
+        ApiResponse.Message = $"{_localizer["Tunnel.Deleted"]}（{await PushConfigAsync(entity.ClientToken, CancellationToken.None)}）";
         return ApiResponse;
     }
 
@@ -200,7 +207,31 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
 
         ApiResponse.Success = true;
         ApiResponse.Data = new { entity.Id, entity.IsEnabled };
+        ApiResponse.Message = $"{_localizer["Tunnel.Updated"]}（{await PushConfigAsync(entity.ClientToken, CancellationToken.None)}）";
         return ApiResponse;
+    }
+
+    /// <summary>
+    ///     按 Token 重建在线客户端的监听/路由并下发隧道配置清单。
+    ///     返回下发结果描述（已下发并生效 / 客户端离线，登录时生效）。
+    /// </summary>
+    private async Task<string> PushConfigAsync(string token, CancellationToken cancellationToken)
+    {
+        var client = ftServer.Clients.FirstOrDefault(c => c.Token == token);
+        if (client == null)
+        {
+            return "客户端离线，配置已保存，登录时生效";
+        }
+
+        var forwards = await configProvider.GetForwardsAsync(token) ?? [];
+        var webs = await configProvider.GetWebsAsync(token) ?? [];
+
+        ftServer.ApplyForwardConfig(client, forwards);
+        ftServer.ApplyWebConfig(client, webs);
+
+        var configMsg = new TunnelConfigMessage { Webs = webs, Forwards = forwards };
+        await client.webSocket.SendCmdAsync(MessageType.ConfigUpdate, JsonSerializer.Serialize(configMsg), cancellationToken);
+        return "已下发并生效";
     }
 
     private ApiResponse TunnelNotFound()
@@ -211,6 +242,12 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
     }
 
     private string GetUserName() => User.FindFirst("Name")?.Value ?? "unknown";
+
+    private static string MaskToken(string token)
+    {
+        if (string.IsNullOrEmpty(token)) return "(未设置)";
+        return token.Length <= 8 ? token : $"{token[..4]}****{token[^4..]}";
+    }
 
     private static string[] DeserializeWwws(string? json)
     {
@@ -226,7 +263,7 @@ public class WebTunnelRequest
     public string? LocalIp { get; set; }
     public int? LocalPort { get; set; }
     public string[]? Wwws { get; set; }
-    public int? ClientId { get; set; }
+    public string? ClientToken { get; set; }
 }
 
 public class ForwardTunnelRequest
@@ -235,7 +272,7 @@ public class ForwardTunnelRequest
     public string? LocalIp { get; set; }
     public int? LocalPort { get; set; }
     public string? Protocol { get; set; }
-    public int? ClientId { get; set; }
+    public string? ClientToken { get; set; }
 }
 
 public class ToggleRequest
