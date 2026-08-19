@@ -11,10 +11,8 @@ namespace FastTunnel.Core.Config;
 
 public class DefaultServerConfig : IServerConfig
 {
-    [Obsolete("由Tokens替换")]
+    [Obsolete("由管理台 Tokens 表替换")]
     public string Token { get; set; } = string.Empty;
-
-    public List<string> Tokens { get; set; } = [];
 
     public ApiOptions? Api { get; set; }
     public string WebDomain { get; set; } = string.Empty;

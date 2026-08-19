@@ -61,6 +61,7 @@ public class Program
             builder.Services.AddSingleton<FastTunnel.Api.Services.TotpService>();
             builder.Services.AddSingleton<FastTunnel.Api.Filters.CustomExceptionFilterAttribute>();
             builder.Services.AddSingleton<FastTunnel.Core.IClientConfigProvider, FastTunnel.Api.Services.ClientConfigProvider>();
+            builder.Services.AddSingleton<FastTunnel.Core.ITokenValidator, FastTunnel.Api.Services.TokenValidator>();
 
             var jwtConfig = builder.Configuration.GetSection("FastTunnel:Api:JWT").Get<FastTunnel.Core.Config.DefaultServerConfig.JWTOptions>();
             if (jwtConfig != null)
@@ -170,22 +171,7 @@ public class Program
         // }
     }
 
-                if (!db.Tokens.Any())
-                {
-                    var config = app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<FastTunnel.Core.Config.DefaultServerConfig>>().CurrentValue;
-                    if (config.Tokens != null)
-                    {
-                        foreach (var t in config.Tokens)
-                        {
-                            db.Tokens.Add(new Api.Models.Entities.TokenEntity
-                            {
-                                Value = t,
-                                Description = "配置文件导入",
-                            });
-                        }
-                        db.SaveChanges();
-                    }
-                }
+                // Token 由管理台创建（数据库 Tokens 表），不再从配置文件导入
             }
 
             var supportedCultures = new[] { "zh-CN", "en-US" };

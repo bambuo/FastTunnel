@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FastTunnel.Core.Forwarder.MiddleWare;
 
-public class FastTunnelClientHandler(ILogger<FastTunnelClientHandler> logger, FastTunnelServer fastTunnelServer, ILoginHandler loginHandler)
+public class FastTunnelClientHandler(ILogger<FastTunnelClientHandler> logger, FastTunnelServer fastTunnelServer, ILoginHandler loginHandler, ITokenValidator tokenValidator)
 {
     private static int _connectionCount;
     private readonly Version _serverVersion = Assembly.GetExecutingAssembly().GetName().Version;
@@ -61,7 +61,7 @@ public class FastTunnelClientHandler(ILogger<FastTunnelClientHandler> logger, Fa
             return;
         }
 
-        if (!CheckToken(context))
+        if (!await CheckTokenAsync(context))
         {
             await Close(webSocket, "Token验证失败");
             return;
@@ -93,21 +93,18 @@ public class FastTunnelClientHandler(ILogger<FastTunnelClientHandler> logger, Fa
         await webSocket.CloseAsync(WebSocketCloseStatus.Empty, string.Empty, CancellationToken.None);
     }
 
-    private bool CheckToken(HttpContext context)
+    /// <summary>
+    ///     校验客户端 Token：必须在管理台创建且未被停用/删除。
+    ///     Token 不再从服务端配置文件读取。
+    /// </summary>
+    private async Task<bool> CheckTokenAsync(HttpContext context)
     {
-        var checkToken = fastTunnelServer.ServerOption.CurrentValue.Tokens != null && fastTunnelServer.ServerOption.CurrentValue.Tokens.Count != 0;
-
-        if (!checkToken)
-        {
-            return true;
-        }
-
         // 客户端未携带token，登录失败
         if (!context.Request.Headers.TryGetValue(FastTunnelConst.FasttunnelToken, out var token))
         {
             return false;
         }
 
-        return fastTunnelServer.ServerOption.CurrentValue.Tokens?.Contains(token) ?? false;
+        return await tokenValidator.IsValidAsync(token.ToString());
     }
 }
