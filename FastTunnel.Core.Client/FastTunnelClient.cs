@@ -157,12 +157,12 @@ public class FastTunnelClient : IFastTunnelClient
     {
         Server = ClientConfig.Server;
 
-        // 客户端不上报隧道配置，配置由服务端按 Token 下发
+        // 客户端不上报隧道配置，配置由服务端按 Token 下发；仅上报运行环境信息
 # if NET8_0_OR_GREATER
-        return new LogInMassage().ToJson(jsonTypeInfo: SourceGenerationContext.Default.LogInMassage);
+        return new LogInMassage { ClientInfo = ClientInfoCollector.Collect() }.ToJson(jsonTypeInfo: SourceGenerationContext.Default.LogInMassage);
 
 #else
-        return new LogInMassage().ToJson();
+        return new LogInMassage { ClientInfo = ClientInfoCollector.Collect() }.ToJson();
 #endif
     }
 

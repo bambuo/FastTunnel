@@ -22,9 +22,15 @@ const filteredData = computed(() => {
 const columns = computed(() => [
   { title: '令牌', dataIndex: 'token', width: 320, ellipsis: true },
   { title: 'IP', dataIndex: 'ip', width: 140 },
+  { title: '运行环境', slotName: 'env', width: 200 },
   { title: t('table.column.onlineStatus'), slotName: 'online', width: 100 },
   { title: t('table.column.lastSeen'), slotName: 'lastSeen', width: 160 },
 ])
+
+function formatMemory(mb: number): string {
+  if (!mb) return '-'
+  return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${mb} MB`
+}
 
 onMounted(() => fetchList())
 
@@ -83,6 +89,23 @@ async function handleExpand(row: ClientEntity) {
           <span>{{ record.isOnline ? $t('action.online') : $t('action.offline') }}</span>
         </a-space>
       </template>
+      <template #env="{ record }">
+        <span v-if="record.clientInfo">
+          <a-tooltip>
+            <template #content>
+              <div class="env-tip">
+                <p>系统：{{ record.clientInfo.os }} {{ record.clientInfo.osVersion }}</p>
+                <p>架构：{{ record.clientInfo.architecture }}</p>
+                <p>CPU：{{ record.clientInfo.cpuCores }} 核</p>
+                <p>内存：{{ formatMemory(record.clientInfo.totalMemoryMB) }}（可用 {{ formatMemory(record.clientInfo.availableMemoryMB) }}）</p>
+                <p>.NET：{{ record.clientInfo.dotnetVersion }}</p>
+              </div>
+            </template>
+            <span class="env-cell">{{ record.clientInfo.os }} {{ record.clientInfo.architecture }}</span>
+          </a-tooltip>
+        </span>
+        <span v-else>-</span>
+      </template>
       <template #expand-row="{ record }">
         <div class="expand-content">
           <p v-if="!expandedTunnels[record.id]">{{ $t('client.loading') }}</p>
@@ -135,3 +158,11 @@ async function handleExpand(row: ClientEntity) {
   color: var(--color-text-3);
 }
 </style>
+
+.env-cell {
+  cursor: help;
+}
+
+.env-tip p {
+  margin: 2px 0;
+}

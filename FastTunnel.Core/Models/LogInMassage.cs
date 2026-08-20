@@ -5,6 +5,7 @@
 // Copyright (c) 2019 Gui.H
 
 using System.Collections.Generic;
+using FastTunnel.Core.Models;
 
 namespace FastTunnel.Core.Models.Massage;
 
@@ -13,4 +14,7 @@ public class LogInMassage : TunnelMassage
     public IEnumerable<WebConfig> Webs { get; set; } = [];
 
     public IEnumerable<ForwardConfig> Forwards { get; set; } = [];
+
+    /// <summary>客户端运行环境信息（可选，旧客户端不上报）</summary>
+    public ClientInfo? ClientInfo { get; set; }
 }

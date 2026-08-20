@@ -23,6 +23,7 @@ public class ClientsController(FastTunnelDbContext db, FastTunnelServer ftServer
             tokenPreview = MaskToken(x.Token),
             isOnline = true,
             lastSeen = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+            clientInfo = x.ClientInfo,
         }).ToList();
 
         ApiResponse.Data = clients;

@@ -39,6 +39,11 @@ public class TunnelClient(
     public string Token { get; } = token;
 
     /// <summary>
+    ///     客户端运行环境信息（登录消息上报，可能为 null）
+    /// </summary>
+    public ClientInfo? ClientInfo { get; set; }
+
+    /// <summary>
     ///     服务端端口号
     /// </summary>
     public int ConnectionPort { get; set; }

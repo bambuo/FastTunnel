@@ -34,6 +34,10 @@ public class LoginHandler(ILogger<LoginHandler> logger, IClientConfigProvider co
     public virtual async Task<bool> HandlerMsg(FastTunnelServer fastTunnelServer, TunnelClient tunnelClient, string lineCmd, CancellationToken cancellationToken)
     {
         var msg = JsonSerializer.Deserialize(lineCmd, SourceGenerationContext.Default.LogInMassage);
+        if (msg?.ClientInfo != null)
+        {
+            tunnelClient.ClientInfo = msg.ClientInfo;
+        }
 
         await HandleLoginAsync(fastTunnelServer, tunnelClient, msg, cancellationToken);
         return NeedRecive;
