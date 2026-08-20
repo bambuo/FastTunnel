@@ -137,6 +137,17 @@ onMounted(async () => {
   gap: 12px;
 }
 
+.stat-item :deep(.arco-statistic) {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-item :deep(.arco-statistic-title) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .stat-icon {
   flex-shrink: 0;
 }
