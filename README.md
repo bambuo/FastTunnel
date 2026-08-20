@@ -193,11 +193,6 @@ dotnet run --project FastTunnel.Client
 - 令牌与隧道配置均存储在服务端数据库，请保护好服务端访问权限
 - 暴露 3389 / 22 等端口时，请确保系统密码足够复杂
 
-## 文档与社区
-
-- [GitHub](https://github.com/SpringHgui/FastTunnel) / [Gitee](https://gitee.com/Hgui/FastTunnel)
-- QQ 交流群：798672272 / 935214348 / 768089177
-
 ## License
 
 Apache License 2.0

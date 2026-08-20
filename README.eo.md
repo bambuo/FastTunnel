@@ -193,11 +193,6 @@ La paĝo **Sistemaj Agordoj** administras servilajn parametrojn (varmŝargiĝas 
 - Ĵetonoj kaj tunelaj agordoj estas konservitaj en la servila datumbazo; protektu servilan aliron
 - Uzu fortajn pasvortojn kiam vi elmetas pordojn kiel 3389 / 22
 
-## Ligiloj kaj Komunumo
-
-- [GitHub](https://github.com/SpringHgui/FastTunnel) / [Gitee](https://gitee.com/Hgui/FastTunnel)
-- QQ-Grupoj: 798672272 / 935214348 / 768089177
-
 ## Permesilo
 
 Apache License 2.0

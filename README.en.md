@@ -193,11 +193,6 @@ The **System Settings** page manages server parameters (hot-reloaded on save):
 - Tokens and tunnel configs are stored in the server database; protect server access
 - Use strong passwords when exposing ports such as 3389 / 22
 
-## Links & Community
-
-- [GitHub](https://github.com/SpringHgui/FastTunnel) / [Gitee](https://gitee.com/Hgui/FastTunnel)
-- QQ Groups: 798672272 / 935214348 / 768089177
-
 ## License
 
 Apache License 2.0
