@@ -3,6 +3,7 @@ using FastTunnel.Api.Models.Entities;
 using FastTunnel.Api.Resources;
 using FastTunnel.Api.Services;
 using FastTunnel.Api.Models;
+using FastTunnel.Api.Utils;
 using FastTunnel.Core;
 using FastTunnel.Core.Client;
 using FastTunnel.Core.Extensions;
@@ -32,7 +33,7 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
             x.Id, x.SubDomain, x.LocalIp, x.LocalPort,
             wwws = DeserializeWwws(x.WwwsJson),
             x.ClientToken,
-            clientName = MaskToken(x.ClientToken),
+            clientName = TokenMasker.Mask(x.ClientToken),
             x.IsEnabled,
             createdAt = x.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
         });
@@ -128,7 +129,7 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
             x.Id, x.RemotePort, x.LocalIp, x.LocalPort,
             x.Protocol,
             x.ClientToken,
-            clientName = MaskToken(x.ClientToken),
+            clientName = TokenMasker.Mask(x.ClientToken),
             x.IsEnabled,
             createdAt = x.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
         });
@@ -242,12 +243,6 @@ public class TunnelsController(FastTunnelDbContext db, IStringLocalizer<ApiMessa
     }
 
     private string GetUserName() => User.FindFirst("Name")?.Value ?? "unknown";
-
-    private static string MaskToken(string token)
-    {
-        if (string.IsNullOrEmpty(token)) return "(未设置)";
-        return token.Length <= 8 ? token : $"{token[..4]}****{token[^4..]}";
-    }
 
     private static string[] DeserializeWwws(string? json)
     {

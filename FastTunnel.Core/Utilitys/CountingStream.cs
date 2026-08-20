@@ -32,7 +32,8 @@ public sealed class CountingStream : Stream
 
     public override bool CanRead => _inner.CanRead;
 
-    public override bool CanSeek => _inner.CanSeek;
+    // 隧道流不可 Seek；即使内层可 Seek，Seek 后计数也会失真，统一声明不可 Seek
+    public override bool CanSeek => false;
 
     public override bool CanWrite => _inner.CanWrite;
 
@@ -70,6 +71,19 @@ public sealed class CountingStream : Stream
     {
         await _inner.WriteAsync(buffer, cancellationToken);
         if (buffer.Length > 0) _traffic.Add(_token, buffer.Length);
+    }
+
+    public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    {
+        var n = await _inner.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
+        if (n > 0) _traffic.Add(_token, n);
+        return n;
+    }
+
+    public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    {
+        await _inner.WriteAsync(buffer.AsMemory(offset, count), cancellationToken);
+        if (count > 0) _traffic.Add(_token, count);
     }
 
     public override long Seek(long offset, SeekOrigin origin) => _inner.Seek(offset, origin);

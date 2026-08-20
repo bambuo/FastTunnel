@@ -10,4 +10,5 @@
     <Project Path="FastTunnel.Client/FastTunnel.Client.csproj"/>
     <Project Path="FastTunnel.Api/FastTunnel.Api.csproj"/>
     <Project Path="FastTunnel.Server/FastTunnel.Server.csproj"/>
+    <Project Path="FastTunnel.Tests/FastTunnel.Tests.csproj"/>
 </Solution>

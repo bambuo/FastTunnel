@@ -5,6 +5,7 @@
 // Copyright (c) 2019 Gui.H
 
 using FastTunnel.Core.Handlers;
+using FastTunnel.Core.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
@@ -37,7 +38,7 @@ namespace FastTunnel.Core.Listener
         private readonly WebSocket _tunnelClient;
         private readonly ILogger _logger;
         private readonly TimeSpan _idleTimeout;
-        private readonly string _token;
+        private readonly TunnelClient _client;
 
         private readonly Channel<byte[]> _outbound =
             Channel.CreateBounded<byte[]>(new BoundedChannelOptions(1024)
@@ -52,13 +53,13 @@ namespace FastTunnel.Core.Listener
 
         public UdpSession(IPEndPoint remoteEp, UdpClient udpClient,
             ForwardDispatcher dispatcher, WebSocket tunnelClient,
-            string token, ILogger logger, TimeSpan idleTimeout)
+            TunnelClient client, ILogger logger, TimeSpan idleTimeout)
         {
             _remoteEp = remoteEp;
             _udpClient = udpClient;
             _dispatcher = dispatcher;
             _tunnelClient = tunnelClient;
-            _token = token;
+            _client = client;
             _logger = logger;
             _idleTimeout = idleTimeout;
         }
@@ -128,7 +129,7 @@ namespace FastTunnel.Core.Listener
                         await stream.WriteAsync(header, 0, 2, token);
                         await stream.WriteAsync(data, 0, data.Length, token);
                         await stream.FlushAsync(token);
-                        _dispatcher.Traffic.Add(_token, data.Length);
+                        _dispatcher.Traffic.Add(_client.Token, data.Length);
                         _lastActivity = DateTime.UtcNow;
                     }
                 }
@@ -158,7 +159,7 @@ namespace FastTunnel.Core.Listener
                     {
                         if (!await ReadExactAsync(stream, buffer, 0, len, token)) break;
                         await _udpClient.SendAsync(buffer, len, _remoteEp);
-                        _dispatcher.Traffic.Add(_token, len);
+                        _dispatcher.Traffic.Add(_client.Token, len);
                         _lastActivity = DateTime.UtcNow;
                     }
                     finally

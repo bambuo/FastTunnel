@@ -106,9 +106,9 @@ public class FastTunnelServer(ILogger<FastTunnelServer> logger, IProxyConfigProv
                 }
 
                 IPortListener ls = item.Protocol == ProtocolEnum.UDP
-                    ? new UdpProxyListener("0.0.0.0", item.RemotePort, logger, client.webSocket, client.Token)
+                    ? new UdpProxyListener("0.0.0.0", item.RemotePort, logger, client.webSocket, client)
                     : new PortProxyListener("0.0.0.0", item.RemotePort, logger, client.webSocket);
-                ls.Start(new ForwardDispatcher(logger, this, item, client.Token));
+                ls.Start(new ForwardDispatcher(logger, this, item, client));
 
                 var forwardInfo = new ForwardInfo<ForwardHandlerArg> { Listener = ls, Socket = client.webSocket, SSHConfig = item };
 

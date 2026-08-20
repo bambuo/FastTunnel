@@ -1,4 +1,6 @@
 using FastTunnel.Api.Data;
+using FastTunnel.Api.Utils;
+using FastTunnel.Core;
 using FastTunnel.Core.Client;
 using FastTunnel.Api.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -32,33 +34,22 @@ public class StatsController(FastTunnelDbContext db, FastTunnelServer ftServer) 
     [HttpGet("traffic")]
     public ApiResponse Traffic([FromQuery] int hours = 24)
     {
-        if (hours <= 0 || hours > 24) hours = 24;
+        if (hours <= 0 || hours > TrafficStats.BucketCount) hours = TrafficStats.BucketCount;
 
         var snapshot = ftServer.Traffic.Snapshot(hours);
-        var hourLabels = new string[hours];
-        var end = FastTunnel.Core.Models.TrafficStats.CurrentBucketStart;
-        for (var i = hours - 1; i >= 0; i--)
-        {
-            hourLabels[i] = end.AddHours(-(hours - 1 - i)).ToString("yyyy-MM-ddTHH:00:00Z");
-        }
+        var hourLabels = ftServer.Traffic.GetHourLabels(hours);
 
         ApiResponse.Data = new
         {
-            hours = hourLabels,
+            hours = hourLabels.Select(h => h.ToString("yyyy-MM-ddTHH:00:00Z")),
             series = snapshot.Select(kv => new
             {
                 token = kv.Key,
-                label = MaskToken(kv.Key),
+                label = TokenMasker.Mask(kv.Key),
                 data = kv.Value,
             }),
         };
         ApiResponse.Success = true;
         return ApiResponse;
-    }
-
-    private static string MaskToken(string token)
-    {
-        if (string.IsNullOrEmpty(token)) return "(未设置)";
-        return token.Length <= 8 ? token : $"{token[..4]}****{token[^4..]}";
     }
 }

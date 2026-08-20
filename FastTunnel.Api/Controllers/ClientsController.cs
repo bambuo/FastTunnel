@@ -2,6 +2,7 @@ using FastTunnel.Api.Data;
 using FastTunnel.Api.Resources;
 using FastTunnel.Core.Client;
 using FastTunnel.Api.Models;
+using FastTunnel.Api.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -20,7 +21,7 @@ public class ClientsController(FastTunnelDbContext db, FastTunnelServer ftServer
             name = $"Client@{x.RemoteIpAddress}",
             ip = x.RemoteIpAddress.ToString(),
             token = x.Token,
-            tokenPreview = MaskToken(x.Token),
+            tokenPreview = TokenMasker.Mask(x.Token),
             isOnline = true,
             lastSeen = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
             clientInfo = x.ClientInfo,
@@ -29,12 +30,6 @@ public class ClientsController(FastTunnelDbContext db, FastTunnelServer ftServer
         ApiResponse.Data = clients;
         ApiResponse.Success = true;
         return new JsonResult(ApiResponse);
-    }
-
-    private static string MaskToken(string token)
-    {
-        if (string.IsNullOrEmpty(token)) return "(未设置)";
-        return token.Length <= 8 ? token : $"{token[..4]}****{token[^4..]}";
     }
 
     [HttpGet("online/count")]

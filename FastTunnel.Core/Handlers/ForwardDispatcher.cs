@@ -20,7 +20,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FastTunnel.Core.Handlers;
 
-public class ForwardDispatcher(ILogger logger, FastTunnelServer server, ForwardConfig config, string token)
+public class ForwardDispatcher(ILogger logger, FastTunnelServer server, ForwardConfig config, TunnelClient tunnelClient)
 {
     /// <summary>
     ///     流量统计（按 Token）
@@ -65,7 +65,7 @@ public class ForwardDispatcher(ILogger logger, FastTunnelServer server, ForwardC
                 return;
             }
 
-            await using var stream1 = new CountingStream(await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10)), server.Traffic, token);
+            await using var stream1 = new CountingStream(await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10)), server.Traffic, tunnelClient.Token);
             await using var stream2 = new NetworkStream(socket, true);
             stream2.ReadTimeout = 1000 * 60 * 10;
             await Task.WhenAny(stream1.CopyToAsync(stream2), stream2.CopyToAsync(stream1));

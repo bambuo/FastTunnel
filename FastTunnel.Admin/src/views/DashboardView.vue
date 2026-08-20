@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import * as echarts from 'echarts'
 import { getStatsOverview, getTokenTraffic } from '@/api/stats'
 import { getAuditLogs } from '@/api/auditLogs'
 import type { StatsOverview, TrafficResponse } from '@/types/stats'
 import type { AuditLogEntity } from '@/types/auditLog'
 import { IconDesktop, IconLanguage, IconSwap, IconSafe } from '@arco-design/web-vue/es/icon'
 import { formatDateTime } from '@/utils/format'
+import TrafficChart from '@/components/charts/TrafficChart.vue'
 
 const { t } = useI18n()
 
@@ -20,60 +20,6 @@ const stats = ref<StatsOverview>({
 const recentLogs = ref<AuditLogEntity[]>([])
 const loading = ref(true)
 const traffic = ref<TrafficResponse | null>(null)
-
-const chartRef = ref<HTMLDivElement | null>(null)
-let chart: echarts.ECharts | null = null
-let resizeObserver: ResizeObserver | null = null
-
-function formatBytes(bytes: number): string {
-  if (!bytes) return '0 B'
-  const units = ['B', 'KB', 'MB', 'GB', 'TB']
-  let i = 0
-  let v = bytes
-  while (v >= 1024 && i < units.length - 1) { v /= 1024; i++ }
-  return `${v.toFixed(v >= 100 || i === 0 ? 0 : 1)} ${units[i]}`
-}
-
-function renderChart() {
-  if (!chartRef.value) return
-  if (!chart) {
-    chart = echarts.init(chartRef.value)
-  }
-  const data = traffic.value
-  if (!data) return
-
-  const hours = data.hours.map(h => formatDateTime(h))
-  chart.setOption({
-    tooltip: {
-      trigger: 'axis',
-      valueFormatter: (value: unknown) => formatBytes(Number(value) || 0),
-    },
-    legend: { data: data.series.map(s => s.label), top: 0 },
-    grid: { left: 16, right: 16, top: 40, bottom: 8, containLabel: true },
-    xAxis: {
-      type: 'category',
-      boundaryGap: false,
-      data: hours,
-      axisLabel: { fontSize: 11 },
-    },
-    yAxis: {
-      type: 'value',
-      axisLabel: { fontSize: 11, formatter: (v: number) => formatBytes(v) },
-      splitLine: { lineStyle: { type: 'dashed' } },
-    },
-    series: data.series.map(s => ({
-      name: s.label,
-      type: 'line',
-      smooth: true,
-      showSymbol: false,
-      data: s.data,
-    })),
-  }, true)
-}
-
-function handleResize() {
-  chart?.resize()
-}
 
 onMounted(async () => {
   try {
@@ -89,20 +35,7 @@ onMounted(async () => {
     // handled
   } finally {
     loading.value = false
-    // 等待 v-else 分支渲染完成后再初始化图表（chartRef 此时才可用）
-    await nextTick()
-    if (traffic.value && traffic.value.series.length > 0) {
-      renderChart()
-      resizeObserver = new ResizeObserver(handleResize)
-      if (chartRef.value) resizeObserver.observe(chartRef.value)
-    }
   }
-})
-
-onBeforeUnmount(() => {
-  resizeObserver?.disconnect()
-  chart?.dispose()
-  chart = null
 })
 </script>
 
@@ -169,7 +102,7 @@ onBeforeUnmount(() => {
       </a-row>
 
       <a-card v-if="traffic && traffic.series.length > 0" :title="$t('dashboard.traffic')" class="traffic-card">
-        <div ref="chartRef" class="traffic-chart"></div>
+        <TrafficChart :traffic="traffic" />
       </a-card>
 
       <a-card :title="$t('dashboard.recentOps')" class="logs-card">
@@ -246,8 +179,4 @@ onBeforeUnmount(() => {
   margin-bottom: 24px;
 }
 
-.traffic-chart {
-  width: 100%;
-  height: 300px;
-}
 </style>

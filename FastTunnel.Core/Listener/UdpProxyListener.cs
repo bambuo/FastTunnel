@@ -5,6 +5,7 @@
 // Copyright (c) 2019 Gui.H
 
 using FastTunnel.Core.Handlers;
+using FastTunnel.Core.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -28,7 +29,7 @@ namespace FastTunnel.Core.Listener
 
         readonly ILogger _logger;
         readonly WebSocket _client;
-        readonly string _token;
+        readonly TunnelClient _tunnelClient;
 
         UdpClient _udpClient;
         ForwardDispatcher _requestDispatcher;
@@ -40,10 +41,10 @@ namespace FastTunnel.Core.Listener
 
         public int ListenPort { get; set; }
 
-        public UdpProxyListener(string ip, int port, ILogger logger, WebSocket client, string token)
+        public UdpProxyListener(string ip, int port, ILogger logger, WebSocket client, TunnelClient tunnelClient)
         {
             _client = client;
-            _token = token;
+            _tunnelClient = tunnelClient;
             _logger = logger;
             ListenIp = ip;
             ListenPort = port;
@@ -89,7 +90,7 @@ namespace FastTunnel.Core.Listener
 
         private UdpSession CreateSession(IPEndPoint remoteEp)
         {
-            var session = new UdpSession(remoteEp, _udpClient, _requestDispatcher, _client, _token, _logger, SessionIdleTimeout);
+            var session = new UdpSession(remoteEp, _udpClient, _requestDispatcher, _client, _tunnelClient, _logger, SessionIdleTimeout);
             session.Closed += () =>
             {
                 _sessions.TryRemove(remoteEp, out _);
