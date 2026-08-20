@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using FastTunnel.Core.Client;
 using FastTunnel.Core.Extensions;
 using FastTunnel.Core.Models;
+using FastTunnel.Core.Utilitys;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Forwarder;
@@ -79,7 +80,8 @@ public class FastTunnelForwarderHttpClientFactory(ILogger<FastTunnelForwarderHtt
             var res = await tcs.Task.WaitAsync(cancellation);
 
             logger.LogDebug($"[Http]Swap OK {msgId}");
-            return res;
+            // YARP 在此流上双向复制 body，用计数流统计该 Token 的流量
+            return new CountingStream(res, fastTunnelServer.Traffic, web.Token);
         }
         catch (WebSocketException)
         {

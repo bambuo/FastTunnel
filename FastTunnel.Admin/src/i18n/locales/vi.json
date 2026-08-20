@@ -74,7 +74,8 @@
     },
     "table": {
       "empty": "Không có hoạt động gần đây"
-    }
+    },
+    "traffic": "Lưu lượng theo Token"
   },
   "config": {
     "general": "Chung",

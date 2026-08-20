@@ -15,12 +15,17 @@ using FastTunnel.Core.Exceptions;
 using FastTunnel.Core.Extensions;
 using FastTunnel.Core.Listener;
 using FastTunnel.Core.Models;
+using FastTunnel.Core.Utilitys;
 using Microsoft.Extensions.Logging;
 
 namespace FastTunnel.Core.Handlers;
 
-public class ForwardDispatcher(ILogger logger, FastTunnelServer server, ForwardConfig config)
+public class ForwardDispatcher(ILogger logger, FastTunnelServer server, ForwardConfig config, string token)
 {
+    /// <summary>
+    ///     流量统计（按 Token）
+    /// </summary>
+    public TrafficStats Traffic => server.Traffic;
     /// <summary>
     /// </summary>
     /// <param name="socket">用户请求</param>
@@ -60,7 +65,7 @@ public class ForwardDispatcher(ILogger logger, FastTunnelServer server, ForwardC
                 return;
             }
 
-            await using var stream1 = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            await using var stream1 = new CountingStream(await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10)), server.Traffic, token);
             await using var stream2 = new NetworkStream(socket, true);
             stream2.ReadTimeout = 1000 * 60 * 10;
             await Task.WhenAny(stream1.CopyToAsync(stream2), stream2.CopyToAsync(stream1));

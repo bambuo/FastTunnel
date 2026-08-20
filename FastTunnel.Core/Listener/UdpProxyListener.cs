@@ -28,6 +28,7 @@ namespace FastTunnel.Core.Listener
 
         readonly ILogger _logger;
         readonly WebSocket _client;
+        readonly string _token;
 
         UdpClient _udpClient;
         ForwardDispatcher _requestDispatcher;
@@ -39,9 +40,10 @@ namespace FastTunnel.Core.Listener
 
         public int ListenPort { get; set; }
 
-        public UdpProxyListener(string ip, int port, ILogger logger, WebSocket client)
+        public UdpProxyListener(string ip, int port, ILogger logger, WebSocket client, string token)
         {
             _client = client;
+            _token = token;
             _logger = logger;
             ListenIp = ip;
             ListenPort = port;
@@ -87,7 +89,7 @@ namespace FastTunnel.Core.Listener
 
         private UdpSession CreateSession(IPEndPoint remoteEp)
         {
-            var session = new UdpSession(remoteEp, _udpClient, _requestDispatcher, _client, _logger, SessionIdleTimeout);
+            var session = new UdpSession(remoteEp, _udpClient, _requestDispatcher, _client, _token, _logger, SessionIdleTimeout);
             session.Closed += () =>
             {
                 _sessions.TryRemove(remoteEp, out _);

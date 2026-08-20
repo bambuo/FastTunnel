@@ -37,6 +37,7 @@ namespace FastTunnel.Core.Listener
         private readonly WebSocket _tunnelClient;
         private readonly ILogger _logger;
         private readonly TimeSpan _idleTimeout;
+        private readonly string _token;
 
         private readonly Channel<byte[]> _outbound =
             Channel.CreateBounded<byte[]>(new BoundedChannelOptions(1024)
@@ -51,12 +52,13 @@ namespace FastTunnel.Core.Listener
 
         public UdpSession(IPEndPoint remoteEp, UdpClient udpClient,
             ForwardDispatcher dispatcher, WebSocket tunnelClient,
-            ILogger logger, TimeSpan idleTimeout)
+            string token, ILogger logger, TimeSpan idleTimeout)
         {
             _remoteEp = remoteEp;
             _udpClient = udpClient;
             _dispatcher = dispatcher;
             _tunnelClient = tunnelClient;
+            _token = token;
             _logger = logger;
             _idleTimeout = idleTimeout;
         }
@@ -126,6 +128,7 @@ namespace FastTunnel.Core.Listener
                         await stream.WriteAsync(header, 0, 2, token);
                         await stream.WriteAsync(data, 0, data.Length, token);
                         await stream.FlushAsync(token);
+                        _dispatcher.Traffic.Add(_token, data.Length);
                         _lastActivity = DateTime.UtcNow;
                     }
                 }
@@ -155,6 +158,7 @@ namespace FastTunnel.Core.Listener
                     {
                         if (!await ReadExactAsync(stream, buffer, 0, len, token)) break;
                         await _udpClient.SendAsync(buffer, len, _remoteEp);
+                        _dispatcher.Traffic.Add(_token, len);
                         _lastActivity = DateTime.UtcNow;
                     }
                     finally

@@ -13,4 +13,7 @@ public class WebInfo
     public WebSocket Socket { get; set; } = null!;
 
     public WebConfig WebConfig { get; set; } = null!;
+
+    /// <summary>所属客户端的 Token（流量统计用）</summary>
+    public string Token { get; set; } = string.Empty;
 }

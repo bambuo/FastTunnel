@@ -73,7 +73,8 @@
     },
     "table": {
       "empty": "暂无操作记录"
-    }
+    },
+    "traffic": "流量趋势（按 Token）"
   },
   "config": {
     "general": "通用",

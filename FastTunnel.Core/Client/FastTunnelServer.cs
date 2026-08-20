@@ -39,6 +39,11 @@ public class FastTunnelServer(ILogger<FastTunnelServer> logger, IProxyConfigProv
         = new();
 
     /// <summary>
+    ///     按 Token 的流量统计（内存滑动窗口）
+    /// </summary>
+    public TrafficStats Traffic { get; } = new();
+
+    /// <summary>
     ///     客户端登录
     /// </summary>
     /// <param name="client"></param>
@@ -101,9 +106,9 @@ public class FastTunnelServer(ILogger<FastTunnelServer> logger, IProxyConfigProv
                 }
 
                 IPortListener ls = item.Protocol == ProtocolEnum.UDP
-                    ? new UdpProxyListener("0.0.0.0", item.RemotePort, logger, client.webSocket)
+                    ? new UdpProxyListener("0.0.0.0", item.RemotePort, logger, client.webSocket, client.Token)
                     : new PortProxyListener("0.0.0.0", item.RemotePort, logger, client.webSocket);
-                ls.Start(new ForwardDispatcher(logger, this, item));
+                ls.Start(new ForwardDispatcher(logger, this, item, client.Token));
 
                 var forwardInfo = new ForwardInfo<ForwardHandlerArg> { Listener = ls, Socket = client.webSocket, SSHConfig = item };
 
@@ -147,7 +152,7 @@ public class FastTunnelServer(ILogger<FastTunnelServer> logger, IProxyConfigProv
 
         foreach (var item in webs)
         {
-            var info = new WebInfo { Socket = client.webSocket, WebConfig = item };
+            var info = new WebInfo { Socket = client.webSocket, WebConfig = item, Token = client.Token };
             var hostName = $"{item.SubDomain}.{ServerOption.CurrentValue.WebDomain}".Trim().ToLower();
 
             logger.LogDebug($"new domain '{hostName}'");
