@@ -6,6 +6,7 @@ using FastTunnel.Core.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
@@ -212,8 +213,11 @@ public class Program
 
             app.UseCors("corsPolicy");
 
-            app.UseStaticFiles();
-            app.MapFallbackToFile("index.html");
+            // 前端静态文件嵌入在程序集内（FastTunnel.Admin/dist，见 csproj 的 EmbedAdminDist），
+            // 单文件发布后无需在磁盘上附带 wwwroot
+            var webRootProvider = new ManifestEmbeddedFileProvider(typeof(Program).Assembly, "wwwroot");
+            app.UseStaticFiles(new StaticFileOptions { FileProvider = webRootProvider });
+            app.MapFallbackToFile("index.html", new StaticFileOptions { FileProvider = webRootProvider });
 
             app.UseAuthentication();
             app.UseAuthorization();

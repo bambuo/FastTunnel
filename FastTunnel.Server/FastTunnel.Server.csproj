@@ -7,6 +7,8 @@
     <LangVersion>default</LangVersion>
     <!-- 覆盖 Directory.Build.props 的全局设置：Server 的本地化中间件需要完整 globalization -->
     <InvariantGlobalization>false</InvariantGlobalization>
+    <!-- 前端 dist 嵌入为资源清单，供 ManifestEmbeddedFileProvider 读取 -->
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +25,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.0" />
@@ -48,9 +51,23 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
+  <!-- 前端构建产物（FastTunnel.Admin/dist）嵌入为 wwwroot/ 前缀的资源，
+       单文件发布后静态文件随二进制分发；dist 缺失时自动执行 bun 构建。
+       时机须早于 FileProviders.Embedded 包的 _CalculateEmbeddedFilesManifestInputs
+       （PrepareResourceNames 的依赖），否则嵌入清单不会被编译进程序集 -->
+  <Target Name="EmbedAdminDist" BeforeTargets="PrepareForBuild">
+    <Exec Condition="!Exists('..\FastTunnel.Admin\dist\index.html')" Command="bun install" WorkingDirectory="..\FastTunnel.Admin" ContinueOnError="true" />
+    <Exec Condition="!Exists('..\FastTunnel.Admin\dist\index.html')" Command="bun run build" WorkingDirectory="..\FastTunnel.Admin" ContinueOnError="true" />
+    <ItemGroup>
+      <EmbeddedResource Remove="..\FastTunnel.Admin\dist\**\*" />
+      <EmbeddedResource Include="..\FastTunnel.Admin\dist\**\*" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Update="..\FastTunnel.Admin\dist\**\*">
+        <LogicalName>wwwroot/%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
 
   <ProjectExtensions>
     <VisualStudio>
