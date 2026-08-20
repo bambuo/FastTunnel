@@ -7,6 +7,8 @@
     <LangVersion>default</LangVersion>
     <!-- 覆盖 Directory.Build.props 的全局设置：Server 的本地化中间件需要完整 globalization -->
     <InvariantGlobalization>false</InvariantGlobalization>
+    <!-- 静态文件以嵌入资源提供（EmbedAdminDist），不使用 Static Web Assets 构建目标 -->
+    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
     <!-- 前端 dist 嵌入为资源清单，供 ManifestEmbeddedFileProvider 读取 -->
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
@@ -59,8 +61,7 @@
        单文件发布后静态文件随二进制分发；dist 缺失时自动执行 bun 构建。
        时机须早于 FileProviders.Embedded 包的 _CalculateEmbeddedFilesManifestInputs
        （PrepareResourceNames 的依赖），否则嵌入清单不会被编译进程序集 -->
-  <Target Name="EmbedAdminDist" BeforeTargets="PrepareForBuild">
-    <Exec Condition="!Exists('..\FastTunnel.Admin\dist\index.html')" Command="bun install" WorkingDirectory="..\FastTunnel.Admin" ContinueOnError="true" />
+  <Target Name="EmbedAdminDist" BeforeTargets="PrepareForBuild">    <Exec Condition="!Exists('..\FastTunnel.Admin\dist\index.html')" Command="bun install" WorkingDirectory="..\FastTunnel.Admin" ContinueOnError="true" />
     <Exec Condition="!Exists('..\FastTunnel.Admin\dist\index.html')" Command="bun run build" WorkingDirectory="..\FastTunnel.Admin" ContinueOnError="true" />
     <ItemGroup>
       <EmbeddedResource Remove="..\FastTunnel.Admin\dist\**\*" />
@@ -71,6 +72,11 @@
         <LogicalName>wwwroot/%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
       </EmbeddedResource>
     </ItemGroup>
+  </Target>
+
+  <!-- 依赖库（FastTunnel.Core 为 NuGet 包生成）的文档 xml 不进发布目录：单文件运行不需要 -->
+  <Target Name="RemoveDependencyDocsFromPublish" AfterTargets="CopyFilesToPublishDirectory">
+    <Delete Files="$(PublishDir)FastTunnel.Core.xml" />
   </Target>
 
   <ProjectExtensions>

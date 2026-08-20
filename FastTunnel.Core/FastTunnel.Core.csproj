@@ -15,6 +15,9 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>FastTunnel.Core</PackageTags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- 文档 xml 生成到中间目录：只进 NuGet 包，不复制到 bin/发布目录（注意：
+         此处不能用 $(IntermediateOutputPath)，它在项目求值时尚未定义 -->
+    <DocumentationFile>obj/$(Configuration)/$(TargetFramework)/$(AssemblyName).xml</DocumentationFile>
     <PackageReleaseNotes>FastTunnel.Core</PackageReleaseNotes>
     <LangVersion>default</LangVersion>
     <TargetFramework>net10.0</TargetFramework>
