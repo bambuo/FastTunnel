@@ -75,7 +75,7 @@
     "table": {
       "empty": "Không có hoạt động gần đây"
     },
-    "traffic": "Lưu lượng theo Token",
+    "traffic": "Xu hướng lưu lượng",
     "trafficEmpty": "Chưa có dữ liệu lưu lượng"
   },
   "config": {
