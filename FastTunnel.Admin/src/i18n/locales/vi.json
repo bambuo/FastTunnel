@@ -1,0 +1,248 @@
+{
+  "nav": {
+    "brand": "FastTunnel",
+    "dashboard": "Bảng điều khiển",
+    "webTunnels": "Tunnel Web",
+    "systemSettings": "Cài đặt hệ thống",
+    "forwardTunnels": "Chuyển tiếp cổng",
+    "tokens": "Token",
+    "clients": "Máy khách",
+    "auditLogs": "Nhật ký kiểm tra",
+    "settings": "Cài đặt hệ thống",
+    "logout": "Đăng xuất",
+    "language": "Ngôn ngữ"
+  },
+  "login": {
+    "brand": {
+      "desc": "Bảng điều khiển xuyên mạng nội bộ"
+    },
+    "title": {
+      "credentials": "Đăng nhập",
+      "mfaSetup": "Thiết lập xác thực hai lớp",
+      "mfaVerify": "Xác thực hai lớp"
+    },
+    "form": {
+      "username": "Tên đăng nhập",
+      "usernamePlaceholder": "Nhập tên đăng nhập",
+      "password": "Mật khẩu",
+      "passwordPlaceholder": "Nhập mật khẩu",
+      "submit": "Đăng nhập"
+    },
+    "setup": {
+      "hint": "Không thể kết nối máy chủ. Nếu đây là lần triển khai đầu tiên,",
+      "link": "đi tới trang thiết lập"
+    },
+    "mfa": {
+      "totpLabel": "Nhập mã 6 chữ số từ ứng dụng xác thực",
+      "totpHint": "Nhập mã 6 chữ số từ ứng dụng Authenticator",
+      "countdown": "Token hết hạn sau",
+      "back": "Quay lại đăng nhập"
+    }
+  },
+  "mfa": {
+    "setup": {
+      "title": "Xác minh thành công, vui lòng thiết lập xác thực hai lớp",
+      "tip": "Quét mã QR bên dưới bằng {app1} hoặc {app2}",
+      "secretLabel": "Không quét được? Nhập khóa thủ công:",
+      "copy": "Sao chép"
+    }
+  },
+  "setup": {
+    "title": "Thiết lập FastTunnel",
+    "desc": "Triển khai lần đầu, vui lòng tạo tài khoản quản trị",
+    "form": {
+      "username": "Tên quản trị",
+      "usernamePlaceholder": "Nhập tên đăng nhập",
+      "password": "Mật khẩu quản trị",
+      "passwordPlaceholder": "Ít nhất 8 ký tự, chữ và số",
+      "passwordWeak": "Mật khẩu quá yếu: ít nhất 8 ký tự gồm chữ và số",
+      "passwordHint": "Sử dụng kết hợp chữ và số",
+      "confirm": "Xác nhận mật khẩu",
+      "confirmPlaceholder": "Nhập lại mật khẩu",
+      "confirmMismatch": "Mật khẩu không khớp",
+      "submit": "Hoàn tất thiết lập"
+    }
+  },
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "recentOps": "Hoạt động gần đây",
+    "stat": {
+      "onlineClients": "Máy khách trực tuyến",
+      "activeWebTunnels": "Tunnel Web đang hoạt động",
+      "activeForwardTunnels": "Chuyển tiếp cổng đang hoạt động",
+      "totalTokens": "Tổng Token"
+    },
+    "table": {
+      "empty": "Không có hoạt động gần đây"
+    }
+  },
+  "config": {
+    "general": "Chung",
+    "pageDesc": "Quản lý cấu hình máy chủ FastTunnel. Thay đổi có hiệu lực ngay (thay đổi JWT cần khởi động lại)",
+    "enableForward": "Bật chuyển tiếp cổng",
+    "enableForwardTip": "Khi tắt, máy chủ ngừng xử lý chuyển tiếp cổng",
+    "webDomain": "Tên miền gốc",
+    "webDomainPlaceholder": "vd. test.cc",
+    "webDomainTip": "Máy khách truy cập trang nội bộ qua ${SubDomain}.${WebDomain}",
+    "webAllowAccessIps": "Danh sách trắng truy cập",
+    "webAllowAccessIpsPlaceholder": "Nhập IP và nhấn Enter",
+    "webAllowAccessIpsTip": "Để trống cho phép mọi IP (trường dự phòng, chưa hiệu lực ở phiên bản hiện tại)",
+    "jwt": "Xác thực JWT",
+    "clockSkew": "Độ lệch đồng hồ (giây)",
+    "validAudience": "ValidAudience",
+    "validIssuer": "ValidIssuer",
+    "issuerSigningKey": "Khóa ký",
+    "expires": "Hết hạn (phút)",
+    "jwtTip": "Thay đổi JWT cần khởi động lại máy chủ để có hiệu lực",
+    "save": "Lưu cấu hình",
+    "saved": "Đã lưu và áp dụng cấu hình (thay đổi JWT cần khởi động lại máy chủ)"
+  },
+  "page": {
+    "tokens": "Token",
+    "auditLogs": "Nhật ký kiểm tra",
+    "clients": "Máy khách",
+    "forwardTunnels": "Chuyển tiếp cổng",
+    "webTunnels": "Tunnel Web"
+  },
+  "table": {
+    "column": {
+      "tokenValue": "Token",
+      "description": "Mô tả",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo",
+      "actions": "Thao tác",
+      "name": "Tên",
+      "onlineStatus": "Trạng thái",
+      "lastSeen": "Lần cuối thấy",
+      "remotePort": "Cổng từ xa",
+      "localAddress": "Địa chỉ nội bộ",
+      "protocol": "Giao thức",
+      "client": "Máy khách",
+      "subDomain": "Tên miền phụ",
+      "operator": "Người thao tác",
+      "entity": "Đối tượng",
+      "detail": "Chi tiết",
+      "time": "Thời gian",
+      "token": "Token",
+      "ip": "IP",
+      "environment": "Môi trường"
+    }
+  },
+  "action": {
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "copy": "Sao chép",
+    "reset": "Đặt lại",
+    "newToken": "Token mới",
+    "editToken": "Sửa Token",
+    "newTunnel": "Tunnel mới",
+    "enabled": "Đã bật",
+    "disabled": "Đã tắt",
+    "online": "Trực tuyến",
+    "offline": "Ngoại tuyến"
+  },
+  "placeholder": {
+    "searchToken": "Tìm mô tả hoặc giá trị Token",
+    "searchClient": "Tìm tên máy khách",
+    "searchTunnel": "Tìm cổng hoặc địa chỉ nội bộ",
+    "searchSubDomain": "Tìm tên miền phụ hoặc địa chỉ nội bộ",
+    "tokenValue": "Để trống để tự tạo UUID",
+    "description": "vd. Máy chủ văn phòng",
+    "subDomain": "vd. api",
+    "localIp": "vd. 192.168.1.100",
+    "localPort": "vd. 8080",
+    "remotePort": "vd. 2222",
+    "sshPort": "vd. 22",
+    "clientToken": "Chọn Token",
+    "notSet": "Chưa đặt"
+  },
+  "popconfirm": {
+    "deleteToken": "Xóa Token này?",
+    "deleteTunnel": "Xóa tunnel này?"
+  },
+  "empty": {
+    "noAuditLogs": "Không có nhật ký kiểm tra",
+    "noForwardTunnels": "Không có chuyển tiếp cổng",
+    "noWebTunnels": "Không có tunnel web"
+  },
+  "message": {
+    "token": {
+      "created": "Tạo Token thành công",
+      "updated": "Cập nhật Token thành công",
+      "deleted": "Đã xóa Token",
+      "copied": "Đã sao chép vào bộ nhớ tạm",
+      "copyFailed": "Sao chép thất bại"
+    },
+    "tunnel": {
+      "created": "Tạo tunnel thành công",
+      "updated": "Cập nhật tunnel thành công",
+      "deleted": "Đã xóa tunnel",
+      "portOccupied": "Cổng {port} đã được sử dụng"
+    },
+    "operationFailed": "Thao tác thất bại",
+    "deleteFailed": "Xóa thất bại",
+    "setup": {
+      "completed": "Hoàn tất thiết lập, đang chuyển đến đăng nhập",
+      "failed": "Thiết lập thất bại"
+    },
+    "secret": {
+      "copied": "Đã sao chép khóa bí mật vào bộ nhớ tạm",
+      "copyFailed": "Sao chép thất bại, vui lòng sao chép thủ công"
+    }
+  },
+  "tunnelForm": {
+    "title": {
+      "edit": "Sửa tunnel",
+      "create": "Tunnel mới"
+    },
+    "label": {
+      "subDomain": "Tên miền phụ",
+      "localIp": "IP nội bộ",
+      "localPort": "Cổng nội bộ",
+      "clientToken": "Token",
+      "remotePort": "Cổng từ xa",
+      "protocol": "Giao thức"
+    },
+    "tokenOption": "({desc})"
+  },
+  "client": {
+    "loading": "Đang tải...",
+    "webTunnels": "Tunnel Web",
+    "forwardTunnels": "Chuyển tiếp cổng",
+    "none": "Không có",
+    "env": {
+      "os": "Hệ điều hành",
+      "arch": "Kiến trúc",
+      "cpu": "CPU: {count} lõi",
+      "memory": "Bộ nhớ: {total} (khả dụng {available})",
+      "dotnet": ".NET"
+    }
+  },
+  "route": {
+    "setup": "Thiết lập",
+    "login": "Đăng nhập",
+    "dashboard": "Bảng điều khiển",
+    "webTunnels": "Tunnel Web",
+    "forwardTunnels": "Chuyển tiếp cổng",
+    "tokens": "Token",
+    "clients": "Máy khách",
+    "auditLogs": "Nhật ký kiểm tra"
+  },
+  "filter": {
+    "action": "Thao tác",
+    "entity": "Đối tượng",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "deletionStatus": "Trạng thái xóa",
+    "enabledStatus": "Trạng thái bật",
+    "all": "Tất cả",
+    "deleted": "Đã xóa",
+    "notDeleted": "Chưa xóa",
+    "enabled": "Đã bật",
+    "disabled": "Đã tắt"
+  },
+  "status": {
+    "deleted": "Đã xóa",
+    "active": "Hoạt động"
+  }
+}
