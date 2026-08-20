@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { use, init } from 'echarts/core'
 import { LineChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
@@ -10,8 +9,6 @@ import type { TrafficResponse } from '@/types/stats'
 import { formatDateTime } from '@/utils/format'
 
 use([LineChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer])
-
-const { t } = useI18n()
 
 const props = defineProps<{
   traffic: TrafficResponse | null
