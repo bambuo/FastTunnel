@@ -15,7 +15,7 @@ namespace FastTunnel.Core.Utilitys;
 ///     采集客户端运行环境信息（系统、CPU、内存、.NET 版本），登录时上报。
 ///     内存采集跨平台尽力而为，失败返回 0。
 /// </summary>
-public static class ClientInfoCollector
+public static partial class ClientInfoCollector
 {
     public static ClientInfo Collect()
     {
@@ -121,10 +121,10 @@ public static class ClientInfoCollector
         public ulong ullAvailExtendedVirtual;
     }
 
-    [DllImport("kernel32.dll", SetLastError = true)]
+    [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
+    private static partial bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
 
-    [DllImport("libc", SetLastError = true)]
-    private static extern int sysctlbyname(string name, out ulong value, ref nuint size, IntPtr newp, nuint newlen);
+    [LibraryImport("libc", SetLastError = true, StringMarshalling = StringMarshalling.Utf8)]
+    private static partial int sysctlbyname(string name, out ulong value, ref nuint size, IntPtr newp, nuint newlen);
 }
