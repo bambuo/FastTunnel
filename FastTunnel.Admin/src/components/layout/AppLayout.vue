@@ -99,7 +99,7 @@ function handleLogout() {
             :model-value="locale"
             size="small"
             style="width: 116px"
-            @change="switchLocale"
+            @change="(val: any) => switchLocale(val)"
           >
             <a-option v-for="loc in supportedLocales" :key="loc.key" :value="loc.key">{{ loc.label }}</a-option>
           </a-select>
