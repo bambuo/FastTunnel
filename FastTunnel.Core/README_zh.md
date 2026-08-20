@@ -9,7 +9,7 @@
 [![Nuget](https://img.shields.io/nuget/v/FastTunnel.Core)](https://www.nuget.org/packages/FastTunnel.Core/)
 [![Nuget](https://img.shields.io/nuget/dt/FastTunnel.Core)](https://www.nuget.org/packages/FastTunnel.Core/)
 
-[README](README.md) | [中文文档](README_zh.md)
+[English](../README.en.md) | [中文文档](../README.md)
 
 **本项目支持任何商用和二次开发行为，但对于剽窃复制本项目代码、实现方案或架构重新开源包装成自己的开源作品，严重鄙视。**
 
