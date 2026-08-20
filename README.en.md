@@ -8,7 +8,7 @@
 [![Build status](https://github.com/anjoy8/blog.core/workflows/.NET%20Core/badge.svg)](https://github.com/SpringHgui/FastTunnel/actions)
 [![Nuget](https://img.shields.io/nuget/v/FastTunnel.Core)](https://www.nuget.org/packages/FastTunnel.Core/)
 
-[中文文档](README.md) | [English](README.en.md)
+[中文文档](README.md) | [Esperanto](README.eo.md)
 
 </div>
 
