@@ -96,10 +96,10 @@ onMounted(async () => {
         <a-table
           :columns="[
             { title: t('table.column.actions'), dataIndex: 'action', width: 80 },
-            { title: t('table.column.entity'), dataIndex: 'entity', width: 120 },
-            { title: t('table.column.detail'), dataIndex: 'detail', ellipsis: true },
-            { title: t('table.column.operator'), dataIndex: 'operator', width: 100 },
-            { title: t('table.column.time'), slotName: 'createdAt', width: 160 },
+            { title: t('table.column.entity'), dataIndex: 'entity', width: 110 },
+            { title: t('table.column.detail'), dataIndex: 'detail', ellipsis: true, width: 260 },
+            { title: t('table.column.operator'), dataIndex: 'operator', width: 120, ellipsis: true },
+            { title: t('table.column.time'), slotName: 'createdAt', width: 170 },
           ]"
           :data="recentLogs"
           :pagination="false"
