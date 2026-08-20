@@ -9,6 +9,8 @@
     <InvariantGlobalization>false</InvariantGlobalization>
     <!-- 静态文件以嵌入资源提供（EmbedAdminDist），不使用 Static Web Assets 构建目标 -->
     <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
+    <!-- 不托管于 IIS：Windows 发布时不生成 web.config -->
+    <PublishIISAssets>false</PublishIISAssets>
     <!-- 前端 dist 嵌入为资源清单，供 ManifestEmbeddedFileProvider 读取 -->
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
@@ -74,9 +76,9 @@
     </ItemGroup>
   </Target>
 
-  <!-- 依赖库（FastTunnel.Core 为 NuGet 包生成）的文档 xml 不进发布目录：单文件运行不需要 -->
-  <Target Name="RemoveDependencyDocsFromPublish" AfterTargets="CopyFilesToPublishDirectory">
-    <Delete Files="$(PublishDir)FastTunnel.Core.xml" />
+  <!-- 清理发布目录冗余文件：Core 的文档 xml（NuGet 包内保留） -->
+  <Target Name="CleanPublishExtras" AfterTargets="Publish">
+    <Delete Files="$(PublishDir)FastTunnel.Core.xml" Condition="Exists('$(PublishDir)FastTunnel.Core.xml')" />
   </Target>
 
   <ProjectExtensions>
