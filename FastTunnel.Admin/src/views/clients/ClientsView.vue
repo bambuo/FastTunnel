@@ -97,8 +97,7 @@ async function handleExpand(row: ClientEntity) {
                 <p>{{ $t('client.env.os') }}：{{ record.clientInfo.os }} {{ record.clientInfo.osVersion }}</p>
                 <p>{{ $t('client.env.arch') }}：{{ record.clientInfo.architecture }}</p>
                 <p>{{ $t('client.env.cpu', { count: record.clientInfo.cpuCores }) }}</p>
-                <p v-if="record.clientInfo.totalMemoryMB > 0">{{ $t('client.env.memory', { total: formatMemory(record.clientInfo.totalMemoryMB), available: formatMemory(record.clientInfo.availableMemoryMB) }) }}</p>
-                <p v-else>{{ $t('client.env.memoryAvailable', { available: formatMemory(record.clientInfo.availableMemoryMB) }) }}</p>
+                <p>{{ $t('client.env.memoryAvailable', { available: formatMemory(record.clientInfo.availableMemoryMB) }) }}</p>
                 <p>{{ $t('client.env.dotnet') }}：{{ record.clientInfo.dotnetVersion }}</p>
               </div>
             </template>

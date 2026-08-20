@@ -3,7 +3,6 @@ export interface ClientInfo {
   osVersion: string
   architecture: string
   cpuCores: number
-  totalMemoryMB: number
   availableMemoryMB: number
   dotnetVersion: string
 }

@@ -23,10 +23,7 @@ public class ClientInfo
     /// <summary>逻辑处理器数量</summary>
     public int CpuCores { get; set; }
 
-    /// <summary>总内存（MB），未知为 0</summary>
-    public long TotalMemoryMB { get; set; }
-
-    /// <summary>可用内存（MB，Windows/macOS 为 GC 估算近似值），未知为 0</summary>
+    /// <summary>可用内存（MB，GC 估算近似值），未知为 0</summary>
     public long AvailableMemoryMB { get; set; }
 
     /// <summary>.NET 运行时版本</summary>

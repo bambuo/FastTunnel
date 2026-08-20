@@ -216,7 +216,6 @@
       "os": "Hệ điều hành",
       "arch": "Kiến trúc",
       "cpu": "CPU: {count} lõi",
-      "memory": "Bộ nhớ: {total} (khả dụng {available})",
       "dotnet": ".NET",
       "memoryAvailable": "Bộ nhớ khả dụng: {available}"
     }

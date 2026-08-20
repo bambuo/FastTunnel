@@ -216,7 +216,6 @@
       "os": "系统",
       "arch": "架构",
       "cpu": "CPU：{count} 核",
-      "memory": "内存：{total}（可用 {available}）",
       "dotnet": ".NET",
       "memoryAvailable": "可用内存：{available}"
     }

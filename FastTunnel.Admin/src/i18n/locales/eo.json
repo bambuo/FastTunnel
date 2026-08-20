@@ -216,7 +216,6 @@
       "os": "Sistemo",
       "arch": "Arkitekturo",
       "cpu": "CPU: {count} kernoj",
-      "memory": "Memoro: {total} (havebla {available})",
       "dotnet": ".NET",
       "memoryAvailable": "Havebla memoro: {available}"
     }

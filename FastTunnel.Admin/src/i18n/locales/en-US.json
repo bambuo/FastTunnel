@@ -216,7 +216,6 @@
       "os": "OS",
       "arch": "Architecture",
       "cpu": "CPU: {count} cores",
-      "memory": "Memory: {total} (available {available})",
       "dotnet": ".NET",
       "memoryAvailable": "Available memory: {available}"
     }
