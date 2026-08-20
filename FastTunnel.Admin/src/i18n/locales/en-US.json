@@ -75,7 +75,8 @@
     "table": {
       "empty": "No recent activity"
     },
-    "traffic": "Traffic by Token"
+    "traffic": "Traffic by Token",
+    "trafficEmpty": "No traffic data yet"
   },
   "config": {
     "general": "General",

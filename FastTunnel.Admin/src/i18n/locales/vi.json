@@ -75,7 +75,8 @@
     "table": {
       "empty": "Không có hoạt động gần đây"
     },
-    "traffic": "Lưu lượng theo Token"
+    "traffic": "Lưu lượng theo Token",
+    "trafficEmpty": "Chưa có dữ liệu lưu lượng"
   },
   "config": {
     "general": "Chung",

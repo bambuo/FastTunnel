@@ -75,7 +75,8 @@
     "table": {
       "empty": "Neniuj lastatempaj agoj"
     },
-    "traffic": "Trafiko laŭ Ĵetono"
+    "traffic": "Trafiko laŭ Ĵetono",
+    "trafficEmpty": "Neniu trafika datumoj"
   },
   "config": {
     "general": "Ĝenerala",

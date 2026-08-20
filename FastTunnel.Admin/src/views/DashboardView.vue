@@ -101,7 +101,7 @@ onMounted(async () => {
         </a-col>
       </a-row>
 
-      <a-card v-if="traffic && traffic.series.length > 0" :title="$t('dashboard.traffic')" class="traffic-card">
+      <a-card v-if="traffic" :title="$t('dashboard.traffic')" class="traffic-card">
         <TrafficChart :traffic="traffic" />
       </a-card>
 

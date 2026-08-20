@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { use, init } from 'echarts/core'
 import { LineChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
@@ -10,9 +11,13 @@ import { formatDateTime } from '@/utils/format'
 
 use([LineChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer])
 
+const { t } = useI18n()
+
 const props = defineProps<{
   traffic: TrafficResponse | null
 }>()
+
+const isEmpty = computed(() => !props.traffic || props.traffic.series.length === 0)
 
 const chartRef = ref<HTMLDivElement | null>(null)
 let chart: ECharts | null = null
@@ -81,12 +86,31 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="chartRef" class="traffic-chart"></div>
+  <div class="traffic-chart-wrap">
+    <div v-if="isEmpty" class="traffic-empty">{{ $t('dashboard.trafficEmpty') }}</div>
+    <div ref="chartRef" v-show="!isEmpty" class="traffic-chart"></div>
+  </div>
 </template>
 
 <style scoped>
+.traffic-chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 300px;
+}
+
 .traffic-chart {
   width: 100%;
   height: 300px;
+}
+
+.traffic-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-3);
+  font-size: 13px;
 }
 </style>
