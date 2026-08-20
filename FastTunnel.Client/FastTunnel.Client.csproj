@@ -21,8 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- 开发环境配置不随发布分发 -->
     <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -34,6 +36,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <!-- 依赖库（FastTunnel.Core 为 NuGet 包生成）的文档 xml 不进发布目录 -->
+  <Target Name="CleanPublishExtras" AfterTargets="Publish">
+    <Delete Files="$(PublishDir)FastTunnel.Core.xml" Condition="Exists('$(PublishDir)FastTunnel.Core.xml')" />
+  </Target>
 
   <ProjectExtensions>
     <VisualStudio>
