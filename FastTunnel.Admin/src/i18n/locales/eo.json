@@ -1,0 +1,236 @@
+{
+  "nav": {
+    "brand": "FastTunnel",
+    "dashboard": "Panelo",
+    "webTunnels": "TTT-Tuneloj",
+    "systemSettings": "Sistemaj Agordoj",
+    "forwardTunnels": "Porda Plusendado",
+    "tokens": "Ĵetonoj",
+    "clients": "Klientoj",
+    "auditLogs": "Reviziaj Protokoloj",
+    "settings": "Sistemaj Agordoj",
+    "logout": "Elsaluti",
+    "language": "Lingvo"
+  },
+  "login": {
+    "brand": {
+      "desc": "Panelo pri retpenetrado"
+    },
+    "title": {
+      "credentials": "Ensaluti",
+      "mfaSetup": "Agordi Dufaktoran Aŭtentigon",
+      "mfaVerify": "Dufaktora Aŭtentigo"
+    },
+    "form": {
+      "username": "Uzantnomo",
+      "usernamePlaceholder": "Enigu uzantnomon",
+      "password": "Pasvorto",
+      "passwordPlaceholder": "Enigu pasvorton",
+      "submit": "Ensaluti"
+    },
+    "setup": {
+      "hint": "Ne povas konektiĝi al la servilo. Se ĉi tiu estas via unua deplojo,",
+      "link": "iru al la agorda paĝo"
+    },
+    "mfa": {
+      "totpLabel": "Enigu la 6-ciferan kodon el via aŭtentiga aplikaĵo",
+      "totpHint": "Enigu la 6-ciferan kodon el via Aŭtentiga aplikaĵo",
+      "countdown": "Ĵetono eksvalidiĝos post",
+      "back": "Reen al ensaluto"
+    }
+  },
+  "mfa": {
+    "setup": {
+      "title": "Kontrolo sukcesa, bonvolu agordi dufaktoran aŭtentigon",
+      "tip": "Skanu la QR-kodon sube per {app1} aŭ {app2}",
+      "secretLabel": "Ne povas skani? Enigu la ŝlosilon mane:",
+      "copy": "Kopii"
+    }
+  },
+  "setup": {
+    "title": "FastTunnel Agordo",
+    "desc": "Unua deplojo, bonvolu krei administran konton",
+    "form": {
+      "username": "Administra Uzantnomo",
+      "usernamePlaceholder": "Enigu uzantnomon",
+      "password": "Administra Pasvorto",
+      "passwordPlaceholder": "Almenaŭ 8 signoj, literoj kaj ciferoj",
+      "passwordWeak": "Pasvorto tro malforta: almenaŭ 8 signoj kun literoj kaj ciferoj",
+      "passwordHint": "Uzu kombinaĵon de literoj kaj ciferoj",
+      "confirm": "Konfirmi Pasvorton",
+      "confirmPlaceholder": "Re-enigu pasvorton",
+      "confirmMismatch": "Pasvortoj ne kongruas",
+      "submit": "Plenumi Agordon"
+    }
+  },
+  "dashboard": {
+    "title": "Panelo",
+    "recentOps": "Lastatempaj Agoj",
+    "stat": {
+      "onlineClients": "Retaj Klientoj",
+      "activeWebTunnels": "Aktivaj TTT-Tuneloj",
+      "activeForwardTunnels": "Aktivaj Pordaj Plusendoj",
+      "totalTokens": "Totalaj Ĵetonoj"
+    },
+    "table": {
+      "empty": "Neniuj lastatempaj agoj"
+    }
+  },
+  "config": {
+    "general": "Ĝenerala",
+    "pageDesc": "Administri la agordojn de FastTunnel-servilo. Ŝanĝoj efikas tuj (JWT-ŝanĝoj postulas rekomencon)",
+    "enableForward": "Ŝalti pordan plusendadon",
+    "enableForwardTip": "Kiam malŝaltita, la servilo ĉesas trakti pordan plusendadon",
+    "webDomain": "Radika domajno",
+    "webDomainPlaceholder": "ekz. test.cc",
+    "webDomainTip": "Klientoj aliras internajn paĝojn per ${SubDomain}.${WebDomain}",
+    "webAllowAccessIps": "Alirlisto (blanklisto)",
+    "webAllowAccessIpsPlaceholder": "Tajpu IP-on kaj premu Enen",
+    "webAllowAccessIpsTip": "Malplena signifas, ke ĉiuj IP-oj estas permesitaj (rezervita kampo, ne efika en la nuna versio)",
+    "jwt": "JWT-Aŭtentigo",
+    "clockSkew": "Horloĝa deklivo (sekundoj)",
+    "validAudience": "ValidAudience",
+    "validIssuer": "ValidIssuer",
+    "issuerSigningKey": "Subskriba ŝlosilo",
+    "expires": "Eksvalidiĝo (minutoj)",
+    "jwtTip": "JWT-ŝanĝoj postulas servilan rekomencon por efiki",
+    "save": "Konservi Agordojn",
+    "saved": "Agordoj konservitaj kaj aplikitaj (JWT-ŝanĝoj postulas servilan rekomencon)"
+  },
+  "page": {
+    "tokens": "Ĵetonoj",
+    "auditLogs": "Reviziaj Protokoloj",
+    "clients": "Klientoj",
+    "forwardTunnels": "Porda Plusendado",
+    "webTunnels": "TTT-Tuneloj"
+  },
+  "table": {
+    "column": {
+      "tokenValue": "Ĵetono",
+      "description": "Priskribo",
+      "status": "Stato",
+      "createdAt": "Kreita",
+      "actions": "Agoj",
+      "name": "Nomo",
+      "onlineStatus": "Stato",
+      "lastSeen": "Laste Vidita",
+      "remotePort": "Fora Pordo",
+      "localAddress": "Loka Adreso",
+      "protocol": "Protokolo",
+      "client": "Kliento",
+      "subDomain": "Subdomajno",
+      "operator": "Operaciisto",
+      "entity": "Ento",
+      "detail": "Detalo",
+      "time": "Tempo"
+    }
+  },
+  "action": {
+    "edit": "Redakti",
+    "delete": "Forigi",
+    "copy": "Kopii",
+    "reset": "Restarigi",
+    "newToken": "Nova Ĵetono",
+    "editToken": "Redakti Ĵetonon",
+    "newTunnel": "Nova Tunelo",
+    "enabled": "Ŝaltita",
+    "disabled": "Malŝaltita",
+    "online": "Reta",
+    "offline": "Eksterreta"
+  },
+  "placeholder": {
+    "searchToken": "Serĉi priskribon aŭ ĵetonan valoron",
+    "searchClient": "Serĉi klientan nomon",
+    "searchTunnel": "Serĉi pordon aŭ lokan adreson",
+    "searchSubDomain": "Serĉi subdomajnon aŭ lokan adreson",
+    "tokenValue": "Lasu malplena por aŭtomate generi UUID",
+    "description": "ekz. Oficeja Servilo",
+    "subDomain": "ekz. api",
+    "localIp": "ekz. 192.168.1.100",
+    "localPort": "ekz. 8080",
+    "remotePort": "ekz. 2222",
+    "sshPort": "ekz. 22",
+    "clientToken": "Elektu Ĵetonon"
+  },
+  "popconfirm": {
+    "deleteToken": "Forigi ĉi tiun ĵetonon?",
+    "deleteTunnel": "Forigi ĉi tiun tunelon?"
+  },
+  "empty": {
+    "noAuditLogs": "Neniuj reviziaj protokoloj",
+    "noForwardTunnels": "Neniuj pordaj plusendoj",
+    "noWebTunnels": "Neniuj TTT-tuneloj"
+  },
+  "message": {
+    "token": {
+      "created": "Ĵetono kreita sukcese",
+      "updated": "Ĵetono ĝisdatigita sukcese",
+      "deleted": "Ĵetono forigita",
+      "copied": "Kopiita al tondujo",
+      "copyFailed": "Kopiado malsukcesis"
+    },
+    "tunnel": {
+      "created": "Tunelo kreita sukcese",
+      "updated": "Tunelo ĝisdatigita sukcese",
+      "deleted": "Tunelo forigita",
+      "portOccupied": "Pordo {port} jam estas uzata"
+    },
+    "operationFailed": "Operacio malsukcesis",
+    "deleteFailed": "Forigo malsukcesis",
+    "setup": {
+      "completed": "Agordo kompleta, direktante al ensaluto",
+      "failed": "Agordo malsukcesis"
+    },
+    "secret": {
+      "copied": "Sekreto kopiita al tondujo",
+      "copyFailed": "Kopiado malsukcesis, bonvolu kopii mane"
+    }
+  },
+  "tunnelForm": {
+    "title": {
+      "edit": "Redakti Tunelon",
+      "create": "Nova Tunelo"
+    },
+    "label": {
+      "subDomain": "Subdomajno",
+      "localIp": "Loka IP",
+      "localPort": "Loka Pordo",
+      "clientToken": "Ĵetono",
+      "remotePort": "Fora Pordo",
+      "protocol": "Protokolo"
+    }
+  },
+  "client": {
+    "loading": "Ŝarĝante...",
+    "webTunnels": "TTT-Tuneloj",
+    "forwardTunnels": "Pordaj Plusendoj",
+    "none": "Neniu"
+  },
+  "route": {
+    "setup": "Agordo",
+    "login": "Ensaluto",
+    "dashboard": "Panelo",
+    "webTunnels": "TTT-Tuneloj",
+    "forwardTunnels": "Pordaj Plusendoj",
+    "tokens": "Ĵetonoj",
+    "clients": "Klientoj",
+    "auditLogs": "Reviziaj Protokoloj"
+  },
+  "filter": {
+    "action": "Ago",
+    "entity": "Ento",
+    "startDate": "Komenca Dato",
+    "endDate": "Fina Dato",
+    "deletionStatus": "Foriga Stato",
+    "enabledStatus": "Ŝaltita Stato",
+    "all": "Ĉiuj",
+    "deleted": "Forigita",
+    "notDeleted": "Ne Forigita",
+    "enabled": "Ŝaltita",
+    "disabled": "Malŝaltita"
+  },
+  "status": {
+    "deleted": "Forigita",
+    "active": "Aktiva"
+  }
+}
