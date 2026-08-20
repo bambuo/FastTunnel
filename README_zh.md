@@ -38,15 +38,58 @@ FastTunnel 是一个高性能跨平台内网穿透工具，使用它可以实现
 
 ## 架构
 
+```mermaid
+flowchart TB
+    subgraph Public[公网]
+        User[公网用户]
+    end
+
+    subgraph Server[服务端 · 有公网 IP]
+        Listener[端口监听<br/>TCP / UDP 转发]
+        Route[YARP 域名路由<br/>网站隧道]
+        API[管理 API + 管理台]
+        DB[(SQLite<br/>令牌 / 隧道配置 / 审计日志)]
+    end
+
+    subgraph Intranet[内网]
+        Client[FastTunnel 客户端]
+        MySQL[(MySQL)]
+        Redis[(Redis)]
+        Web[内网网站]
+    end
+
+    User -->|IP:端口 访问| Listener
+    User -->|子域名 访问| Route
+    Listener <-->|WebSocket 隧道| Client
+    Route <-->|WebSocket 隧道| Client
+    Client --> MySQL
+    Client --> Redis
+    Client --> Web
+    API --> DB
+    Listener --> DB
+    Route --> DB
 ```
-┌────────────┐    WebSocket 隧道     ┌─────────────────────────────┐
-│  内网客户端  │ ◄──────────────────► │         服务端                │
-│ (FastTunnel │   登录(携带Token)     │  FastTunnel.Server           │
-│   .Client)  │                      │   ├── 端口监听(TCP/UDP)      │
-│   │         │                      │   ├── YARP 域名路由(网站隧道)  │
-│   └── 内网服务                       │   └── 管理 API + 管理台前端   │
-│       (mysql/网站/...)              └─────────────┬───────────────┘
-└────────────┘                                   公网访问入口
+
+**登录与配置下发流程**
+
+```mermaid
+sequenceDiagram
+    participant Admin as 管理台
+    participant API as 服务端
+    participant DB as 数据库
+    participant Client as 内网客户端
+    participant Svc as 内网服务
+
+    Admin->>API: 创建令牌 / 配置隧道
+    API->>DB: 保存（令牌、端口转发、网站隧道）
+    Client->>API: 连接服务端（携带 Token）
+    API->>DB: 校验 Token、读取该令牌的隧道配置
+    API->>API: 建立端口监听（TCP/UDP）与域名路由
+    API-->>Client: 下发隧道配置清单
+    Note over Client: 客户端持有清单，收到转发指令时连接内网服务
+    User->>API: 访问 服务端端口 / 子域名
+    API-->>Client: 转发指令（含内网地址）
+    Client->>Svc: 连接内网服务并桥接数据
 ```
 
 | 项目 | 说明 |

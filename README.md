@@ -38,16 +38,58 @@ FastTunnel is a high-performance cross-platform intranet penetration tool. With 
 
 ## Architecture
 
+```mermaid
+flowchart TB
+    subgraph Public[Public Network]
+        User[Public User]
+    end
+
+    subgraph Server[Server · Public IP]
+        Listener[Port Listeners<br/>TCP / UDP Forwarding]
+        Route[YARP Domain Routes<br/>Web Tunnels]
+        API[Admin API + Admin UI]
+        DB[(SQLite<br/>Tokens / Tunnel Configs / Audit Logs)]
+    end
+
+    subgraph Intranet[Intranet]
+        Client[FastTunnel Client]
+        MySQL[(MySQL)]
+        Redis[(Redis)]
+        Web[Intranet Website]
+    end
+
+    User -->|IP:Port access| Listener
+    User -->|Subdomain access| Route
+    Listener <-->|WebSocket Tunnel| Client
+    Route <-->|WebSocket Tunnel| Client
+    Client --> MySQL
+    Client --> Redis
+    Client --> Web
+    API --> DB
+    Listener --> DB
+    Route --> DB
 ```
-┌────────────┐    WebSocket tunnel    ┌─────────────────────────────┐
-│ Intranet   │ ◄────────────────────► │ Server                      │
-│ Client     │    login (with Token)  │ FastTunnel.Server           │
-│ (FastTunnel│                        │  ├── Port listeners (TCP/UDP)│
-│  .Client)  │                        │  ├── YARP domain routes     │
-│   │        │                        │  └── Admin API + Admin UI   │
-│   └── Intranet services             └─────────────┬───────────────┘
-│       (mysql/web/...)                            Public access
-└────────────┘
+
+**Login & Config Delivery Flow**
+
+```mermaid
+sequenceDiagram
+    participant Admin as Admin Panel
+    participant API as Server
+    participant DB as Database
+    participant Client as Intranet Client
+    participant Svc as Intranet Service
+
+    Admin->>API: Create token / configure tunnels
+    API->>DB: Save (token, port forwarding, web tunnels)
+    Client->>API: Connect to server (with Token)
+    API->>DB: Validate token, load tunnel configs for the token
+    API->>API: Create port listeners (TCP/UDP) and domain routes
+    API-->>Client: Deliver tunnel config manifest
+    Note over Client: Client holds the manifest; connects to intranet services when forwarding instructions arrive
+    User->>API: Access server port / subdomain
+    API-->>Client: Forwarding instruction (with intranet address)
+    Client->>Svc: Connect to intranet service and bridge data
 ```
 
 | Project | Description |
