@@ -122,7 +122,10 @@
       "operator": "Operaciisto",
       "entity": "Ento",
       "detail": "Detalo",
-      "time": "Tempo"
+      "time": "Tempo",
+      "token": "Ĵetono",
+      "ip": "IP",
+      "environment": "Medio"
     }
   },
   "action": {
@@ -150,7 +153,8 @@
     "localPort": "ekz. 8080",
     "remotePort": "ekz. 2222",
     "sshPort": "ekz. 22",
-    "clientToken": "Elektu Ĵetonon"
+    "clientToken": "Elektu Ĵetonon",
+    "notSet": "Ne agordita"
   },
   "popconfirm": {
     "deleteToken": "Forigi ĉi tiun ĵetonon?",
@@ -198,13 +202,21 @@
       "clientToken": "Ĵetono",
       "remotePort": "Fora Pordo",
       "protocol": "Protokolo"
-    }
+    },
+    "tokenOption": "({desc})"
   },
   "client": {
     "loading": "Ŝarĝante...",
     "webTunnels": "TTT-Tuneloj",
     "forwardTunnels": "Pordaj Plusendoj",
-    "none": "Neniu"
+    "none": "Neniu",
+    "env": {
+      "os": "Sistemo",
+      "arch": "Arkitekturo",
+      "cpu": "CPU: {count} kernoj",
+      "memory": "Memoro: {total} (havebla {available})",
+      "dotnet": ".NET"
+    }
   },
   "route": {
     "setup": "Agordo",

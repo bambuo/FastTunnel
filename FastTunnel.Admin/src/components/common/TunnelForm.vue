@@ -79,7 +79,7 @@ async function loadTokens() {
 }
 
 function maskToken(value: string): string {
-  if (!value) return '(未设置)'
+  if (!value) return t('placeholder.notSet')
   return value.length <= 8 ? value : `${value.slice(0, 4)}****${value.slice(-4)}`
 }
 
@@ -127,7 +127,7 @@ function handleOk() {
         </a-form-item>
         <a-form-item :label="$t('tunnelForm.label.clientToken')" field="clientToken" required>
           <a-select v-model="webForm.clientToken" :placeholder="$t('placeholder.clientToken')" allow-clear>
-            <a-option v-for="tk in tokens" :key="tk.value" :value="tk.value">{{ maskToken(tk.value) }}（{{ tk.description || 'Token' }}）</a-option>
+            <a-option v-for="tk in tokens" :key="tk.value" :value="tk.value">{{ maskToken(tk.value) }}{{ $t('tunnelForm.tokenOption', { desc: tk.description || $t('tunnelForm.label.clientToken') }) }}</a-option>
           </a-select>
         </a-form-item>
       </a-form>
@@ -152,7 +152,7 @@ function handleOk() {
         </a-form-item>
         <a-form-item :label="$t('tunnelForm.label.clientToken')" field="clientToken" required>
           <a-select v-model="forwardForm.clientToken" :placeholder="$t('placeholder.clientToken')" allow-clear>
-            <a-option v-for="tk in tokens" :key="tk.value" :value="tk.value">{{ maskToken(tk.value) }}（{{ tk.description || 'Token' }}）</a-option>
+            <a-option v-for="tk in tokens" :key="tk.value" :value="tk.value">{{ maskToken(tk.value) }}{{ $t('tunnelForm.tokenOption', { desc: tk.description || $t('tunnelForm.label.clientToken') }) }}</a-option>
           </a-select>
         </a-form-item>
       </a-form>

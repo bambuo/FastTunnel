@@ -20,9 +20,9 @@ const filteredData = computed(() => {
 })
 
 const columns = computed(() => [
-  { title: '令牌', dataIndex: 'token', width: 320, ellipsis: true },
-  { title: 'IP', dataIndex: 'ip', width: 140 },
-  { title: '运行环境', slotName: 'env', width: 200 },
+  { title: t('table.column.token'), dataIndex: 'token', width: 320, ellipsis: true },
+  { title: t('table.column.ip'), dataIndex: 'ip', width: 140 },
+  { title: t('table.column.environment'), slotName: 'env', width: 200 },
   { title: t('table.column.onlineStatus'), slotName: 'online', width: 100 },
   { title: t('table.column.lastSeen'), slotName: 'lastSeen', width: 160 },
 ])
@@ -94,11 +94,11 @@ async function handleExpand(row: ClientEntity) {
           <a-tooltip>
             <template #content>
               <div class="env-tip">
-                <p>系统：{{ record.clientInfo.os }} {{ record.clientInfo.osVersion }}</p>
-                <p>架构：{{ record.clientInfo.architecture }}</p>
-                <p>CPU：{{ record.clientInfo.cpuCores }} 核</p>
-                <p>内存：{{ formatMemory(record.clientInfo.totalMemoryMB) }}（可用 {{ formatMemory(record.clientInfo.availableMemoryMB) }}）</p>
-                <p>.NET：{{ record.clientInfo.dotnetVersion }}</p>
+                <p>{{ $t('client.env.os') }}：{{ record.clientInfo.os }} {{ record.clientInfo.osVersion }}</p>
+                <p>{{ $t('client.env.arch') }}：{{ record.clientInfo.architecture }}</p>
+                <p>{{ $t('client.env.cpu', { count: record.clientInfo.cpuCores }) }}</p>
+                <p>{{ $t('client.env.memory', { total: formatMemory(record.clientInfo.totalMemoryMB), available: formatMemory(record.clientInfo.availableMemoryMB) }) }}</p>
+                <p>{{ $t('client.env.dotnet') }}：{{ record.clientInfo.dotnetVersion }}</p>
               </div>
             </template>
             <span class="env-cell">{{ record.clientInfo.os }} {{ record.clientInfo.architecture }}</span>

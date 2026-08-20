@@ -122,7 +122,10 @@
       "operator": "操作人",
       "entity": "对象",
       "detail": "详情",
-      "time": "时间"
+      "time": "时间",
+      "token": "令牌",
+      "ip": "IP",
+      "environment": "运行环境"
     }
   },
   "action": {
@@ -150,7 +153,8 @@
     "localPort": "如 8080",
     "remotePort": "如 2222",
     "sshPort": "如 22",
-    "clientToken": "选择令牌"
+    "clientToken": "选择令牌",
+    "notSet": "未设置"
   },
   "popconfirm": {
     "deleteToken": "确定删除？",
@@ -198,13 +202,21 @@
       "clientToken": "令牌",
       "remotePort": "远程端口",
       "protocol": "协议"
-    }
+    },
+    "tokenOption": "（{desc}）"
   },
   "client": {
     "loading": "加载中...",
     "webTunnels": "网站隧道",
     "forwardTunnels": "端口转发",
-    "none": "无"
+    "none": "无",
+    "env": {
+      "os": "系统",
+      "arch": "架构",
+      "cpu": "CPU：{count} 核",
+      "memory": "内存：{total}（可用 {available}）",
+      "dotnet": ".NET"
+    }
   },
   "route": {
     "setup": "系统初始化",

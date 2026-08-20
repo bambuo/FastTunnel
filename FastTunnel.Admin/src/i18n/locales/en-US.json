@@ -122,7 +122,10 @@
       "operator": "Operator",
       "entity": "Entity",
       "detail": "Detail",
-      "time": "Time"
+      "time": "Time",
+      "token": "Token",
+      "ip": "IP",
+      "environment": "Environment"
     }
   },
   "action": {
@@ -150,7 +153,8 @@
     "localPort": "e.g. 8080",
     "remotePort": "e.g. 2222",
     "sshPort": "e.g. 22",
-    "clientToken": "Select a Token"
+    "clientToken": "Select a Token",
+    "notSet": "Not set"
   },
   "popconfirm": {
     "deleteToken": "Delete this token?",
@@ -198,13 +202,21 @@
       "clientToken": "Token",
       "remotePort": "Remote Port",
       "protocol": "Protocol"
-    }
+    },
+    "tokenOption": "({desc})"
   },
   "client": {
     "loading": "Loading...",
     "webTunnels": "Web Tunnels",
     "forwardTunnels": "Forward Tunnels",
-    "none": "None"
+    "none": "None",
+    "env": {
+      "os": "OS",
+      "arch": "Architecture",
+      "cpu": "CPU: {count} cores",
+      "memory": "Memory: {total} (available {available})",
+      "dotnet": ".NET"
+    }
   },
   "route": {
     "setup": "Setup",
