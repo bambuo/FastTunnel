@@ -43,6 +43,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- 开发环境配置不随发布分发 -->
+    <Content Update="appsettings.Development.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
     <None Update="uninstall.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
