@@ -1,68 +1,161 @@
 <div align="center">
-  
+
 <img src="images/logo.png" width="150" align=center />
 
 ## FastTunnel
+
 [![License](https://img.shields.io/badge/license-Apache%202-green.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Build status](https://github.com/anjoy8/blog.core/workflows/.NET%20Core/badge.svg)](https://github.com/SpringHgui/FastTunnel/actions)
 [![Nuget](https://img.shields.io/nuget/v/FastTunnel.Core)](https://www.nuget.org/packages/FastTunnel.Core/)
-[![Nuget](https://img.shields.io/nuget/dt/FastTunnel.Core)](https://www.nuget.org/packages/FastTunnel.Core/)
 
-[README](README.md) | [中文介绍](README_zh.md)  
-
-</div>
-<div align="center">
-
-# Sponsor
-If `FastTunel` gives you value, might as well ☕ [sponsor a cup of coffee](https://afdian.com/a/gui_h/plan)~。  
-
-## new open-source task scheduling system, welcome to learn more about [OpenTask](https://github.com/SpringHgui/OpenTask)
+[README](README.md) | [中文文档](README_zh.md)
 
 </div>
 
+## What is FastTunnel
 
-## What is FastTunnel？
-- FastTunnel is a high-performance cross-platform intranet penetration tool. With it, you can expose intranet services to the public network for yourself or anyone to access.
-- Unlike other penetration tools, the FastTunnel project is committed to creating an easy-to-extensible and easy-to-maintain intranet penetration framework.
-- You can build your own penetration application by referencing the nuget package of `FastTunnel.Core`, and target the business extension functions you need.
+FastTunnel is a high-performance cross-platform intranet penetration tool. With it, you can expose intranet services to the public network for yourself or anyone to access.
 
-The penetration platform developed based on this framework, if you need intranet penetration, you can register and use it directly, eliminating the cost of building and maintaining yourself.
-But do not use this service for important items.
+- **TCP / UDP port forwarding**: access any intranet service (mysql, redis, ssh, remote desktop, etc.)
+- **Web tunnels**: access intranet web services via custom domain names / subdomains (commonly used for WeChat development)
+- **Built-in web admin panel**: token management, tunnel configuration, online clients, system settings, and audit logs
+- Unlike other penetration tools, FastTunnel is committed to being an easy-to-extend, easy-to-maintain intranet penetration framework. You can build your own penetration application by referencing the `FastTunnel.Core` NuGet package.
 
+> ⚠️ When exposing port 3389 (remote desktop), make sure your system password is strong enough to prevent unauthorized access.
 
-## Docs
-[Docs](https://github.com/SpringHgui/opentask-doc/blob/master/docs/fasttunel/getting-started.md)
+## Features
 
-## Repositories
-
-[GitHub](https://github.com/SpringHgui/FastTunnel)  
-[Gitee](https://gitee.com/Hgui/FastTunnel)
-
-**If helpful, click on ⭐Star to support this project, please submit an issue if you have needs and bugs, and welcome coder to PR**
-
-## GVP Projrct
-
-![img1](images/gvp.png)
-***
-
-## What can FastTunel do？
-- [x] Remote intranet computer Windows/Linux/Mac
-- [x] Use a custom domain name to access intranet web services (usually used for WeChat development)
-- [x] Port forwarding/port mapping, access services provided by any port on the intranet mysql, redis, ftp, etc.
+- [x] Remote access to intranet computers (Windows / Linux / Mac)
+- [x] Custom domain access to intranet web services
+- [x] TCP / UDP port forwarding (bidirectional UDP datagram forwarding)
+- [x] Multiple domains bound to intranet services
+- [x] Client Token authentication (tokens are created in the admin panel; unauthenticated tokens are rejected)
+- [x] Server-managed tunnel configuration: zero client-side config, all managed in the admin panel, changes take effect immediately
+- [x] Client environment reporting (OS / CPU / memory / .NET version)
+- [x] Visual system settings (root domain, port forwarding toggle, JWT, etc., hot-reloaded on save)
+- [x] Operation audit logs
 - [ ] p2p penetration
-- [x] Support binding multiple domain names to access intranet services
-- [x] Support domain name whitelist restriction
-- [x] Support client identity verification
- 
-## Contributors
-<a href = "https://github.com/FastTunnel/FastTunnel/graphs/contributors">
-  <img src = "https://contrib.rocks/image?repo=FastTunnel/FastTunnel"/>
-</a>
- 
-## Join QQ Group  
-Group1：798672272  
-Group2：935214348  
-Group3：768089177  
+
+## Architecture
+
+```
+┌────────────┐    WebSocket tunnel    ┌─────────────────────────────┐
+│ Intranet   │ ◄────────────────────► │ Server                      │
+│ Client     │    login (with Token)  │ FastTunnel.Server           │
+│ (FastTunnel│                        │  ├── Port listeners (TCP/UDP)│
+│  .Client)  │                        │  ├── YARP domain routes     │
+│   │        │                        │  └── Admin API + Admin UI   │
+│   └── Intranet services             └─────────────┬───────────────┘
+│       (mysql/web/...)                            Public access
+└────────────┘
+```
+
+| Project | Description |
+|---|---|
+| `FastTunnel.Server` | Server (deployed on a machine with a public IP), hosts admin API and admin UI |
+| `FastTunnel.Client` | Client (deployed on intranet machines), actively connects to the server |
+| `FastTunnel.Core` | Core framework library (published to NuGet for secondary development) |
+| `FastTunnel.Core.Client` | Client core library |
+| `FastTunnel.Api` | Admin API (tokens, tunnels, online clients, system settings, audit logs) |
+| `FastTunnel.Admin` | Admin UI (Vue 3 + Arco Design) |
+
+## Screenshots
+
+**Dashboard**
+
+![Dashboard](images/screenshots/dashboard.png)
+
+**Tokens** (created in the admin panel; clients must carry a valid token to log in)
+
+![Tokens](images/screenshots/tokens.png)
+
+**Web Tunnels**
+
+![Web Tunnels](images/screenshots/web-tunnels.png)
+
+**Port Forwarding** (TCP / UDP)
+
+![Port Forwarding](images/screenshots/forward-tunnels.png)
+
+**Online Clients** (live connections with environment info)
+
+![Online Clients](images/screenshots/clients.png)
+
+**Audit Logs**
+
+![Audit Logs](images/screenshots/audit-logs.png)
+
+**System Settings**
+
+![System Settings](images/screenshots/settings.png)
+
+## Quick Start
+
+### 1. Deploy the server
+
+```bash
+# Development (listens on http://*:1270 by default)
+dotnet run --project FastTunnel.Server
+
+# Or publish
+./publish.sh
+```
+
+Server data is stored in `data/fasttunnel.db` (SQLite, under the app directory: accounts, tokens, tunnel configs, audit logs).
+
+### 2. Initialize the admin panel
+
+Open `http://server-ip:1270` in a browser. On first use, the setup page creates the admin account (TOTP two-factor verification supported).
+
+### 3. Create a token and tunnels
+
+1. **Tokens** → create a token (e.g. `ft-demo-token`)
+2. **Web Tunnels** → create (subdomain + intranet service address, bound to a token)
+3. **Port Forwarding** → create (remote port + intranet address + TCP/UDP protocol, bound to a token)
+
+Tunnel changes take effect immediately; if the target client is offline, the config is applied automatically when the client logs in.
+
+### 4. Configure and start the client
+
+Only three settings are needed in `FastTunnel.Client/appsettings.json`:
+
+```json
+{
+  "FastTunnel": {
+    "Server": {
+      "ServerAddr": "server-ip-or-domain",
+      "ServerPort": 1270
+    },
+    "Token": "ft-demo-token"
+  }
+}
+```
+
+```bash
+dotnet run --project FastTunnel.Client
+```
+
+Once connected, the server automatically creates port listeners and domain routes based on the admin config. Access intranet services via `server-ip:remote-port` or `subdomain.root-domain:1270`.
+
+### 5. System settings
+
+The **System Settings** page manages server parameters (hot-reloaded on save):
+
+- **Enable port forwarding**: when disabled, the server stops handling port forwarding
+- **Root domain**: subdomain suffix for web tunnels (e.g. `test.cc`)
+- **JWT auth**: admin panel login token parameters (changes require a server restart)
+
+## Security Notes
+
+- The default JWT signing key is a built-in default; change it in System Settings for production
+- Tokens and tunnel configs are stored in the server database; protect server access
+- Use strong passwords when exposing ports such as 3389 / 22
+
+## Links & Community
+
+- [GitHub](https://github.com/SpringHgui/FastTunnel) / [Gitee](https://gitee.com/Hgui/FastTunnel)
+- QQ Groups: 798672272 / 935214348 / 768089177
 
 ## License
+
 Apache License 2.0
