@@ -95,16 +95,14 @@ function handleLogout() {
         </div>
         <div class="header-right">
           <span class="username">{{ authStore.username }}</span>
-          <a-dropdown trigger="click">
-            <a-button type="text" size="small">{{ $t('nav.language') }}</a-button>
-            <template #content>
-              <a-doption
-                v-for="loc in supportedLocales"
-                :key="loc.key"
-                @click="switchLocale(loc.key)"
-              >{{ loc.label }}</a-doption>
-            </template>
-          </a-dropdown>
+          <a-select
+            :model-value="locale"
+            size="small"
+            style="width: 116px"
+            @change="switchLocale"
+          >
+            <a-option v-for="loc in supportedLocales" :key="loc.key" :value="loc.key">{{ loc.label }}</a-option>
+          </a-select>
           <a-button type="text" size="small" @click="handleLogout">{{ $t('nav.logout') }}</a-button>
         </div>
       </a-layout-header>
