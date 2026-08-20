@@ -5,8 +5,6 @@
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
     <TargetFramework>net10.0</TargetFramework>
-    <!-- LibraryImport 源生成 P/Invoke 需要不安全代码 -->
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

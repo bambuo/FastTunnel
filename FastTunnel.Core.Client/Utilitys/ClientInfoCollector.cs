@@ -13,9 +13,10 @@ namespace FastTunnel.Core.Utilitys;
 
 /// <summary>
 ///     采集客户端运行环境信息（系统、CPU、内存、.NET 版本），登录时上报。
-///     内存采集跨平台尽力而为，失败返回 0。
+///     纯托管实现：Linux 读 /proc/meminfo（精确总量/可用量），
+///     Windows/macOS 用 GC.GetGCMemoryInfo()（可用量近似值 + 内存压力百分比）。
 /// </summary>
-public static partial class ClientInfoCollector
+public static class ClientInfoCollector
 {
     public static ClientInfo Collect()
     {
@@ -43,41 +44,19 @@ public static partial class ClientInfoCollector
     {
         try
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return GetWindowsMemory();
-            }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 return GetLinuxMemory();
-            }
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                return GetMacMemory();
             }
         }
         catch
         {
             // 内存采集失败时返回 0，不影响其他信息
         }
-        return (0, 0);
-    }
 
-    private static (long, long) GetMacMemory()
-    {
-        var size = (nuint)sizeof(ulong);
-        if (sysctlbyname("hw.memsize", out var total, ref size, IntPtr.Zero, 0) == 0)
-        {
-            return (BytesToMB(total), 0);
-        }
-        return (0, 0);
-    }
-
-    private static (long, long) GetWindowsMemory()
-    {
-        var status = new MEMORYSTATUSEX { dwLength = (uint)Marshal.SizeOf<MEMORYSTATUSEX>() };
-        if (!GlobalMemoryStatusEx(ref status)) return (0, 0);
-        return (BytesToMB(status.ullTotalPhys), BytesToMB(status.ullAvailPhys));
+        // Windows / macOS / 其他：无纯托管的物理内存总量 API，
+        // 可用量用 GC 估算值（近似）
+        return (0, BytesToMB(GC.GetGCMemoryInfo().TotalAvailableMemoryBytes));
     }
 
     private static (long, long) GetLinuxMemory()
@@ -105,26 +84,5 @@ public static partial class ClientInfoCollector
         return parts.Length >= 2 && long.TryParse(parts[1], out var kb) ? kb / 1024 : 0;
     }
 
-    private static long BytesToMB(ulong bytes) => (long)(bytes / 1024 / 1024);
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct MEMORYSTATUSEX
-    {
-        public uint dwLength;
-        public uint dwMemoryLoad;
-        public ulong ullTotalPhys;
-        public ulong ullAvailPhys;
-        public ulong ullTotalPageFile;
-        public ulong ullAvailPageFile;
-        public ulong ullTotalVirtual;
-        public ulong ullAvailVirtual;
-        public ulong ullAvailExtendedVirtual;
-    }
-
-    [LibraryImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
-
-    [LibraryImport("libc", SetLastError = true, StringMarshalling = StringMarshalling.Utf8)]
-    private static partial int sysctlbyname(string name, out ulong value, ref nuint size, IntPtr newp, nuint newlen);
+    private static long BytesToMB(long bytes) => bytes / 1024 / 1024;
 }

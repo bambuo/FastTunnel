@@ -26,7 +26,7 @@ public class ClientInfo
     /// <summary>总内存（MB），未知为 0</summary>
     public long TotalMemoryMB { get; set; }
 
-    /// <summary>可用内存（MB），未知为 0</summary>
+    /// <summary>可用内存（MB，Windows/macOS 为 GC 估算近似值），未知为 0</summary>
     public long AvailableMemoryMB { get; set; }
 
     /// <summary>.NET 运行时版本</summary>

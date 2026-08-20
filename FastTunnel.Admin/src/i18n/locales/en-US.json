@@ -217,7 +217,8 @@
       "arch": "Architecture",
       "cpu": "CPU: {count} cores",
       "memory": "Memory: {total} (available {available})",
-      "dotnet": ".NET"
+      "dotnet": ".NET",
+      "memoryAvailable": "Available memory: {available}"
     }
   },
   "route": {
