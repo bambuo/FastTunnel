@@ -86,7 +86,7 @@ sequenceDiagram
     API->>DB: Validate token, load tunnel configs for the token
     API->>API: Create port listeners (TCP/UDP) and domain routes
     API-->>Client: Deliver tunnel config manifest
-    Note over Client: Client holds the manifest; connects to intranet services when forwarding instructions arrive
+    Note over Client: Client holds the manifest and connects to intranet services when forwarding instructions arrive
     User->>API: Access server port / subdomain
     API-->>Client: Forwarding instruction (with intranet address)
     Client->>Svc: Connect to intranet service and bridge data
